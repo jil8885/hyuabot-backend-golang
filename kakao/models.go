@@ -9,3 +9,50 @@ type UserMessage struct {
 type UserRequest struct {
 	Message string `json:"utterance"`
 }
+
+
+// 송신 json 형식
+type ServerResponse struct {
+	Version string `json:"version"`
+	Template SkillTemplate `json:"templates"`
+}
+
+// 송신 Response Template
+type SkillTemplate struct {
+	Outputs []Components `json:"outputs"`
+	QuickReplies []QuickReply `json:"quickReplies"`
+}
+
+// Output Template
+type Components struct {}
+
+type SimpleTextResponse struct {
+	Components
+	SimpleText TextContent `json:"simpleText"`
+}
+
+type TextContent struct {
+	Text string `json:"text"`
+}
+
+type TextCard struct {
+	Components
+	Title string `json:"title"`
+	Description string `json:"description"`
+	Buttons []CardButton `json:"buttons"`
+}
+
+// Quick Reply Template
+type QuickReply struct {
+	Action string `json:"action"`
+	Label string `json:"label"`
+	MessageText string `json:"messageText"`
+	BlockID string `json:"blockId"`
+}
+
+// Card Button
+type CardButton struct {
+	Action string `json:"action"`
+	Label string `json:"label"`
+	Link string `json:"webLinkUrl"`
+}
