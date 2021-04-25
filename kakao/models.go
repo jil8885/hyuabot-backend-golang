@@ -24,7 +24,7 @@ type SkillTemplate struct {
 }
 
 // Output Template
-type Components struct {}
+type Components interface {}
 
 type SimpleTextResponse struct {
 	Components

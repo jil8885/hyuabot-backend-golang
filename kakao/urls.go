@@ -1,6 +1,11 @@
 package kakao
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/jil8885/hyuabot-backend-golang/shuttle"
+	"strings"
+	"time"
+)
 
 // 카카오 i 용 url handler
 func Middleware(c *fiber.Ctx) error {
@@ -10,7 +15,92 @@ func Middleware(c *fiber.Ctx) error {
 
 // 카카오 i 셔틀 도착 정보 제공
 func Shuttle(c *fiber.Ctx) error {
-	return c.SendString("카카오 i 셔틀 도착 정보")
+	message := parseAnswer(c)
+	// 사용자 메세지에서 셔틀버스 정보 추출
+	busStop := ""
+	temp := ""
+	if strings.Contains(message, "의 셔틀버스 도착 정보"){
+		temp = strings.Split(message, "의 셔틀버스 도착 정보입니다")[0]
+
+	} else {
+		temp = strings.TrimSpace(strings.Split(message, " ")[1])
+	}
+	switch temp {
+	case "기숙사":
+		busStop = "Residence"
+	case "셔틀콕":
+		busStop = "Shuttlecock_O"
+	case "한대앞역":
+		busStop = "Subway"
+	case "예술인A":
+		busStop = "Terminal"
+	case "셔틀콕 건너편":
+		busStop = "Shuttlecock_I"
+	}
+
+	// 현재 시간 로딩 (KST)
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+
+	busForStation, busForTerminal := shuttle.GetShuttle(busStop, now)
+	message = ""
+	switch busStop {
+	case "Residence":
+		message += "기숙사→한대앞\n"
+		for index, item := range busForStation{
+			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+			if index > 1{
+				break
+			}
+		}
+		message += "기숙사→예술인\n"
+		for index, item := range busForTerminal{
+			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+			if index > 1{
+				break
+			}
+		}
+		message += "예술인 출발 버스는 셔틀콕, 기숙사 방면으로 운행합니다.\n"
+	case "Terminal":
+		message += "예술인→ERICA\n"
+		for index, item := range busForTerminal{
+			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+			if index > 1{
+				break
+			}
+		}
+		message += "예술인 출발 버스는 셔틀콕, 기숙사 방면으로 운행합니다.\n"
+	case "Terminal":
+		message += "예술인→ERICA\n"
+		for index, item := range busForTerminal{
+			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+			if index > 1{
+				break
+			}
+		}
+		message += "예술인 출발 버스는 셔틀콕, 기숙사 방면으로 운행합니다.\n"
+	case "Terminal":
+		message += "예술인→ERICA\n"
+		for index, item := range busForTerminal{
+			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+			if index > 1{
+				break
+			}
+		}
+		message += "예술인 출발 버스는 셔틀콕, 기숙사 방면으로 운행합니다.\n"
+	case "Shuttlecock_I":
+		message += "셔틀콕 건너편→기숙사\n"
+		for index, item := range busForTerminal{
+			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+			if index > 1{
+				break
+			}
+		}
+		message += "일부 차량은 기숙사로 가지 않을 수 있습니다.\n"
+	}
+	message += "제공되는 출발 시간표는 시간표 기반으로, 미리 정류장에서 기다리는 것을 추천드립니다."
+	response := setResponse(setTemplate([]Components{setSimpleText(message)}, []QuickReply{}))
+	return c.JSON(response)
 }
 
 // 카카오 i 셔틀 정류장 정보 제공
