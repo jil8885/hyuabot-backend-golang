@@ -60,25 +60,32 @@ func Shuttle(c *fiber.Ctx) error {
 				break
 			}
 		}
-		message += "예술인 출발 버스는 셔틀콕, 기숙사 방면으로 운행합니다.\n"
-	case "Terminal":
-		message += "예술인→ERICA\n"
+		message += "기숙사 출발 버스는 셔틀콕을 경유합니다.\n"
+	case "Shuttlecock_O":
+		message += "셔틀콕→한대앞\n"
+		for index, item := range busForStation{
+			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+			if index > 1{
+				break
+			}
+		}
+		message += "셔틀콕→예술인\n"
 		for index, item := range busForTerminal{
 			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
 			if index > 1{
 				break
 			}
 		}
-		message += "예술인 출발 버스는 셔틀콕, 기숙사 방면으로 운행합니다.\n"
-	case "Terminal":
-		message += "예술인→ERICA\n"
-		for index, item := range busForTerminal{
+		message += "한대앞 방면은 순환, 직행 중 앞에 오는 것이 빠릅니다.\n"
+	case "Subway":
+		message += "한대앞→ERICA\n"
+		for index, item := range busForStation{
 			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
 			if index > 1{
 				break
 			}
 		}
-		message += "예술인 출발 버스는 셔틀콕, 기숙사 방면으로 운행합니다.\n"
+		message += "캠퍼스 방면은 순환, 직행 중 앞에 오는 것이 빠릅니다.\n"
 	case "Terminal":
 		message += "예술인→ERICA\n"
 		for index, item := range busForTerminal{
@@ -99,7 +106,14 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "일부 차량은 기숙사로 가지 않을 수 있습니다.\n"
 	}
 	message += "제공되는 출발 시간표는 시간표 기반으로, 미리 정류장에서 기다리는 것을 추천드립니다."
-	response := setResponse(setTemplate([]Components{setSimpleText(message)}, []QuickReply{}))
+
+	// 바로가기 버튼
+	var replies []QuickReply
+	replies = append(replies, QuickReply{"blocks", "앱 설치", "앱 설치 안내입니다.", "6077ca2de2039a2ba38c755f"})
+	replies = append(replies, QuickReply{"blocks", "🔍 정류장", busStop + " 정류장 정보입니다.", "5ebf702e7a9c4b000105fb25"})
+	replies = append(replies, QuickReply{"blocks", "🚫 오류제보", "셔틀 오류 제보하기", "5cc3fced384c5508fceec5bb"})
+
+	response := setResponse(setTemplate([]Components{setSimpleText(message)}, replies))
 	return c.JSON(response)
 }
 
