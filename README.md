@@ -38,3 +38,7 @@ $ go run .\main.go
 ### /common : 공통 기능을 위한 url prefix
 * /food : ERICA 교내 식당에 대한 메뉴를 Firebase 에 저장
 * /library : ERICA 학술정보관 내 열람실 좌석 정보를 Firebase 에 저장
+
+## Issue
+* 시간표 관리 페이지를 추가하여 deploy 없이 업데이트 가능하도록 수정
+* 시간표 객체를 in-memory 형태로 작동할 수 있게 전역 변수 수정
