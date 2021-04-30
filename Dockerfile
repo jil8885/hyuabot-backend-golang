@@ -1,7 +1,7 @@
 ### Bulder
 FROM golang:1.15.11-alpine3.13 as builder
 RUN apk update
-RUN apk add git ca-certificates upx
+RUN apk add git ca-certificates upx tzdata
 
 WORKDIR /usr/src/app
 
