@@ -47,61 +47,98 @@ func Shuttle(c *fiber.Ctx) error {
 	switch busStop {
 	case "Residence":
 		message += "기숙사→한대앞\n"
-		for index, item := range busForStation{
-			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
-			if index > 1{
-				break
+		if len(busForStation) > 0{
+			for index, item := range busForStation{
+				message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+				if index > 1{
+					break
+				}
 			}
+			message += "\n"
+		} else {
+			message += "운행 종료\n\n"
 		}
+
 		message += "기숙사→예술인\n"
-		for index, item := range busForTerminal{
-			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
-			if index > 1{
-				break
+		if len(busForTerminal) > 0{
+			for index, item := range busForTerminal{
+				message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+				if index > 1{
+					break
+				}
 			}
+			message += "\n"
+		} else {
+			message += "운행 종료\n\n"
 		}
 		message += "기숙사 출발 버스는 셔틀콕을 경유합니다.\n"
 	case "Shuttlecock_O":
 		message += "셔틀콕→한대앞\n"
-		for index, item := range busForStation{
-			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
-			if index > 1{
-				break
+		if len(busForStation) > 0{
+			for index, item := range busForStation{
+				message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+				if index > 1{
+					break
+				}
 			}
+			message += "\n"
+		} else {
+			message += "운행 종료\n\n"
 		}
+
 		message += "셔틀콕→예술인\n"
-		for index, item := range busForTerminal{
-			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
-			if index > 1{
-				break
+		if len(busForTerminal) > 0{
+			for index, item := range busForTerminal{
+				message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+				if index > 1{
+					break
+				}
 			}
+			message += "\n"
+		} else {
+			message += "운행 종료\n\n"
 		}
 		message += "한대앞 방면은 순환, 직행 중 앞에 오는 것이 빠릅니다.\n"
 	case "Subway":
 		message += "한대앞→ERICA\n"
-		for index, item := range busForStation{
-			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
-			if index > 1{
-				break
+		if len(busForStation) > 0{
+			for index, item := range busForStation{
+				message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+				if index > 1{
+					break
+				}
 			}
+			message += "\n"
+		} else {
+			message += "운행 종료\n\n"
 		}
 		message += "캠퍼스 방면은 순환, 직행 중 앞에 오는 것이 빠릅니다.\n"
 	case "Terminal":
 		message += "예술인→ERICA\n"
-		for index, item := range busForTerminal{
-			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
-			if index > 1{
-				break
+		if len(busForTerminal) > 0{
+			for index, item := range busForTerminal{
+				message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+				if index > 1{
+					break
+				}
 			}
+			message += "\n"
+		} else {
+			message += "운행 종료\n\n"
 		}
 		message += "예술인 출발 버스는 셔틀콕, 기숙사 방면으로 운행합니다.\n"
 	case "Shuttlecock_I":
 		message += "셔틀콕 건너편→기숙사\n"
-		for index, item := range busForTerminal{
-			message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
-			if index > 1{
-				break
+		if len(busForTerminal) > 0{
+			for index, item := range busForTerminal{
+				message += strings.Replace(item.Time, ":", "시", 1) + "분 출발 예정\n"
+				if index > 1{
+					break
+				}
 			}
+			message += "\n"
+		} else {
+			message += "운행 종료\n\n"
 		}
 		message += "일부 차량은 기숙사로 가지 않을 수 있습니다.\n"
 	}
