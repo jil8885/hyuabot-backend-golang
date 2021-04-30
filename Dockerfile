@@ -1,7 +1,7 @@
 ### Bulder
-FROM golang:1.15.11-alpine3.13 as builder
+FROM golang:1.15.11-alpine3.13
 RUN apk update
-RUN apk add git ca-certificates upx tzdata
+RUN apk add --no-cache tzdata
 
 WORKDIR /usr/src/app
 
@@ -13,13 +13,7 @@ RUN go mod tidy
 
 COPY . .
 
-RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags="-s -w" -o bin/main main.go;
-# compile & pack
-
-### Executable Image
-FROM scratch
-
-COPY --from=builder /usr/src/app/bin/main ./main
+RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags="-s -w" -o main main.go;
 
 EXPOSE 8080
 
