@@ -19,12 +19,10 @@ func Shuttle(c *fiber.Ctx) error {
 	// 사용자 메세지에서 셔틀버스 정보 추출
 	busStop := ""
 	temp := ""
-	if strings.Contains(message, "의 셔틀버스 도착 정보"){
-		temp = strings.Split(message, "의 셔틀버스 도착 정보입니다")[0]
+	otherStops := [5]string{"🏘️ 기숙사", "🏫 셔틀콕", "🚆 한대앞역", "🚍 예술인A", "🏫 셔틀콕 건너편"}
 
-	} else {
-		temp = strings.TrimSpace(strings.Split(message, " ")[1])
-	}
+	temp = strings.TrimSpace(strings.Split(message, " ")[1])
+
 	switch temp {
 	case "기숙사":
 		busStop = "Residence"
@@ -147,19 +145,30 @@ func Shuttle(c *fiber.Ctx) error {
 	// 바로가기 버튼
 	var replies []QuickReply
 	replies = append(replies, QuickReply{"blocks", "앱 설치", "앱 설치 안내입니다.", "6077ca2de2039a2ba38c755f"})
-	replies = append(replies, QuickReply{"blocks", "🔍 정류장", busStop + " 정류장 정보입니다.", "5ebf702e7a9c4b000105fb25"})
+	replies = append(replies, QuickReply{"blocks", "🔍 정류장", temp + " 정류장 정보입니다.", "5ebf702e7a9c4b000105fb25"})
 	replies = append(replies, QuickReply{"blocks", "🚫 오류제보", "셔틀 오류 제보하기", "5cc3fced384c5508fceec5bb"})
+
+	for _, stop := range otherStops{
+		replies = append(replies, QuickReply{"blocks", stop, stop, "5cc3dc8ee82127558b7e6eba"})
+	}
 
 	response := setResponse(setTemplate([]Components{setSimpleText(message)}, replies))
 	return c.JSON(response)
 }
 
-// 카카오 i 셔틀 정류장 정보 제공
+// ShuttleStop 카카오 i 셔틀 정류장 정보 제공
 func ShuttleStop(c *fiber.Ctx) error {
+	//message := parseAnswer(c)
+	// 정류장 코드
+	//stop_list := {"셔틀콕": "Shuttlecock_O", "셔틀콕 건너편": "Shuttlecock_I", "한대앞역": "Subway", "예술인A": "Terminal", "기숙사": "Residence"}
+	//stop_view := {"shuttle": "http://kko.to/TyWyjU3Yp", "station": "http://kko.to/c93C0UFYj", "dormitory": "http://kko.to/R-l1jU3DT", "terminal": "http://kko.to/7mzoYUFY0"}
+	//// 사용자 메세지에서 정류장 이름 추출
+	//busStop := strings.TrimSpace(strings.Split(message, "정류장 정보입니다")[0])
+
 	return c.SendString("카카오 i 셔틀 정류장 정보")
 }
 
-// 카카오 i 전철 도착 정보 제공
+// Subway 카카오 i 전철 도착 정보 제공
 func Subway(c *fiber.Ctx) error {
 	return c.SendString("카카오 i 전철 도착 정보")
 }
