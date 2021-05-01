@@ -14,7 +14,7 @@ type UserRequest struct {
 // 송신 json 형식
 type ServerResponse struct {
 	Version string `json:"version"`
-	Template SkillTemplate `json:"templates"`
+	Template SkillTemplate `json:"template"`
 }
 
 // 송신 Response Template
