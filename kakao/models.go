@@ -27,7 +27,6 @@ type SkillTemplate struct {
 type Components interface {}
 
 type SimpleTextResponse struct {
-	Components
 	SimpleText TextContent `json:"simpleText"`
 }
 
