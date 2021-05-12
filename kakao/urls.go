@@ -150,7 +150,7 @@ func Shuttle(c *fiber.Ctx) error {
 		replies = append(replies, QuickReply{"blocks", stop, stop, "5cc3dc8ee82127558b7e6eba"})
 	}
 
-	response := setResponse(setTemplate([]Components{setSimpleText(message)}, replies))
+	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(message))}, replies))
 	return c.JSON(response)
 }
 
