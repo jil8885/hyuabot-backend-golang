@@ -50,5 +50,13 @@ func GetShuttle(busStop string, now time.Time) ([]Departure, []Departure) {
 			}
 		}
 	}
+
+	if len(busForStation) > 2 {
+		busForStation = busForStation[:2]
+	}
+
+	if len(busForTerminal) > 2{
+		busForTerminal = busForTerminal[:2]
+	}
 	return busForStation, busForTerminal
 }
