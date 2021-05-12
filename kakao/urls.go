@@ -135,14 +135,67 @@ func Shuttle(c *fiber.Ctx) error {
 
 // ShuttleStop 카카오 i 셔틀 정류장 정보 제공
 func ShuttleStop(c *fiber.Ctx) error {
-	//message := parseAnswer(c)
-	// 정류장 코드
-	//stop_list := {"셔틀콕": "Shuttlecock_O", "셔틀콕 건너편": "Shuttlecock_I", "한대앞역": "Subway", "예술인A": "Terminal", "기숙사": "Residence"}
-	//stop_view := {"shuttle": "http://kko.to/TyWyjU3Yp", "station": "http://kko.to/c93C0UFYj", "dormitory": "http://kko.to/R-l1jU3DT", "terminal": "http://kko.to/7mzoYUFY0"}
-	//// 사용자 메세지에서 정류장 이름 추출
-	//busStop := strings.TrimSpace(strings.Split(message, "정류장 정보입니다")[0])
+	message := parseAnswer(c)
+	temp := strings.TrimSpace(strings.Split(message, " 정류장 정보입니다.")[0])
+	var busStop string
+	var roadViewLink string
 
-	return c.SendString("카카오 i 셔틀 정류장 정보")
+	switch temp {
+	case "기숙사":
+		busStop = "Residence"
+		roadViewLink = "https://kko.to/R-l1jU3DT"
+	case "셔틀콕":
+		busStop = "Shuttlecock_O"
+		roadViewLink = "https://kko.to/TyWyjU3Yp"
+	case "한대앞역":
+		busStop = "Subway"
+		roadViewLink = "https://kko.to/c93C0UFYj"
+	case "예술인A":
+		busStop = "Terminal"
+		roadViewLink = "https://kko.to/7mzoYUFY0"
+	case "셔틀콕 건너편":
+		busStop = "Shuttlecock_I"
+		roadViewLink = "https://kko.to/TyWyjU3Yp"
+	}
+
+	message = ""
+
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+	busForStationFirst, busForStationLast, busForTerminalFirst, busForTerminalLast := shuttle.GetFirstLastShuttle(busStop, now)
+
+	switch busStop {
+	case "Residence", "Shuttlecock_O":
+		message += "한대앞 : "
+		message += strings.Replace(busForStationFirst.Time, ":", "시 ", 1) + "분(첫차) "
+		message += strings.Replace(busForStationLast.Time, ":", "시 ", 1) + "분(막차)\n"
+		message += "예술인 : "
+		message += strings.Replace(busForTerminalFirst.Time, ":", "시 ", 1) + "분(첫차) "
+		message += strings.Replace(busForTerminalLast.Time, ":", "시 ", 1) + "분(막차)\n"
+	case "Subway":
+		message += "셔틀콕, 기숙사 : "
+		message += strings.Replace(busForStationFirst.Time, ":", "시 ", 1) + "분(첫차) "
+		message += strings.Replace(busForStationLast.Time, ":", "시 ", 1) + "분(막차)\n"
+		message += "예술인 : "
+		message += strings.Replace(busForTerminalFirst.Time, ":", "시 ", 1) + "분(첫차) "
+		message += strings.Replace(busForTerminalLast.Time, ":", "시 ", 1) + "분(막차)\n"
+	case "Terminal":
+		message += "셔틀콕, 기숙사 : "
+		message += strings.Replace(busForTerminalFirst.Time, ":", "시 ", 1) + "분(첫차) "
+		message += strings.Replace(busForTerminalLast.Time, ":", "시 ", 1) + "분(막차)\n"
+	case "Shuttlecock_I":
+		message += "기숙사 : "
+		message += strings.Replace(busForTerminalFirst.Time, ":", "시 ", 1) + "분(첫차) "
+		message += strings.Replace(busForTerminalLast.Time, ":", "시 ", 1) + "분(막차)\n"
+	}
+
+	var buttons []CardButton
+	buttons = append(buttons, CardButton{Action: "webLink", Label: "👀 로드뷰로 보기", Link: roadViewLink})
+
+	var replies []QuickReply
+
+	response := setResponse(setTemplate([]Components{setBasicCard(temp, message, buttons)}, replies))
+	return c.JSON(response)
 }
 
 // Subway 카카오 i 전철 도착 정보 제공

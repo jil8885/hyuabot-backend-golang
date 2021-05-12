@@ -12,3 +12,6 @@ func setSimpleText(message string) SimpleTextResponse {
 	return SimpleTextResponse{SimpleText: TextContent{message}}
 }
 
+func setBasicCard(title string, message string, buttons []CardButton) TextCard {
+	return TextCard{Title: title, Description: message, Buttons: buttons}
+}

@@ -35,7 +35,6 @@ type TextContent struct {
 }
 
 type TextCard struct {
-	Components
 	Title string `json:"title"`
 	Description string `json:"description"`
 	Buttons []CardButton `json:"buttons"`
