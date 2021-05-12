@@ -147,7 +147,7 @@ func Shuttle(c *fiber.Ctx) error {
 	replies = append(replies, QuickReply{"block", "🚫 오류제보", "셔틀 오류 제보하기", "5cc3fced384c5508fceec5bb"})
 
 	for _, stop := range otherStops{
-		replies = append(replies, QuickReply{"blocks", stop, stop, "5cc3dc8ee82127558b7e6eba"})
+		replies = append(replies, QuickReply{"block", stop, stop, "5cc3dc8ee82127558b7e6eba"})
 	}
 
 	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(message))}, replies))
