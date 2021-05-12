@@ -142,9 +142,9 @@ func Shuttle(c *fiber.Ctx) error {
 
 	// 바로가기 버튼
 	var replies []QuickReply
-	replies = append(replies, QuickReply{"blocks", "앱 설치", "앱 설치 안내입니다.", "6077ca2de2039a2ba38c755f"})
-	replies = append(replies, QuickReply{"blocks", "🔍 정류장", temp + " 정류장 정보입니다.", "5ebf702e7a9c4b000105fb25"})
-	replies = append(replies, QuickReply{"blocks", "🚫 오류제보", "셔틀 오류 제보하기", "5cc3fced384c5508fceec5bb"})
+	replies = append(replies, QuickReply{"block", "앱 설치", "앱 설치 안내입니다.", "6077ca2de2039a2ba38c755f"})
+	replies = append(replies, QuickReply{"block", "🔍 정류장", temp + " 정류장 정보입니다.", "5ebf702e7a9c4b000105fb25"})
+	replies = append(replies, QuickReply{"block", "🚫 오류제보", "셔틀 오류 제보하기", "5cc3fced384c5508fceec5bb"})
 
 	for _, stop := range otherStops{
 		replies = append(replies, QuickReply{"blocks", stop, stop, "5cc3dc8ee82127558b7e6eba"})
