@@ -34,6 +34,10 @@ type TextContent struct {
 	Text string `json:"text"`
 }
 
+type BasicCardResponse struct {
+	Card TextCard `json:"basicCard"`
+}
+
 type TextCard struct {
 	Title string `json:"title"`
 	Description string `json:"description"`

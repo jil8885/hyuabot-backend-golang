@@ -194,7 +194,7 @@ func ShuttleStop(c *fiber.Ctx) error {
 
 	replies := make([]QuickReply, 0)
 
-	response := setResponse(setTemplate([]Components{setBasicCard(temp, message, buttons)}, replies))
+	response := setResponse(setTemplate([]Components{BasicCardResponse{Card: setBasicCard(temp, message, buttons)}}, replies))
 	return c.JSON(response)
 }
 
