@@ -192,7 +192,7 @@ func ShuttleStop(c *fiber.Ctx) error {
 	var buttons []CardButton
 	buttons = append(buttons, CardButton{Action: "webLink", Label: "👀 로드뷰로 보기", Link: roadViewLink})
 
-	var replies []QuickReply
+	replies := make([]QuickReply, 0)
 
 	response := setResponse(setTemplate([]Components{setBasicCard(temp, message, buttons)}, replies))
 	return c.JSON(response)
