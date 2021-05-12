@@ -21,7 +21,7 @@ func Shuttle(c *fiber.Ctx) error {
 	temp := ""
 	otherStops := [5]string{"🏘️ 기숙사", "🏫 셔틀콕", "🚆 한대앞역", "🚍 예술인A", "🏫 셔틀콕 건너편"}
 
-	temp = strings.TrimSpace(strings.Split(message, " ")[1])
+	temp = strings.TrimSpace(message[strings.Index(message, " "):])
 
 	switch temp {
 	case "기숙사":
