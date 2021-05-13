@@ -154,19 +154,19 @@ func ShuttleStop(c *fiber.Ctx) error {
 	switch temp {
 	case "기숙사":
 		busStop = "Residence"
-		roadViewLink = "https://kko.to/R-l1jU3DT"
+		roadViewLink = "http://kko.to/R-l1jU3DT"
 	case "셔틀콕":
 		busStop = "Shuttlecock_O"
-		roadViewLink = "https://kko.to/TyWyjU3Yp"
+		roadViewLink = "http://kko.to/TyWyjU3Yp"
 	case "한대앞역":
 		busStop = "Subway"
-		roadViewLink = "https://kko.to/c93C0UFYj"
+		roadViewLink = "http://kko.to/c93C0UFYj"
 	case "예술인A":
 		busStop = "Terminal"
-		roadViewLink = "https://kko.to/7mzoYUFY0"
+		roadViewLink = "http://kko.to/7mzoYUFY0"
 	case "셔틀콕 건너편":
 		busStop = "Shuttlecock_I"
-		roadViewLink = "https://kko.to/TyWyjU3Yp"
+		roadViewLink = "http://kko.to/TyWyjU3Yp"
 	}
 
 	message = ""
