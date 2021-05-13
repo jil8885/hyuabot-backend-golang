@@ -183,14 +183,14 @@ func ShuttleStop(c *fiber.Ctx) error {
 		message += busForTerminalFirst.Time + "(첫차)/"
 		message += busForTerminalLast.Time + "(막차)\n"
 	case "Subway":
-		message += "셔틀콕, 기숙사 : "
+		message += "셔틀콕,기숙사 : "
 		message += busForStationFirst.Time + "(첫차)/"
 		message += busForStationLast.Time + "(막차)\n"
 		message += "예술인 : "
 		message += busForTerminalFirst.Time + "(첫차)/"
 		message += busForTerminalLast.Time + "(막차)\n"
 	case "Terminal":
-		message += "셔틀콕, 기숙사 : "
+		message += "셔틀콕,기숙사 : "
 		message += busForTerminalFirst.Time + "(첫차)/"
 		message += busForTerminalLast.Time + "(막차)\n"
 	case "Shuttlecock_I":
