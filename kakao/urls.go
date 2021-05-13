@@ -167,26 +167,26 @@ func ShuttleStop(c *fiber.Ctx) error {
 	switch busStop {
 	case "Residence", "Shuttlecock_O":
 		message += "한대앞 : "
-		message += strings.Replace(busForStationFirst.Time, ":", "시 ", 1) + "분(첫차) "
-		message += strings.Replace(busForStationLast.Time, ":", "시 ", 1) + "분(막차)\n"
+		message += strings.Replace(busForStationFirst.Time, ":", "시 ", 1) + "(첫차)/"
+		message += strings.Replace(busForStationLast.Time, ":", "시 ", 1) + "(막차)\n"
 		message += "예술인 : "
-		message += strings.Replace(busForTerminalFirst.Time, ":", "시 ", 1) + "분(첫차) "
-		message += strings.Replace(busForTerminalLast.Time, ":", "시 ", 1) + "분(막차)\n"
+		message += strings.Replace(busForTerminalFirst.Time, ":", "시 ", 1) + "(첫차)/"
+		message += strings.Replace(busForTerminalLast.Time, ":", "시 ", 1) + "(막차)\n"
 	case "Subway":
 		message += "셔틀콕, 기숙사 : "
-		message += strings.Replace(busForStationFirst.Time, ":", "시 ", 1) + "분(첫차) "
-		message += strings.Replace(busForStationLast.Time, ":", "시 ", 1) + "분(막차)\n"
+		message += strings.Replace(busForStationFirst.Time, ":", "시 ", 1) + "(첫차)/"
+		message += strings.Replace(busForStationLast.Time, ":", "시 ", 1) + "(막차)\n"
 		message += "예술인 : "
-		message += strings.Replace(busForTerminalFirst.Time, ":", "시 ", 1) + "분(첫차) "
-		message += strings.Replace(busForTerminalLast.Time, ":", "시 ", 1) + "분(막차)\n"
+		message += strings.Replace(busForTerminalFirst.Time, ":", "시 ", 1) + "(첫차)/"
+		message += strings.Replace(busForTerminalLast.Time, ":", "시 ", 1) + "(막차)\n"
 	case "Terminal":
 		message += "셔틀콕, 기숙사 : "
-		message += strings.Replace(busForTerminalFirst.Time, ":", "시 ", 1) + "분(첫차) "
-		message += strings.Replace(busForTerminalLast.Time, ":", "시 ", 1) + "분(막차)\n"
+		message += strings.Replace(busForTerminalFirst.Time, ":", "시 ", 1) + "(첫차)/"
+		message += strings.Replace(busForTerminalLast.Time, ":", "시 ", 1) + "(막차)\n"
 	case "Shuttlecock_I":
 		message += "기숙사 : "
-		message += strings.Replace(busForTerminalFirst.Time, ":", "시 ", 1) + "분(첫차) "
-		message += strings.Replace(busForTerminalLast.Time, ":", "시 ", 1) + "분(막차)\n"
+		message += strings.Replace(busForTerminalFirst.Time, ":", "시 ", 1) + "(첫차)/"
+		message += strings.Replace(busForTerminalLast.Time, ":", "시 ", 1) + "(막차)\n"
 	}
 
 	var buttons []CardButton
