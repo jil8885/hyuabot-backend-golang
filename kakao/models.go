@@ -14,7 +14,7 @@ type UserRequest struct {
 // 송신 json 형식
 type ServerResponse struct {
 	Version string `json:"version"`
-	Template SkillTemplate `json:"templates"`
+	Template SkillTemplate `json:"template"`
 }
 
 // 송신 Response Template
@@ -27,7 +27,6 @@ type SkillTemplate struct {
 type Components interface {}
 
 type SimpleTextResponse struct {
-	Components
 	SimpleText TextContent `json:"simpleText"`
 }
 
@@ -35,8 +34,11 @@ type TextContent struct {
 	Text string `json:"text"`
 }
 
+type BasicCardResponse struct {
+	Card TextCard `json:"basicCard"`
+}
+
 type TextCard struct {
-	Components
 	Title string `json:"title"`
 	Description string `json:"description"`
 	Buttons []CardButton `json:"buttons"`
