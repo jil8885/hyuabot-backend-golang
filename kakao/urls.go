@@ -95,6 +95,17 @@ func Shuttle(c *fiber.Ctx) error {
 		} else {
 			message += "운행 종료\n\n"
 		}
+
+		message += "한대앞→예술인\n"
+		if len(busForTerminal) > 0{
+			for _, item := range busForTerminal{
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+			}
+			message += "\n"
+		} else {
+			message += "운행 종료\n\n"
+		}
+		
 		message += "캠퍼스 방면은 순환, 직행 중 앞에 오는 것이 빠릅니다.\n"
 	case "Terminal":
 		message += "예술인→셔틀콕,기숙사\n"
