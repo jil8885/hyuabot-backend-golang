@@ -96,6 +96,11 @@ func GetFirstLastShuttle(busStop string, now time.Time) (Departure, Departure, D
 	if busForStation != nil && busForTerminal != nil{
 		return busForStation[0], busForStation[len(busForStation) - 1], busForTerminal[0], busForTerminal[len(busForTerminal) - 1]
 
+	} else if busForStation != nil{
+		return busForStation[0], busForStation[len(busForStation) - 1], Departure{}, Departure{}
+	} else if busForTerminal != nil{
+		return Departure{}, Departure{}, busForTerminal[0], busForTerminal[len(busForTerminal) - 1]
+	} else{
+		return Departure{}, Departure{}, Departure{}, Departure{}
 	}
-	return Departure{}, Departure{}, Departure{}, Departure{}
 }
