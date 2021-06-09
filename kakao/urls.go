@@ -47,7 +47,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "기숙사→한대앞\n"
 		if len(busForStation) > 0{
 			for _, item := range busForStation{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발\n"
 			}
 			message += "\n"
 		} else {
@@ -57,7 +57,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "기숙사→예술인\n"
 		if len(busForTerminal) > 0{
 			for _, item := range busForTerminal{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발\n"
 			}
 			message += "\n"
 		} else {
@@ -68,7 +68,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "셔틀콕→한대앞\n"
 		if len(busForStation) > 0{
 			for _, item := range busForStation{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발\n"
 			}
 			message += "\n"
 		} else {
@@ -78,7 +78,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "셔틀콕→예술인\n"
 		if len(busForTerminal) > 0{
 			for _, item := range busForTerminal{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발\n"
 			}
 			message += "\n"
 		} else {
@@ -89,7 +89,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "한대앞→셔틀콕,기숙사\n"
 		if len(busForStation) > 0{
 			for _, item := range busForStation{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발\n"
 			}
 			message += "\n"
 		} else {
@@ -99,7 +99,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "한대앞→예술인\n"
 		if len(busForTerminal) > 0{
 			for _, item := range busForTerminal{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발\n"
 			}
 			message += "\n"
 		} else {
@@ -111,7 +111,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "예술인→셔틀콕,기숙사\n"
 		if len(busForTerminal) > 0{
 			for _, item := range busForTerminal{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발\n"
 			}
 			message += "\n"
 		} else {
@@ -121,7 +121,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "셔틀콕 건너편→기숙사\n"
 		if len(busForTerminal) > 0{
 			for _, item := range busForTerminal{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발\n"
 			}
 			message += "\n"
 		} else {
