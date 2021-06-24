@@ -3,6 +3,8 @@ package kakao
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jil8885/hyuabot-backend-golang/shuttle"
+	"github.com/jil8885/hyuabot-backend-golang/subway"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -210,7 +212,24 @@ func ShuttleStop(c *fiber.Ctx) error {
 
 // Subway 카카오 i 전철 도착 정보 제공
 func Subway(c *fiber.Ctx) error {
-	return c.SendString("카카오 i 전철 도착 정보")
+	result := subway.GetRealtimeSubway(0)
+	message := ""
+
+	if result.UpLine == nil{
+		message += "API 서버 문제입니다.\n잠시 후 다시 시도바랍니다."
+	} else {
+		message += "4호선(한대앞역)\n"
+		for _, item := range result.UpLine{
+			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착" + "(" + item.Position + ")\n"
+		}
+		for _, item := range result.DownLine{
+			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착" + "(" + item.Position + ")\n"
+		}
+	}
+
+
+	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(message))}, []QuickReply{}))
+	return c.JSON(response)
 }
 
 // 카카오 i 버스 도착 정보 제공
