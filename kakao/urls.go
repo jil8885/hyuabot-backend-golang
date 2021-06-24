@@ -218,10 +218,11 @@ func Subway(c *fiber.Ctx) error {
 	if result.UpLine == nil{
 		message += "API 서버 문제입니다.\n잠시 후 다시 시도바랍니다."
 	} else {
-		message += "4호선(한대앞역)\n"
+		message += "4호선(상행)\n"
 		for _, item := range result.UpLine{
 			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착" + "(" + item.Position + ")\n"
 		}
+		message += "\n4호선(하행)\n"
 		for _, item := range result.DownLine{
 			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착" + "(" + item.Position + ")\n"
 		}
