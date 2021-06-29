@@ -31,7 +31,7 @@ func GetShuttle(busStop string, now time.Time) ([]Departure, []Departure) {
 	var busForTerminal []Departure
 
 	for _, item := range departureList{
-		if strings.Compare(item.Time, strconv.Itoa(now.Hour()) + ":" + strconv.Itoa(now.Minute())) > 0{
+		if compareTimetable(item.Time, now){
 			if busStop == "Shuttlecock_I" || busStop == "Terminal" {
 				busForTerminal = append(busForTerminal, item)
 				if len(busForTerminal) >= 2{
@@ -102,5 +102,23 @@ func GetFirstLastShuttle(busStop string, now time.Time) (Departure, Departure, D
 		return Departure{}, Departure{}, busForTerminal[0], busForTerminal[len(busForTerminal) - 1]
 	} else{
 		return Departure{}, Departure{}, Departure{}, Departure{}
+	}
+}
+
+func compareTimetable(timeString string, now time.Time) bool {
+	slice := strings.Split(timeString, ":")
+	hour, _ := strconv.Atoi(slice[0])
+	minute, _ := strconv.Atoi(slice[1])
+
+	if hour > now.Hour(){
+		return true
+	} else if hour == now.Hour(){
+		if minute > now.Minute(){
+			return true
+		}else {
+			return false
+		}
+	} else {
+		return false
 	}
 }
