@@ -224,13 +224,13 @@ func Subway(c *fiber.Ctx) error {
 		}
 		message += "\n4호선(하행)\n"
 		for _, item := range realtimeResult.DownLine{
-			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착\n\n"
+			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착\n"
 		}
 	}
 
 	timetableResult := subway.GetTimetableSubway()
 	
-	message += "수인분당선(상행)\n"
+	message += "\n수인분당선(상행)\n"
 	for _, item := range timetableResult.UpLine{
 		slice := strings.Split(item.Time, ":")
 		message += item.TerminalStation + "행 " + slice[0] + "시 " + slice[1] + "분 도착\n"
