@@ -1,5 +1,7 @@
 package subway
 
+import "time"
+
 // 전철 도착 정보
 type RealtimeDataItem struct {
 	TerminalStation string `json:"terminalStn"`
@@ -13,6 +15,12 @@ type RealtimeDataItem struct {
 type RealtimeDataResult struct {
 	UpLine []RealtimeDataItem `json:"up"`
 	DownLine []RealtimeDataItem `json:"down"`
+}
+
+// 전철 도착 캐시
+type RealtimeDataResultCache struct {
+	Result RealtimeAPIResult
+	Time time.Time
 }
 
 // 전철 API JSON
