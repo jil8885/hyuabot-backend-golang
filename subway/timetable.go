@@ -13,7 +13,10 @@ func GetTimetableSubway() TimetableDataResult {
 	var timetableJsonObj TimetableDataByDay
 	timetableResult := TimetableDataResult{}
 
-	now := time.Now()
+	// 현재 시간 로딩 (KST)
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+
 	weekdays := getDate(now)
 	path, _ := os.Getwd()
 	timetableJson := path + "/subway/timetable.json"

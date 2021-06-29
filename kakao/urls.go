@@ -224,7 +224,7 @@ func Subway(c *fiber.Ctx) error {
 		}
 		message += "\n4호선(하행)\n"
 		for _, item := range realtimeResult.DownLine{
-			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착\n"
+			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착\n\n"
 		}
 	}
 
