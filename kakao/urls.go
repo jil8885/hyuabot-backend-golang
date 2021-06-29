@@ -232,11 +232,13 @@ func Subway(c *fiber.Ctx) error {
 	
 	message += "수인분당선(상행)\n"
 	for _, item := range timetableResult.UpLine{
-		message += item.TerminalStation + "행 " + item.Time + "도착\n"
+		slice := strings.Split(item.Time, ":")
+		message += item.TerminalStation + "행 " + slice[0] + "시 " + slice[1] + "분 도착\n"
 	}
 	message += "\n수인분당선(하행)\n"
 	for _, item := range timetableResult.DownLine{
-		message += item.TerminalStation + "행 " + item.Time + "도착\n"
+		slice := strings.Split(item.Time, ":")
+		message += item.TerminalStation + "행 " + slice[0] + "시 " + slice[1] + "분 도착\n"
 	}
 
 	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(message))}, []QuickReply{}))
