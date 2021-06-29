@@ -3,6 +3,8 @@ package kakao
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jil8885/hyuabot-backend-golang/shuttle"
+	"github.com/jil8885/hyuabot-backend-golang/subway"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -47,7 +49,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "기숙사→한대앞\n"
 		if len(busForStation) > 0{
 			for _, item := range busForStation{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
 			}
 			message += "\n"
 		} else {
@@ -57,7 +59,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "기숙사→예술인\n"
 		if len(busForTerminal) > 0{
 			for _, item := range busForTerminal{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
 			}
 			message += "\n"
 		} else {
@@ -68,7 +70,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "셔틀콕→한대앞\n"
 		if len(busForStation) > 0{
 			for _, item := range busForStation{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
 			}
 			message += "\n"
 		} else {
@@ -78,7 +80,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "셔틀콕→예술인\n"
 		if len(busForTerminal) > 0{
 			for _, item := range busForTerminal{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
 			}
 			message += "\n"
 		} else {
@@ -89,7 +91,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "한대앞→셔틀콕,기숙사\n"
 		if len(busForStation) > 0{
 			for _, item := range busForStation{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
 			}
 			message += "\n"
 		} else {
@@ -99,7 +101,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "한대앞→예술인\n"
 		if len(busForTerminal) > 0{
 			for _, item := range busForTerminal{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
 			}
 			message += "\n"
 		} else {
@@ -111,7 +113,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "예술인→셔틀콕,기숙사\n"
 		if len(busForTerminal) > 0{
 			for _, item := range busForTerminal{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
 			}
 			message += "\n"
 		} else {
@@ -121,7 +123,7 @@ func Shuttle(c *fiber.Ctx) error {
 		message += "셔틀콕 건너편→기숙사\n"
 		if len(busForTerminal) > 0{
 			for _, item := range busForTerminal{
-				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발 예정\n"
+				message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
 			}
 			message += "\n"
 		} else {
@@ -210,7 +212,35 @@ func ShuttleStop(c *fiber.Ctx) error {
 
 // Subway 카카오 i 전철 도착 정보 제공
 func Subway(c *fiber.Ctx) error {
-	return c.SendString("카카오 i 전철 도착 정보")
+	realtimeResult := subway.GetRealtimeSubway(0)
+	message := ""
+
+	if realtimeResult.UpLine == nil{
+		message += "API 서버 문제입니다.\n잠시 후 다시 시도바랍니다."
+	} else {
+		message += "4호선(상행)\n"
+		for _, item := range realtimeResult.UpLine{
+			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착\n"
+		}
+		message += "\n4호선(하행)\n"
+		for _, item := range realtimeResult.DownLine{
+			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착\n\n"
+		}
+	}
+
+	timetableResult := subway.GetTimetableSubway()
+	
+	message += "수인분당선(상행)\n"
+	for _, item := range timetableResult.UpLine{
+		message += item.TerminalStation + "행 " + item.Time + "도착\n"
+	}
+	message += "\n수인분당선(하행)\n"
+	for _, item := range timetableResult.DownLine{
+		message += item.TerminalStation + "행 " + item.Time + "도착\n"
+	}
+
+	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(message))}, []QuickReply{}))
+	return c.JSON(response)
 }
 
 // 카카오 i 버스 도착 정보 제공
