@@ -212,22 +212,32 @@ func ShuttleStop(c *fiber.Ctx) error {
 
 // Subway 카카오 i 전철 도착 정보 제공
 func Subway(c *fiber.Ctx) error {
-	result := subway.GetRealtimeSubway(0)
+	realtimeResult := subway.GetRealtimeSubway(0)
 	message := ""
 
-	if result.UpLine == nil{
+	if realtimeResult.UpLine == nil{
 		message += "API 서버 문제입니다.\n잠시 후 다시 시도바랍니다."
 	} else {
 		message += "4호선(상행)\n"
-		for _, item := range result.UpLine{
-			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착" + "(" + item.Position + ")\n"
+		for _, item := range realtimeResult.UpLine{
+			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착\n"
 		}
 		message += "\n4호선(하행)\n"
-		for _, item := range result.DownLine{
-			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착" + "(" + item.Position + ")\n"
+		for _, item := range realtimeResult.DownLine{
+			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착\n"
 		}
 	}
 
+	timetableResult := subway.GetTimetableSubway()
+	
+	message += "수인분당선(상행)\n"
+	for _, item := range timetableResult.UpLine{
+		message += item.TerminalStation + "행 " + item.Time + "도착\n"
+	}
+	message += "\n수인분당선(하행)\n"
+	for _, item := range timetableResult.DownLine{
+		message += item.TerminalStation + "행 " + item.Time + "도착\n"
+	}
 
 	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(message))}, []QuickReply{}))
 	return c.JSON(response)

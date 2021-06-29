@@ -33,3 +33,21 @@ type RealtimeAPIItem struct {
 	RemainedTime string `json:"barvlDt"`
 	Status string `json:"arvlCd"`
 }
+
+// 전철 도착 정보
+type TimetableDataItem struct {
+	TerminalStation string `json:"terminalStn"`
+	Time string `json:"time"`
+}
+
+
+// 전철 도착 결과
+type TimetableDataResult struct {
+	UpLine []TimetableDataItem `json:"up"`
+	DownLine []TimetableDataItem `json:"down"`
+}
+
+type TimetableDataByDay struct {
+	Weekdays TimetableDataResult `json:"weekdays"`
+	Weekend TimetableDataResult `json:"weekend"`
+}
