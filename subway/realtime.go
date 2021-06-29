@@ -2,7 +2,6 @@ package subway
 
 import (
 	"encoding/json"
-	"github.com/bxcodec/httpcache"
 	"io"
 	"io/ioutil"
 	"net/http"
