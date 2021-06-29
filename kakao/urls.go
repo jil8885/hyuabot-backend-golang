@@ -216,7 +216,7 @@ func Subway(c *fiber.Ctx) error {
 	message := ""
 
 	if realtimeResult.UpLine == nil{
-		message += "API 서버 문제입니다.\n잠시 후 다시 시도바랍니다."
+		message += "4호선(상/하행)\nAPI 서버 문제입니다.\n\n"
 	} else {
 		message += "4호선(상행)\n"
 		for _, item := range realtimeResult.UpLine{
