@@ -218,11 +218,11 @@ func Subway(c *fiber.Ctx) error {
 	if realtimeResult.UpLine == nil{
 		message += "4호선(상/하행)\nAPI 서버 문제입니다.\n\n"
 	} else {
-		message += "4호선(상행)\n"
+		message += "4호선(상행-실시간)\n"
 		for _, item := range realtimeResult.UpLine{
 			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착\n"
 		}
-		message += "\n4호선(하행)\n"
+		message += "\n4호선(하행-실시간)\n"
 		for _, item := range realtimeResult.DownLine{
 			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착\n"
 		}
@@ -230,12 +230,12 @@ func Subway(c *fiber.Ctx) error {
 
 	timetableResult := subway.GetTimetableSubway()
 	
-	message += "\n수인분당선(상행)\n"
+	message += "\n수인분당선(상행-시간표)\n"
 	for _, item := range timetableResult.UpLine{
 		slice := strings.Split(item.Time, ":")
 		message += item.TerminalStation + "행 " + slice[0] + "시 " + slice[1] + "분 도착\n"
 	}
-	message += "\n수인분당선(하행)\n"
+	message += "\n수인분당선(하행-시간표)\n"
 	for _, item := range timetableResult.DownLine{
 		slice := strings.Split(item.Time, ":")
 		message += item.TerminalStation + "행 " + slice[0] + "시 " + slice[1] + "분 도착\n"

@@ -35,11 +35,14 @@ func getDate(now time.Time) (string, string) {
 			yearToADD := now.Year() - start.Year()
 			start = start.AddDate(yearToADD, 0, 0)
 			end = end.AddDate(yearToADD, 0, 0)
-
 			if now.After(start) && now.Before(end){
 				correct = index
 				break
 			}
+		}
+
+		if correct != -1 {
+			break
 		}
 	}
 

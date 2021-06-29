@@ -8,9 +8,9 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 )
 
+var cache RealtimeDataResultCache
 
 func GetRealtimeSubway(campus int) RealtimeDataResult {
 	minuteToArrival := map[string]float64{
@@ -31,24 +31,26 @@ func GetRealtimeSubway(campus int) RealtimeDataResult {
 
 	// API 서버 데이터 요청
 	result := RealtimeDataResult{}
-	client := http.Client{Timeout: 3 * time.Second}
-	response, err := client.Get(url)
-	if err != nil || response.StatusCode != 200 {
-		return result
-	}
-	if response.Body != nil {
-		defer func(Body io.ReadCloser) {
-			err := Body.Close()
-			if err != nil {
-
-			}
-		}(response.Body)
-	}
-	body, err := ioutil.ReadAll(response.Body)
+	response, err := http.Get(url)
 	var apiResult RealtimeAPIResult
 	var remainedTime float64
 	var status int
-	err = json.Unmarshal(body, &apiResult)
+
+	if err != nil || response.StatusCode != 200 {
+		apiResult = cache.Result
+	} else {
+		if response.Body != nil {
+			defer func(Body io.ReadCloser) {
+				err := Body.Close()
+				if err != nil {
+					apiResult = cache.Result
+				}
+			}(response.Body)
+		}
+		body, _ := ioutil.ReadAll(response.Body)
+		_ = json.Unmarshal(body, &apiResult)
+	}
+
 	// API json 결과 분리
 	for _, item := range apiResult.RealtimeArrivalList{
 		if campus == 1{
