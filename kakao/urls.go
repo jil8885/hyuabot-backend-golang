@@ -2,6 +2,7 @@ package kakao
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/jil8885/hyuabot-backend-golang/bus"
 	"github.com/jil8885/hyuabot-backend-golang/shuttle"
 	"github.com/jil8885/hyuabot-backend-golang/subway"
 	"strconv"
@@ -247,6 +248,8 @@ func Subway(c *fiber.Ctx) error {
 
 // 카카오 i 버스 도착 정보 제공
 func Bus(c *fiber.Ctx) error {
+	bus.GetRealtimeBusDeparture("216000719", "216000070")
+	bus.GetRealtimeStopDeparture("216000379")
 	return c.SendString(parseAnswer(c))
 }
 
