@@ -248,9 +248,115 @@ func Subway(c *fiber.Ctx) error {
 
 // 카카오 i 버스 도착 정보 제공
 func Bus(c *fiber.Ctx) error {
-	bus.GetRealtimeBusDeparture("216000719", "216000070")
-	bus.GetRealtimeStopDeparture("216000379")
-	return c.SendString(parseAnswer(c))
+	line707Realtime, guestHouseRealtime, timetable := bus.GetBusDepartureInfo()
+	message := "3102번(게스트하우스)\n"
+
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+
+	// 3102 실시간 + 시간표
+	realtimeCount := 0
+	for _, lineItem := range guestHouseRealtime.MsgBody.BusArrivalList{
+		if lineItem.RouteID == 216000061 {
+			if lineItem.PredictTime1 > 0{
+				message += strconv.Itoa(lineItem.LocationNo1) + " 전/" + strconv.Itoa(lineItem.PredictTime1) + "분 후 도착(" + strconv.Itoa(lineItem.RemainSeatCnt1) + "석)\n"
+				realtimeCount = 1
+				if lineItem.PredictTime2 > 0{
+					message += strconv.Itoa(lineItem.LocationNo2) + " 전/" + strconv.Itoa(lineItem.PredictTime2) + "분 후 도착(" + strconv.Itoa(lineItem.RemainSeatCnt2) + "석)\n"
+					realtimeCount = 2
+				}
+			}
+		}
+		break
+	}
+
+	timetableCount := 0
+	if realtimeCount < 2{
+		var lineTimeTable []bus.BusTimeTableItem
+		if now.Weekday() == 0 {
+			lineTimeTable = timetable.Line3102.Sun
+		} else if now.Weekday() == 6 {
+			lineTimeTable = timetable.Line3102.Sat
+		} else {
+			lineTimeTable = timetable.Line3102.Weekdays
+		}
+
+		for _, item := range  lineTimeTable{
+			if compareTimetable(item.Time, now){
+				message += "종점 "+ item.Time +"출발\n"
+				timetableCount += 1
+			}
+			if timetableCount >= 2 - realtimeCount{
+				break
+			}
+		}
+	}
+
+	message += "\n10-1번(게스트하우스)\n"
+	realtimeCount = 0
+	for _, lineItem := range guestHouseRealtime.MsgBody.BusArrivalList{
+		if lineItem.RouteID == 216000068 {
+			if lineItem.PredictTime1 > 0{
+				message += strconv.Itoa(lineItem.LocationNo1) + " 전/" + strconv.Itoa(lineItem.PredictTime1) + "분 후 도착(" + strconv.Itoa(lineItem.RemainSeatCnt1) + "석)\n"
+				realtimeCount = 1
+				if lineItem.PredictTime2 > 0{
+					message += strconv.Itoa(lineItem.LocationNo2) + " 전/" + strconv.Itoa(lineItem.PredictTime2) + "분 후 도착(" + strconv.Itoa(lineItem.RemainSeatCnt2) + "석)\n"
+					realtimeCount = 2
+				}
+			}
+		}
+		break
+	}
+
+	timetableCount = 0
+	if realtimeCount < 2{
+		var lineTimeTable []bus.BusTimeTableItem
+		if now.Weekday() == 0 {
+			lineTimeTable = timetable.Line10_1.Sun
+		} else if now.Weekday() == 6 {
+			lineTimeTable = timetable.Line10_1.Sat
+		} else {
+			lineTimeTable = timetable.Line10_1.Weekdays
+		}
+
+		for _, item := range  lineTimeTable{
+			if compareTimetable(item.Time, now){
+				message += "종점 "+ item.Time +"출발\n"
+				timetableCount += 1
+			}
+			if timetableCount >= 2 - realtimeCount{
+				break
+			}
+		}
+	}
+
+	message += "\n707-1번(한양대정문)\n"
+	for _, departureItem := range line707Realtime{
+		message += strconv.Itoa(departureItem.Location) + " 전/" + strconv.Itoa(departureItem.RemainedTime) + "분 후 도착(" + strconv.Itoa(departureItem.RemainedSeat) + "석)\n"
+	}
+	timetableCount = 0
+	if len(line707Realtime) < 2{
+		var lineTimeTable []bus.BusTimeTableItem
+		if now.Weekday() == 0 {
+			lineTimeTable = timetable.Line707_1.Sun
+		} else if now.Weekday() == 6 {
+			lineTimeTable = timetable.Line707_1.Sat
+		} else {
+			lineTimeTable = timetable.Line707_1.Weekdays
+		}
+
+		for _, item := range  lineTimeTable{
+			if compareTimetable(item.Time, now){
+				message += "종점 "+ item.Time +"출발\n"
+				timetableCount += 1
+			}
+			if timetableCount >= 2 - len(line707Realtime){
+				break
+			}
+		}
+	}
+	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(message))}, []QuickReply{}))
+	return c.JSON(response)
 }
 
 // 카카오 i 학식 정보 제공
@@ -270,4 +376,22 @@ func parseAnswer(c *fiber.Ctx) string {
 		return err.Error()
 	}
 	return model.Request.Message
+}
+
+func compareTimetable(timeString string, now time.Time) bool {
+	slice := strings.Split(timeString, ":")
+	hour, _ := strconv.Atoi(slice[0])
+	minute, _ := strconv.Atoi(slice[1])
+
+	if hour > now.Hour(){
+		return true
+	} else if hour == now.Hour(){
+		if minute > now.Minute(){
+			return true
+		}else {
+			return false
+		}
+	} else {
+		return false
+	}
 }

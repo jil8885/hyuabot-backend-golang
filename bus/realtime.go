@@ -2,7 +2,6 @@ package bus
 
 import (
 	"encoding/xml"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -16,7 +15,6 @@ func GetRealtimeBusDeparture(stopID string, busID string) []DepartureItem {
 	response, err := http.Get(url)
 	result := make([]DepartureItem, 0)
 	xmlObj := Response{}
-
 	if err != nil || response.StatusCode != 200 {
 		return result
 	} else {
@@ -36,21 +34,19 @@ func GetRealtimeBusDeparture(stopID string, busID string) []DepartureItem {
 		if item.LocationNo2 != 0{
 			result = append(result, DepartureItem{Location: item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2})
 		}
-		print(result)
 	}
 	return result
 }
 
-func GetRealtimeStopDeparture(stopID string) StopInfo {
+func GetRealtimeStopDeparture(stopID string) Response {
 	authKey := os.Getenv("bus_auth")
 	url := "http://apis.data.go.kr/6410000/busarrivalservice/getBusArrivalList?serviceKey=" + authKey  + "&stationId=" + stopID
 	// API 서버 데이터 요청
 	response, err := http.Get(url)
-	result := StopInfo{}
 	xmlObj := Response{}
 
 	if err != nil || response.StatusCode != 200 {
-		return result
+		return xmlObj
 	} else {
 		if response.Body != nil {
 			defer func(Body io.ReadCloser) {
@@ -60,7 +56,6 @@ func GetRealtimeStopDeparture(stopID string) StopInfo {
 		body, _ := ioutil.ReadAll(response.Body)
 		_ = xml.Unmarshal(body, &xmlObj)
 	}
-	fmt.Println(xmlObj)
-	return result
+	return xmlObj
 }
 
