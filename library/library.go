@@ -4,7 +4,7 @@ import (
 	"cloud.google.com/go/firestore"
 	"context"
 	"encoding/json"
-	firebase "firebase.google.com/go"
+	firebase "firebase.google.com/go/v4"
 	"fmt"
 	"io"
 	"io/ioutil"
