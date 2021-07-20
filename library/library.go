@@ -106,7 +106,7 @@ func GetLibrary(name string) error {
 	// Firestore handling
 	iter := client.Collection("hanyangApp").Doc("readingRoom").Collection("rooms").Documents(ctx)
 	for{
-		doc, err := iter.Next()
+		_, err := iter.Next()
 		if err == iterator.Done {
 			break
 		}
