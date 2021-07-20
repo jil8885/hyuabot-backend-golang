@@ -32,6 +32,8 @@ func main()  {
 	// 공통 기능 라우트
 	commonUrl := app.Group("/common", common.Middleware)
 	commonUrl.Get("/library", common.Library)
+	commonUrl.Get("/food", common.Food)
+
 	// Fatal Log 출력
 	log.Fatal(app.Listen(":8080"))
 }
