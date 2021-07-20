@@ -366,6 +366,13 @@ func Food(c *fiber.Ctx) error {
 
 // 카카오 i 열람실 정보 제공
 func Library(c *fiber.Ctx) error {
+	message := parseAnswer(c)
+	answer := ""
+
+	if message == "열람실" {
+		answer += "학술정보관 열람실\n"
+
+	}
 	return c.SendString("카카오 i 열람실 정보")
 }
 
