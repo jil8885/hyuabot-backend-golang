@@ -2,6 +2,9 @@ package kakao
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/jil8885/hyuabot-backend-golang/bus"
+	"github.com/jil8885/hyuabot-backend-golang/food"
+	"github.com/jil8885/hyuabot-backend-golang/library"
 	"github.com/jil8885/hyuabot-backend-golang/shuttle"
 	"github.com/jil8885/hyuabot-backend-golang/subway"
 	"strconv"
@@ -247,17 +250,179 @@ func Subway(c *fiber.Ctx) error {
 
 // 카카오 i 버스 도착 정보 제공
 func Bus(c *fiber.Ctx) error {
-	return c.SendString(parseAnswer(c))
+	line707Realtime, guestHouseRealtime, timetable := bus.GetBusDepartureInfo()
+	message := "3102번(게스트하우스)\n"
+
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+
+	// 3102 실시간 + 시간표
+	realtimeCount := 0
+	for _, lineItem := range guestHouseRealtime.MsgBody.BusArrivalList{
+		if lineItem.RouteID == 216000061 {
+			if lineItem.PredictTime1 > 0{
+				message += strconv.Itoa(lineItem.LocationNo1) + " 전/" + strconv.Itoa(lineItem.PredictTime1) + "분 후 도착(" + strconv.Itoa(lineItem.RemainSeatCnt1) + "석)\n"
+				realtimeCount = 1
+				if lineItem.PredictTime2 > 0{
+					message += strconv.Itoa(lineItem.LocationNo2) + " 전/" + strconv.Itoa(lineItem.PredictTime2) + "분 후 도착(" + strconv.Itoa(lineItem.RemainSeatCnt2) + "석)\n"
+					realtimeCount = 2
+				}
+			}
+		}
+		break
+	}
+
+	timetableCount := 0
+	if realtimeCount < 2{
+		var lineTimeTable []bus.BusTimeTableItem
+		if now.Weekday() == 0 {
+			lineTimeTable = timetable.Line3102.Sun
+		} else if now.Weekday() == 6 {
+			lineTimeTable = timetable.Line3102.Sat
+		} else {
+			lineTimeTable = timetable.Line3102.Weekdays
+		}
+
+		for _, item := range  lineTimeTable{
+			if compareTimetable(item.Time, now){
+				message += "종점 "+ strings.ReplaceAll(item.Time, ":", "시 ") +"분 출발\n"
+				timetableCount += 1
+			}
+			if timetableCount >= 2 - realtimeCount{
+				break
+			}
+		}
+	}
+
+	message += "\n10-1번(게스트하우스)\n"
+	realtimeCount = 0
+	for _, lineItem := range guestHouseRealtime.MsgBody.BusArrivalList{
+		if lineItem.RouteID == 216000068 {
+			if lineItem.PredictTime1 > 0{
+				message += strconv.Itoa(lineItem.LocationNo1) + " 전/" + strconv.Itoa(lineItem.PredictTime1) + "분 후 도착\n"
+				realtimeCount = 1
+				if lineItem.PredictTime2 > 0{
+					message += strconv.Itoa(lineItem.LocationNo2) + " 전/" + strconv.Itoa(lineItem.PredictTime2) + "분 후 도착\n"
+					realtimeCount = 2
+				}
+			}
+		}
+		break
+	}
+
+	timetableCount = 0
+	if realtimeCount < 2{
+		var lineTimeTable []bus.BusTimeTableItem
+		if now.Weekday() == 0 {
+			lineTimeTable = timetable.Line10_1.Sun
+		} else if now.Weekday() == 6 {
+			lineTimeTable = timetable.Line10_1.Sat
+		} else {
+			lineTimeTable = timetable.Line10_1.Weekdays
+		}
+
+		for _, item := range  lineTimeTable{
+			if compareTimetable(item.Time, now){
+				message += "종점 "+ strings.ReplaceAll(item.Time, ":", "시 ") +"분 출발\n"
+				timetableCount += 1
+			}
+			if timetableCount >= 2 - realtimeCount{
+				break
+			}
+		}
+	}
+
+	message += "\n707-1번(한양대정문)\n"
+	for _, departureItem := range line707Realtime{
+		message += strconv.Itoa(departureItem.Location) + " 전/" + strconv.Itoa(departureItem.RemainedTime) + "분 후 도착(" + strconv.Itoa(departureItem.RemainedSeat) + "석)\n"
+	}
+	timetableCount = 0
+	if len(line707Realtime) < 2{
+		var lineTimeTable []bus.BusTimeTableItem
+		if now.Weekday() == 0 {
+			lineTimeTable = timetable.Line707_1.Sun
+		} else if now.Weekday() == 6 {
+			lineTimeTable = timetable.Line707_1.Sat
+		} else {
+			lineTimeTable = timetable.Line707_1.Weekdays
+		}
+
+		for _, item := range  lineTimeTable{
+			if compareTimetable(item.Time, now){
+				message += "종점 "+ strings.ReplaceAll(item.Time, ":", "시 ") +"분 출발\n"
+				timetableCount += 1
+			}
+			if timetableCount >= 2 - len(line707Realtime){
+				break
+			}
+		}
+	}
+	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(message))}, []QuickReply{}))
+	return c.JSON(response)
 }
 
 // 카카오 i 학식 정보 제공
 func Food(c *fiber.Ctx) error {
-	return c.SendString("카카오 i 학식 정보")
+	message := parseAnswer(c)
+	answer := ""
+	blockID := "5eaa9b11cdbc3a00015a23fb"
+	var quickReplies []QuickReply
+
+	if message == "학식"{
+		answer = "원하는 식당을 선택해주세요."
+		for _, item := range food.GetRestaurantNames(){
+			quickReplies = append(quickReplies, QuickReply{Action: "block", Label: item, MessageText: item + "의 식단입니다.", BlockID: blockID})
+		}
+	} else{
+		queryResult := food.GetFoodMenuByName(strings.TrimSuffix(message, "의 식단입니다."))
+		typeList := [5]string{"조식", "중식", "석식", "중식/석식", "분식"}
+		for _, item := range typeList {
+			menuList, contains := queryResult.MenuList[item]
+			if contains{
+				answer += item + "\n"
+				for _, menuItem := range menuList{
+					answer += menuItem.Menu +"\n" + menuItem.Price +"원\n\n"
+				}
+			}
+		}
+	}
+
+	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, quickReplies))
+	return c.JSON(response)
 }
 
 // 카카오 i 열람실 정보 제공
 func Library(c *fiber.Ctx) error {
-	return c.SendString("카카오 i 열람실 정보")
+	message := parseAnswer(c)
+	answer := ""
+
+	if message == "열람실" {
+		var quickReplies []QuickReply
+		answer += "학술정보관 잔여 좌석\n\n"
+		queryResult := library.GetLibrary()
+		if len(queryResult) > 0{
+			for _, item := range queryResult{
+				answer += item.Name + " "
+				if item.IsReservable{
+					answer += strconv.Itoa(item.Available) + "/" + strconv.Itoa(item.ActiveTotal)
+					quickReplies = append(quickReplies, QuickReply{Action: "block", Label: "📖 " + item.Name, MessageText: item.Name + "의 좌석정보입니다.", BlockID: "5e0df82cffa74800014bc838"})
+				} else {
+					answer += "예약 불가\n"
+				}
+			}
+		} else {
+			answer += "Google Firebase 서버 에러\n"
+		}
+		response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, quickReplies))
+		return c.JSON(response)
+	} else {
+		item := library.GetLibraryByName(strings.TrimSuffix(message, "의 좌석정보입니다."))
+		answer += item.Name + "\n\n"
+		answer += "총 " + strconv.Itoa(item.ActiveTotal) + "석\n"
+		answer += "예약 가능 " + strconv.Itoa(item.Available) + "석\n"
+		response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, []QuickReply{}))
+		return c.JSON(response)
+	}
 }
 
 // 카카오톡을 통해 넘어온 데이터 중 사용자의 발화 Parse
@@ -267,4 +432,22 @@ func parseAnswer(c *fiber.Ctx) string {
 		return err.Error()
 	}
 	return model.Request.Message
+}
+
+func compareTimetable(timeString string, now time.Time) bool {
+	slice := strings.Split(timeString, ":")
+	hour, _ := strconv.Atoi(slice[0])
+	minute, _ := strconv.Atoi(slice[1])
+
+	if hour > now.Hour(){
+		return true
+	} else if hour == now.Hour(){
+		if minute > now.Minute(){
+			return true
+		}else {
+			return false
+		}
+	} else {
+		return false
+	}
 }

@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var cache RealtimeDataResultCache
@@ -31,7 +32,8 @@ func GetRealtimeSubway(campus int) RealtimeDataResult {
 
 	// API 서버 데이터 요청
 	result := RealtimeDataResult{}
-	response, err := http.Get(url)
+	client := http.Client{Timeout: 3*time.Second}
+	response, err := client.Get(url)
 	var apiResult RealtimeAPIResult
 	var remainedTime float64
 	var status int
@@ -49,6 +51,7 @@ func GetRealtimeSubway(campus int) RealtimeDataResult {
 		}
 		body, _ := ioutil.ReadAll(response.Body)
 		_ = json.Unmarshal(body, &apiResult)
+		cache.Result = apiResult
 	}
 
 	// API json 결과 분리

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cache"
+	"github.com/jil8885/hyuabot-backend-golang/common"
 	"github.com/jil8885/hyuabot-backend-golang/kakao"
 	"log"
 	"time"
@@ -29,6 +30,10 @@ func main()  {
 
 	// 휴아봇 앱 라우트
 	// 공통 기능 라우트
+	commonUrl := app.Group("/common", common.Middleware)
+	commonUrl.Get("/library", common.Library)
+	commonUrl.Get("/food", common.Food)
+
 	// Fatal Log 출력
 	log.Fatal(app.Listen(":8080"))
 }
