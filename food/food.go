@@ -149,3 +149,39 @@ func GetRestaurantNames() []string {
 	}(client)
 	return queryResult
 }
+
+func GetFoodMenuByName(name string) Restaurant {
+	var queryResult Restaurant
+
+	ctx := context.Background()
+	app, err := firebase.NewApp(ctx, nil)
+
+	if err != nil {
+		return queryResult
+	}
+
+	client, err := app.Firestore(ctx)
+	if err != nil{
+		fmt.Println(err)
+		return queryResult
+	}
+
+	// Firestore handling
+	item, err := client.Collection("hanyangApp").Doc("food").Collection("restaurants").Doc(name).Get(ctx)
+	if err != nil {
+		return queryResult
+	}
+
+	err = item.DataTo(&queryResult)
+	queryResult.Name = item.Ref.ID
+
+
+	defer func(client *firestore.Client) {
+		err := client.Close()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}(client)
+	return queryResult
+}

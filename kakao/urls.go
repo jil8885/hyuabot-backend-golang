@@ -374,7 +374,17 @@ func Food(c *fiber.Ctx) error {
 			quickReplies = append(quickReplies, QuickReply{Action: "block", Label: item, MessageText: item + "의 식단입니다.", BlockID: blockID})
 		}
 	} else{
-
+		queryResult := food.GetFoodMenuByName(strings.TrimSuffix(message, "의 식단입니다."))
+		typeList := [5]string{"조식", "중식", "석식", "중식/석식", "분식"}
+		for _, item := range typeList {
+			menuList, contains := queryResult.MenuList[item]
+			if contains{
+				answer += item + "\n"
+				for _, menuItem := range menuList{
+					answer += menuItem.Menu +"\n" + menuItem.Price +"원\n\n"
+				}
+			}
+		}
 	}
 
 	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, quickReplies))
