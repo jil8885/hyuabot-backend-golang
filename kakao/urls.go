@@ -285,7 +285,7 @@ func Bus(c *fiber.Ctx) error {
 
 		for _, item := range  lineTimeTable{
 			if compareTimetable(item.Time, now){
-				message += "종점 "+ item.Time +"출발\n"
+				message += "종점 "+ strings.ReplaceAll(item.Time, ":", "시 ") +"분 출발\n"
 				timetableCount += 1
 			}
 			if timetableCount >= 2 - realtimeCount{
@@ -299,10 +299,10 @@ func Bus(c *fiber.Ctx) error {
 	for _, lineItem := range guestHouseRealtime.MsgBody.BusArrivalList{
 		if lineItem.RouteID == 216000068 {
 			if lineItem.PredictTime1 > 0{
-				message += strconv.Itoa(lineItem.LocationNo1) + " 전/" + strconv.Itoa(lineItem.PredictTime1) + "분 후 도착(" + strconv.Itoa(lineItem.RemainSeatCnt1) + "석)\n"
+				message += strconv.Itoa(lineItem.LocationNo1) + " 전/" + strconv.Itoa(lineItem.PredictTime1) + "분 후 도착\n"
 				realtimeCount = 1
 				if lineItem.PredictTime2 > 0{
-					message += strconv.Itoa(lineItem.LocationNo2) + " 전/" + strconv.Itoa(lineItem.PredictTime2) + "분 후 도착(" + strconv.Itoa(lineItem.RemainSeatCnt2) + "석)\n"
+					message += strconv.Itoa(lineItem.LocationNo2) + " 전/" + strconv.Itoa(lineItem.PredictTime2) + "분 후 도착\n"
 					realtimeCount = 2
 				}
 			}
@@ -323,7 +323,7 @@ func Bus(c *fiber.Ctx) error {
 
 		for _, item := range  lineTimeTable{
 			if compareTimetable(item.Time, now){
-				message += "종점 "+ item.Time +"출발\n"
+				message += "종점 "+ strings.ReplaceAll(item.Time, ":", "시 ") +"분 출발\n"
 				timetableCount += 1
 			}
 			if timetableCount >= 2 - realtimeCount{
@@ -349,7 +349,7 @@ func Bus(c *fiber.Ctx) error {
 
 		for _, item := range  lineTimeTable{
 			if compareTimetable(item.Time, now){
-				message += "종점 "+ item.Time +"출발\n"
+				message += "종점 "+ strings.ReplaceAll(item.Time, ":", "시 ") +"분 출발\n"
 				timetableCount += 1
 			}
 			if timetableCount >= 2 - len(line707Realtime){
