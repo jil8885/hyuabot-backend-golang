@@ -371,19 +371,28 @@ func Library(c *fiber.Ctx) error {
 	answer := ""
 
 	if message == "열람실" {
+		var quickReplies []QuickReply
 		answer += "학술정보관 잔여 좌석\n\n"
 		queryResult := library.GetLibrary()
 		for _, item := range queryResult{
 			answer += item.Name + " "
 			if item.IsReservable{
 				answer += strconv.Itoa(item.Available) + "/" + strconv.Itoa(item.ActiveTotal)
+				quickReplies = append(quickReplies, QuickReply{Action: "block", Label: "📖 " + item.Name, MessageText: item.Name + "의 좌석정보입니다.", BlockID: "5e0df82cffa74800014bc838"})
 			} else {
 				answer += "예약 불가\n"
 			}
 		}
+		response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, quickReplies))
+		return c.JSON(response)
+	} else {
+		item := library.GetLibraryByName(strings.TrimSuffix(message, "의 좌석정보입니다."))
+		answer += item.Name + "\n\n"
+		answer += "총 " + strconv.Itoa(item.ActiveTotal) + "석\n"
+		answer += "예약 가능 " + strconv.Itoa(item.Available) + "석\n"
+		response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, []QuickReply{}))
+		return c.JSON(response)
 	}
-	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, []QuickReply{}))
-	return c.JSON(response)
 }
 
 // 카카오톡을 통해 넘어온 데이터 중 사용자의 발화 Parse

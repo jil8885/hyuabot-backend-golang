@@ -135,3 +135,39 @@ func GetLibrary() []ReadingRoomInfo {
 	}(client)
 	return queryResult
 }
+
+func GetLibraryByName(name string) ReadingRoomInfo {
+	var queryResult ReadingRoomInfo
+
+	ctx := context.Background()
+	app, err := firebase.NewApp(ctx, nil)
+
+	if err != nil {
+		return queryResult
+	}
+
+	client, err := app.Firestore(ctx)
+	if err != nil{
+		fmt.Println(err)
+		return queryResult
+	}
+
+	// Firestore handling
+	item, err := client.Collection("hanyangApp").Doc("readingRoom").Collection("rooms").Doc(name).Get(ctx)
+	if err != nil {
+		return queryResult
+	}
+
+	err = item.DataTo(&queryResult)
+	queryResult.Name = item.Ref.ID
+
+
+	defer func(client *firestore.Client) {
+		err := client.Close()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}(client)
+	return queryResult
+}
