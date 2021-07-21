@@ -90,11 +90,14 @@ func FetchLibrary()  {
 	return
 }
 
-func GetLibrary(name string) error {
+func GetLibrary() []ReadingRoomInfo {
+	var queryResult []ReadingRoomInfo
+
 	ctx := context.Background()
 	app, err := firebase.NewApp(ctx, nil)
+
 	if err != nil {
-		return err
+		return nil
 	}
 
 	client, err := app.Firestore(ctx)
@@ -106,20 +109,22 @@ func GetLibrary(name string) error {
 	// Firestore handling
 	iter := client.Collection("hanyangApp").Doc("readingRoom").Collection("rooms").Documents(ctx)
 	for{
-		_, err := iter.Next()
+		item, err := iter.Next()
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
-			return err
+			return nil
 		}
+		var room ReadingRoomInfo
+		err = item.DataTo(&room)
+		if err != nil {
+			return nil
+		}
+		room.Name = item.Ref.ID
+		queryResult = append(queryResult, room)
 	}
 
-
-	if err != nil{
-		fmt.Println(err)
-		return nil
-	}
 
 	defer func(client *firestore.Client) {
 		err := client.Close()
@@ -128,5 +133,5 @@ func GetLibrary(name string) error {
 			return
 		}
 	}(client)
-	return nil
+	return queryResult
 }

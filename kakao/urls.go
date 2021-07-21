@@ -3,6 +3,7 @@ package kakao
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jil8885/hyuabot-backend-golang/bus"
+	"github.com/jil8885/hyuabot-backend-golang/library"
 	"github.com/jil8885/hyuabot-backend-golang/shuttle"
 	"github.com/jil8885/hyuabot-backend-golang/subway"
 	"strconv"
@@ -370,10 +371,19 @@ func Library(c *fiber.Ctx) error {
 	answer := ""
 
 	if message == "열람실" {
-		answer += "학술정보관 열람실\n"
-
+		answer += "학술정보관 잔여 좌석\n\n"
+		queryResult := library.GetLibrary()
+		for _, item := range queryResult{
+			answer += item.Name + " "
+			if item.IsReservable{
+				answer += strconv.Itoa(item.Available) + "/" + strconv.Itoa(item.ActiveTotal)
+			} else {
+				answer += "예약 불가\n"
+			}
+		}
 	}
-	return c.SendString("카카오 i 열람실 정보")
+	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, []QuickReply{}))
+	return c.JSON(response)
 }
 
 // 카카오톡을 통해 넘어온 데이터 중 사용자의 발화 Parse

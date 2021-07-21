@@ -1,13 +1,13 @@
 package library
 
 type ReadingRoomInfo struct {
-	Name string `json:"name"`
-	IsActive     bool   `json:"isActive"`
-	IsReservable bool   `json:"isReservable"`
-	Total        int    `json:"total"`
-	ActiveTotal  int    `json:"activeTotal"`
-	Occupied     int    `json:"occupied"`
-	Available    int    `json:"available"`
+	Name string `json:"name" firestore:"name,omitempty"`
+	IsActive     bool   `json:"isActive" firestore:"isActive,omitempty"`
+	IsReservable bool   `json:"isReservable" firestore:"isReservable,omitempty"`
+	Total        int    `json:"total" firestore:"total,omitempty"`
+	ActiveTotal  int    `json:"activeTotal" firestore:"activeTotal,omitempty"`
+	Occupied     int    `json:"occupied" firestore:"occupied,omitempty"`
+	Available    int    `json:"available" firestore:"available,omitempty"`
 }
 
 type ReadingRoomData struct {
