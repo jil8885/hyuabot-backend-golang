@@ -8,5 +8,5 @@ type Restaurant struct {
 
 type Menu struct {
 	Menu string
-	Price int
+	Price string
 }

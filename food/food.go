@@ -51,7 +51,7 @@ func FetchFoodMenu(){
 				p := s.Find("p.price")
 				if h3.Length() > 0 && p.Length() > 0{
 					menu := strings.TrimSpace(h3.First().Text())
-					price, _ := strconv.Atoi(p.First().Text())
+					price := p.First().Text()
 					restaurant.MenuList[title] = append(restaurant.MenuList[title], Menu{Menu: menu, Price: price})
 				}
 			})
