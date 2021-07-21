@@ -6,6 +6,7 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"google.golang.org/api/iterator"
 	"net/http"
 	"strconv"
 	"strings"
@@ -103,4 +104,48 @@ func FetchFoodMenu(){
 		}
 	}(client)
 	return
+}
+
+func GetRestaurantNames() []string {
+	ctx := context.Background()
+	app, err := firebase.NewApp(ctx, nil)
+	var queryResult []string
+	if err != nil {
+		fmt.Println(err)
+		return queryResult
+	}
+
+	client, err := app.Firestore(ctx)
+	if err != nil{
+		fmt.Println(err)
+		return queryResult
+	}
+
+	iter := client.Collection("hanyangApp").Doc("food").Collection("restaurants").Documents(ctx)
+	for{
+		item, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			continue
+		}
+		var restaurant Restaurant
+		err = item.DataTo(&restaurant)
+		if err != nil {
+			continue
+		}
+		if restaurant.MenuList != nil{
+			queryResult = append(queryResult, item.Ref.ID)
+		}
+	}
+
+	defer func(client *firestore.Client) {
+		err := client.Close()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}(client)
+	return queryResult
 }

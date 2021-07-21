@@ -3,6 +3,7 @@ package kakao
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jil8885/hyuabot-backend-golang/bus"
+	"github.com/jil8885/hyuabot-backend-golang/food"
 	"github.com/jil8885/hyuabot-backend-golang/library"
 	"github.com/jil8885/hyuabot-backend-golang/shuttle"
 	"github.com/jil8885/hyuabot-backend-golang/subway"
@@ -362,7 +363,22 @@ func Bus(c *fiber.Ctx) error {
 
 // 카카오 i 학식 정보 제공
 func Food(c *fiber.Ctx) error {
-	return c.SendString("카카오 i 학식 정보")
+	message := parseAnswer(c)
+	answer := ""
+	blockID := "5eaa9b11cdbc3a00015a23fb"
+	var quickReplies []QuickReply
+
+	if message == "학식"{
+		answer = "원하는 식당을 선택해주세요."
+		for _, item := range food.GetRestaurantNames(){
+			quickReplies = append(quickReplies, QuickReply{Action: "block", Label: item, MessageText: item + "의 식단입니다.", BlockID: blockID})
+		}
+	} else{
+
+	}
+
+	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, quickReplies))
+	return c.JSON(response)
 }
 
 // 카카오 i 열람실 정보 제공
