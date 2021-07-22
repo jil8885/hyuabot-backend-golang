@@ -43,14 +43,14 @@ type BusTimeTableItem struct {
 	Time string `json:"time"`
 }
 
-type busTimeTableLine struct {
+type BusTimeTableLine struct {
 	Weekdays []BusTimeTableItem `json:"weekdays"`
 	Sat []BusTimeTableItem      `json:"sat"`
 	Sun []BusTimeTableItem      `json:"sun"`
 }
 
 type BusTimeTableJson struct {
-	Line3102 busTimeTableLine `json:"3102"`
-	Line10_1 busTimeTableLine `json:"10-1"`
-	Line707_1 busTimeTableLine `json:"707-1"`
+	Line3102 BusTimeTableLine `json:"3102"`
+	Line10_1 BusTimeTableLine `json:"10-1"`
+	Line707_1 BusTimeTableLine `json:"707-1"`
 }

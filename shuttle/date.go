@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func getDate(now time.Time) (string, string) {
+func GetDate(now time.Time) (string, string) {
 	// 학기중, 계절학기, 방학 중인지 구별 코드
 	// json 파일 로드
 	var dateInfo DateJson

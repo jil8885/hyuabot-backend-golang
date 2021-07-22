@@ -10,7 +10,7 @@ import (
 )
 
 func GetShuttle(busStop string, now time.Time) ([]Departure, []Departure) {
-	category1, category2 := getDate(now)
+	category1, category2 := GetDate(now)
 	path, _ := os.Getwd()
 	dateJson := path + "/shuttle/timetable/" + category1 + "/" + category2 + "/" + busStop + "_" + category2 + ".json"
 
@@ -59,9 +59,45 @@ func GetShuttle(busStop string, now time.Time) ([]Departure, []Departure) {
 	return busForStation, busForTerminal
 }
 
+func GetShuttleTimetable(busStop string, now time.Time, category string) ([]Departure, []Departure) {
+	category1, _ := GetDate(now)
+	path, _ := os.Getwd()
+	dateJson := path + "/shuttle/timetable/" + category1 + "/" + category + "/" + busStop + "_" + category + ".json"
+
+	// 시간표 json 로딩
+	var departureList []Departure
+	data, err := os.Open(dateJson)
+	if err != nil{
+		return []Departure{}, []Departure{}
+	}
+	byteValue, _ := ioutil.ReadAll(data)
+	err = json.Unmarshal(byteValue, &departureList)
+	if err != nil {
+		return []Departure{}, []Departure{}
+	}
+
+	// 반환할 데이터 선택
+	var busForStation []Departure
+	var busForTerminal []Departure
+
+	for _, item := range departureList{
+		if busStop == "Shuttlecock_I" || busStop == "Terminal" {
+			busForTerminal = append(busForTerminal, item)
+		} else {
+			if item.Heading == "C" || item.Heading == ""{
+				busForTerminal = append(busForTerminal, item)
+				busForStation = append(busForStation, item)
+			} else if item.Heading == "DH" && len(busForStation) < 2{
+				busForStation = append(busForStation, item)
+			}
+		}
+	}
+
+	return busForStation, busForTerminal
+}
 
 func GetFirstLastShuttle(busStop string, now time.Time) (Departure, Departure, Departure, Departure) {
-	category1, category2 := getDate(now)
+	category1, category2 := GetDate(now)
 	path, _ := os.Getwd()
 	dateJson := path + "/shuttle/timetable/" + category1 + "/" + category2 + "/" + busStop + "_" + category2 + ".json"
 
