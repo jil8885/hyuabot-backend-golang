@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cache"
+	"github.com/jil8885/hyuabot-backend-golang/app"
 	"github.com/jil8885/hyuabot-backend-golang/common"
 	"github.com/jil8885/hyuabot-backend-golang/kakao"
 	"log"
@@ -11,8 +12,8 @@ import (
 
 // 실제 서버 실행코드
 func main()  {
-	app := fiber.New()
-	app.Use(cache.New(cache.Config{
+	server := fiber.New()
+	server.Use(cache.New(cache.Config{
 		Next: func(c *fiber.Ctx) bool {
 			return c.Query("refresh") == "true"
 		},
@@ -20,7 +21,7 @@ func main()  {
 		CacheControl: true,
 	}))
 	// 카카오 i 라우트
-	kakaoUrl := app.Group("/kakao", kakao.Middleware)
+	kakaoUrl := server.Group("/kakao", kakao.Middleware)
 	kakaoUrl.Post("/shuttle", kakao.Shuttle)
 	kakaoUrl.Post("/shuttle/by-stop", kakao.ShuttleStop)
 	kakaoUrl.Post("/subway", kakao.Subway)
@@ -29,11 +30,13 @@ func main()  {
 	kakaoUrl.Post("/library", kakao.Library)
 
 	// 휴아봇 앱 라우트
+	appUrl : server.Group("/app", app.Middleware)
+
 	// 공통 기능 라우트
-	commonUrl := app.Group("/common", common.Middleware)
+	commonUrl := server.Group("/common", common.Middleware)
 	commonUrl.Get("/library", common.Library)
 	commonUrl.Get("/food", common.Food)
 
 	// Fatal Log 출력
-	log.Fatal(app.Listen(":8080"))
+	log.Fatal(server.Listen(":8080"))
 }
