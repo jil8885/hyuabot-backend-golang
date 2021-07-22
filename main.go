@@ -30,7 +30,17 @@ func main()  {
 	kakaoUrl.Post("/library", kakao.Library)
 
 	// 휴아봇 앱 라우트
-	appUrl : server.Group("/app", app.Middleware)
+	appUrl := server.Group("/app", app.Middleware)
+	appUrl.Get("/shuttle", app.GetShuttleDeparture)
+	appUrl.Post("/shuttle", app.GetShuttleDepartureByStop)
+	appUrl.Post("/shuttle/by-stop", app.GetShuttleStopInfoByStop)
+	appUrl.Post("/subway", app.GetSubwayDeparture)
+	appUrl.Get("/bus", app.GetBusDeparture)
+	appUrl.Post("/bus", app.GetBusDepartureByLine)
+	appUrl.Post("/bus/timetable", app.GetBusTimetableByRoute)
+	appUrl.Get("/library", app.PushNotificationByRoom)
+	appUrl.Post("/library", app.GetReadingRoomSeatByCampus)
+	appUrl.Post("/food", app.GetFoodMenuByCampus)
 
 	// 공통 기능 라우트
 	commonUrl := server.Group("/common", common.Middleware)
