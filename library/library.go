@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	firebase "firebase.google.com/go/v4"
+	"firebase.google.com/go/v4/messaging"
 	"fmt"
 	"google.golang.org/api/iterator"
 	"io"
@@ -18,6 +19,8 @@ func FetchLibrary()  {
 	// API 서버 데이터 요청
 	result := ReadingRoomJSON{}
 	response, err := http.Get(url)
+
+	roomMap := map[string]string{"제1열람실": "reading_room_1", "제2열람실": "reading_room_2", "제3열람실": "reading_room_3", "제4열람실": "reading_room_4"}
 
 	if err != nil{
 		return
@@ -53,6 +56,10 @@ func FetchLibrary()  {
 		return
 	}
 
+	messagingClient, err := app.Messaging(ctx)
+	if err != nil {
+		return
+	}
 	// Firestore handling
 	err = client.RunTransaction(ctx, func(ctx context.Context, transaction *firestore.Transaction) error {
 		document := client.Collection("hanyangApp").Doc("readingRoom")
@@ -70,7 +77,21 @@ func FetchLibrary()  {
 				"occupied": item.Occupied,
 				"available": item.Available,
 			}, firestore.MergeAll)
+			
+			if item.IsReservable && item.Available > 0{
+				message := &messaging.Message{
+					Data:         map[string]string{"type": "reading_room", "name": roomMap[item.Name]},
+					Android:      &messaging.AndroidConfig{Priority: "high"},
+					Topic:        roomMap[item.Name],
+				}
+
+				_, err := messagingClient.Send(ctx, message)
+				if err != nil {
+					return err
+				}
+			}
 		}
+		
 		return err
 	})
 
