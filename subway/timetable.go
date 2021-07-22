@@ -70,6 +70,64 @@ func GetTimetableSubway() TimetableDataResult {
 	return timetableResult
 }
 
+func GetTimetableSubwayAll() (TimetableDataResult, TimetableDataResult) {
+	// 현재 시간 로딩 (KST)
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+
+	var timetableJsonObj TimetableDataByDay
+	timetableResultWeekdays := TimetableDataResult{}
+	timetableResultWeekends := TimetableDataResult{}
+
+	path, _ := os.Getwd()
+	timetableJson := path + "/subway/timetable.json"
+	data, err := os.Open(timetableJson)
+	if err != nil{
+		return TimetableDataResult{}, TimetableDataResult{}
+	}
+	byteValue, _ := ioutil.ReadAll(data)
+	err = json.Unmarshal(byteValue, &timetableJsonObj)
+	if err != nil {
+		return TimetableDataResult{}, TimetableDataResult{}
+	}
+
+	for _, item := range timetableJsonObj.Weekdays.UpLine{
+		if compareTimetable(item.Time, now){
+			timetableResultWeekdays.UpLine = append(timetableResultWeekdays.UpLine, item)
+			if len(timetableResultWeekdays.UpLine) >= 2{
+				break
+			}
+		}
+	}
+
+	for _, item := range timetableJsonObj.Weekdays.DownLine{
+		if compareTimetable(item.Time, now){
+			timetableResultWeekdays.DownLine = append(timetableResultWeekdays.DownLine, item)
+			if len(timetableResultWeekdays.DownLine) >= 2{
+				break
+			}
+		}
+	}
+	for _, item := range timetableJsonObj.Weekend.UpLine{
+		if compareTimetable(item.Time, now){
+			timetableResultWeekends.UpLine = append(timetableResultWeekends.UpLine, item)
+			if len(timetableResultWeekends.UpLine) >= 2{
+				break
+			}
+		}
+	}
+
+	for _, item := range timetableJsonObj.Weekend.DownLine{
+		if compareTimetable(item.Time, now){
+			timetableResultWeekends.DownLine = append(timetableResultWeekends.DownLine, item)
+			if len(timetableResultWeekends.DownLine) >= 2{
+				break
+			}
+		}
+	}
+	return timetableResultWeekdays, timetableResultWeekends
+}
+
 func compareTimetable(timeString string, now time.Time) bool {
 	slice := strings.Split(timeString, ":")
 	hour, _ := strconv.Atoi(slice[0])

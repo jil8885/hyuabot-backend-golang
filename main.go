@@ -38,7 +38,6 @@ func main()  {
 	appUrl.Get("/bus", app.GetBusDeparture)
 	appUrl.Post("/bus", app.GetBusDepartureByLine)
 	appUrl.Post("/bus/timetable", app.GetBusTimetableByRoute)
-	appUrl.Get("/library", app.PushNotificationByRoom)
 	appUrl.Post("/library", app.GetReadingRoomSeatByCampus)
 	appUrl.Post("/food", app.GetFoodMenuByCampus)
 
