@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cache"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/jil8885/hyuabot-backend-golang/app"
 	"github.com/jil8885/hyuabot-backend-golang/common"
 	"github.com/jil8885/hyuabot-backend-golang/kakao"
@@ -20,6 +21,8 @@ func main()  {
 		Expiration: time.Minute,
 		CacheControl: true,
 	}))
+	server.Use(logger.New())
+
 	// 카카오 i 라우트
 	kakaoUrl := server.Group("/kakao", kakao.Middleware)
 	kakaoUrl.Post("/shuttle", kakao.Shuttle)
@@ -39,7 +42,7 @@ func main()  {
 	appUrl.Post("/bus", app.GetBusDepartureByLine)
 	appUrl.Post("/bus/timetable", app.GetBusTimetableByRoute)
 	appUrl.Post("/library", app.GetReadingRoomSeatByCampus)
-	appUrl.Post("/food", app.GetFoodMenuByCampus)
+	appUrl.Get("/food", app.GetFoodMenuByCampus)
 
 	// 공통 기능 라우트
 	commonUrl := server.Group("/common", common.Middleware)
