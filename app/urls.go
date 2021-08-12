@@ -66,19 +66,28 @@ func GetShuttleStopInfoByStop(c *fiber.Ctx) error {
 func GetSubwayDeparture(c *fiber.Ctx) error {
 	campus := strings.ToLower(parseCampus(c)) == "seoul"
 
+	now := time.Now()
+	_, isWeekends := shuttle.GetDate(now)
+	isHoliday := shuttle.IsHoliday(now)
+
 	if campus {
 		return c.JSON(SubwayDepartureSeoul{
 			Line2: subway.GetRealtimeSubway(1),
 		})
 	} else{
 		timetableWeekdays, timetableWeekends := subway.GetTimetableSubwayAll()
-		return c.JSON(SubwayDepartureERICA{
-			Line4: subway.GetRealtimeSubway(0),
-			LineSuin: SubwayTimetable{
-				Weekdays:   timetableWeekends,
-				Weekends: timetableWeekdays,
-			},
-		})
+		if isWeekends == "weekend" || isHoliday{
+			return c.JSON(SubwayDepartureERICA{
+				Line4: subway.GetRealtimeSubway(0),
+				LineSuin: timetableWeekends,
+			})
+		} else {
+			return c.JSON(SubwayDepartureERICA{
+				Line4: subway.GetRealtimeSubway(0),
+				LineSuin: timetableWeekdays,
+			})
+		}
+
 	}
 }
 

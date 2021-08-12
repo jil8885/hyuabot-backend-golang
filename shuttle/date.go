@@ -71,13 +71,13 @@ func GetDate(now time.Time) (string, string) {
 	}
 
 	day := "week"
-	if now.Weekday() == 0 || now.Weekday() == 6 || isHoliday(now){
+	if now.Weekday() == 0 || now.Weekday() == 6 || IsHoliday(now){
 		day = "weekend"
 	}
 	return term, day
 }
 
-func isHoliday(time time.Time) bool {
+func IsHoliday(time time.Time) bool {
 	lunarHoliday := []*calendar.Calendar{calendar.ByLunar(int64(time.Year()), 4, 8, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 8, 14, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 8, 15, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 8, 16, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()) - 1, 12, 30, 0, 0, 0, false),calendar.ByLunar(int64(time.Year()), 1, 1, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 1, 2, 0, 0, 0, false)}
 	boolean := false
 	for _, date := range lunarHoliday{

@@ -40,12 +40,7 @@ type SubwayDepartureSeoul struct {
 
 type SubwayDepartureERICA struct {
 	Line4 subway.RealtimeDataResult `json:"main"`
-	LineSuin SubwayTimetable `json:"sub"`
-}
-
-type SubwayTimetable struct {
-	Weekdays subway.TimetableDataResult `json:"weekdays"`
-	Weekends subway.TimetableDataResult `json:"weekends"`
+	LineSuin subway.TimetableDataResult `json:"sub"`
 }
 
 type Bus struct {
