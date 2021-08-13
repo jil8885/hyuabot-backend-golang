@@ -31,7 +31,7 @@ func GetRealtimeSubway(campus int, lineID int) RealtimeDataResult {
 	}
 
 	// API 서버 데이터 요청
-	result := RealtimeDataResult{}
+	result := RealtimeDataResult{[]RealtimeDataItem{}, []RealtimeDataItem{}}
 	client := http.Client{Timeout: 3*time.Second}
 	response, err := client.Get(url)
 	var apiResult RealtimeAPIResult

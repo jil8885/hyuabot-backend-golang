@@ -4,7 +4,7 @@ import "time"
 
 // 전철 도착 정보
 type RealtimeDataItem struct {
-	TerminalStation string `json:"terminalStn"`
+	TerminalStation string `json:"endStn"`
 	Position string `json:"pos"`
 	RemainedTime float64 `json:"time"`
 	Status string `json:"status"`
