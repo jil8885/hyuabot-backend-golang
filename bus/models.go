@@ -21,12 +21,20 @@ type TimeTableItem struct {
 	DepartureTime string
 }
 
-type Response struct {
-	MsgBody msgBody `xml:"msgBody"`
+type StopResponse struct {
+	MsgBody stopMsgBody `xml:"msgBody"`
 }
 
-type msgBody struct {
+type stopMsgBody struct {
 	BusArrivalList []busArrivalItem `xml:"busArrivalList"`
+}
+
+type RouteResponse struct {
+	MsgBody routeMsgBody `xml:"msgBody"`
+}
+
+type routeMsgBody struct {
+	BusArrivalItem busArrivalItem `xml:"busArrivalItem"`
 }
 
 type busArrivalItem struct {

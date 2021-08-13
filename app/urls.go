@@ -107,33 +107,52 @@ func GetSubwayDeparture(c *fiber.Ctx) error {
 
 func GetBusDeparture(c *fiber.Ctx) error {
 	responseRealtimeByStop := bus.GetRealtimeStopDeparture("216000379")
-	response := Bus{Realtime: map[string][]bus.DepartureItem{"10-1": []bus.DepartureItem{}, "3102": []bus.DepartureItem{}, "707-1": []bus.DepartureItem{}}}
-	response.Realtime["707-1"] = bus.GetRealtimeBusDeparture("216000719", "216000070")
+	response := Bus{
+		LineGreenToStation: BusByRoute{
+			Realtime:  []bus.DepartureItem{},
+			Timetable: bus.BusTimeTableLine{Weekdays: []bus.BusTimeTableItem{}, Sat: []bus.BusTimeTableItem{}, Sun: []bus.BusTimeTableItem{}},
+		},
+		LineGreenToCampus: BusByRoute{
+			Realtime:  bus.GetRealtimeBusDeparture("216000138", "216000068"),
+			Timetable: bus.BusTimeTableLine{Weekdays: []bus.BusTimeTableItem{}, Sat: []bus.BusTimeTableItem{}, Sun: []bus.BusTimeTableItem{}},
+		},
+		LineBlue: BusByRoute{
+			Realtime:  bus.GetRealtimeBusDeparture("216000719", "216000070"),
+			Timetable: bus.BusTimeTableLine{Weekdays: []bus.BusTimeTableItem{}, Sat: []bus.BusTimeTableItem{}, Sun: []bus.BusTimeTableItem{}},
+		},
+		LineRed: BusByRoute{
+			Realtime:  []bus.DepartureItem{},
+			Timetable: bus.BusTimeTableLine{Weekdays: []bus.BusTimeTableItem{}, Sat: []bus.BusTimeTableItem{}, Sun: []bus.BusTimeTableItem{}},
+		},
+	}
 	for _, item := range responseRealtimeByStop.MsgBody.BusArrivalList{
 		if item.PredictTime1 > 0{
 			if item.RouteID == 216000061{
-				response.Realtime["3102"] = append(response.Realtime["3102"], bus.DepartureItem{
+				response.LineRed.Realtime = append(response.LineRed.Realtime, bus.DepartureItem{
 					Location : item.LocationNo1, RemainedTime: item.PredictTime1, RemainedSeat: item.RemainSeatCnt1,
 				})
 			} else if item.RouteID == 216000068{
-				response.Realtime["10-1"] = append(response.Realtime["10-1"], bus.DepartureItem{
+				response.LineGreenToStation.Realtime = append(response.LineGreenToStation.Realtime, bus.DepartureItem{
 					Location : item.LocationNo1, RemainedTime: item.PredictTime1, RemainedSeat: item.RemainSeatCnt1,
 				})
 			}
 			if item.PredictTime2 > 0{
 				if item.RouteID == 216000061{
-					response.Realtime["3102"] = append(response.Realtime["3102"], bus.DepartureItem{
+					response.LineRed.Realtime = append(response.LineRed.Realtime, bus.DepartureItem{
 						Location : item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2,
 					})
 				} else if item.RouteID == 216000068{
-					response.Realtime["10-1"] = append(response.Realtime["10-1"], bus.DepartureItem{
+					response.LineGreenToStation.Realtime = append(response.LineGreenToStation.Realtime, bus.DepartureItem{
 						Location : item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2,
 					})
 				}
 			}
 		}
 	}
-	response.Timetable = bus.GetTimetable()
+	timetable := bus.GetTimetable()
+	response.LineGreenToStation.Timetable = timetable.Line10_1
+	response.LineBlue.Timetable = timetable.Line707_1
+	response.LineRed.Timetable = timetable.Line3102
 	return c.JSON(response)
 }
 

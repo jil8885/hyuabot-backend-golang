@@ -49,8 +49,10 @@ type SubwayDepartureERICA struct {
 }
 
 type Bus struct {
-	Realtime map[string][]bus.DepartureItem `json:"realtime"`
-	Timetable bus.BusTimeTableJson `json:"timetable"`
+	LineRed BusByRoute `json:"3102"`
+	LineBlue BusByRoute `json:"707-1"`
+	LineGreenToStation BusByRoute `json:"10-1_station"`
+	LineGreenToCampus BusByRoute `json:"10-1_campus"`
 }
 
 type BusByRoute struct {
