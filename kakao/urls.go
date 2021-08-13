@@ -215,7 +215,7 @@ func ShuttleStop(c *fiber.Ctx) error {
 
 // Subway 카카오 i 전철 도착 정보 제공
 func Subway(c *fiber.Ctx) error {
-	realtimeResult := subway.GetRealtimeSubway(0)
+	realtimeResult := subway.GetRealtimeSubway(0, 1004)
 	message := ""
 
 	if realtimeResult.UpLine == nil{

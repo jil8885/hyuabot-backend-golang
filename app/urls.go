@@ -72,19 +72,33 @@ func GetSubwayDeparture(c *fiber.Ctx) error {
 
 	if campus {
 		return c.JSON(SubwayDepartureSeoul{
-			Line2: subway.GetRealtimeSubway(1),
+			Line2: subway.GetRealtimeSubway(1, 1002),
 		})
 	} else{
-		timetableWeekdays, timetableWeekends := subway.GetTimetableSubwayAll()
+		timetableWeekdaysLine4, timetableWeekendsLine4 := subway.GetTimetableSubwayAll(1004)
+		timetableWeekdaysLineSuin, timetableWeekendsLineSuin := subway.GetTimetableSubwayAll(1071)
+
 		if isWeekends == "weekend" || isHoliday{
 			return c.JSON(SubwayDepartureERICA{
-				Line4: subway.GetRealtimeSubway(0),
-				LineSuin: timetableWeekends,
+				Line4: SubwayDepartureByLine{
+					RealtimeList:  subway.GetRealtimeSubway(0, 1004),
+					TimetableList: timetableWeekendsLine4,
+				},
+				LineSuin: SubwayDepartureByLine{
+					RealtimeList:  subway.GetRealtimeSubway(0, 1071),
+					TimetableList: timetableWeekendsLineSuin,
+				},
 			})
 		} else {
 			return c.JSON(SubwayDepartureERICA{
-				Line4: subway.GetRealtimeSubway(0),
-				LineSuin: timetableWeekdays,
+				Line4: SubwayDepartureByLine{
+					RealtimeList:  subway.GetRealtimeSubway(0, 1004),
+					TimetableList: timetableWeekdaysLine4,
+				},
+				LineSuin: SubwayDepartureByLine{
+					RealtimeList:  subway.GetRealtimeSubway(0, 1071),
+					TimetableList: timetableWeekdaysLineSuin,
+				},
 			})
 		}
 

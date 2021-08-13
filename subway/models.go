@@ -44,7 +44,7 @@ type RealtimeAPIItem struct {
 
 // 전철 도착 정보
 type TimetableDataItem struct {
-	TerminalStation string `json:"terminalStn"`
+	TerminalStation string `json:"endStn"`
 	Time string `json:"time"`
 }
 

@@ -13,7 +13,7 @@ import (
 
 var cache RealtimeDataResultCache
 
-func GetRealtimeSubway(campus int) RealtimeDataResult {
+func GetRealtimeSubway(campus int, lineID int) RealtimeDataResult {
 	minuteToArrival := map[string]float64{
 		"한대앞": 0, "중앙": 2, "고잔": 4, "초지": 6.5, "안산": 9, "신길온천": 12.5, "정왕": 16, "오이도": 19, "달월": 21, "월곶": 23,
 			"소래포구": 25, "인천논현": 27, "호구포": 29, "상록수": 2, "반월": 6, "대야미": 8.5, "수리산": 11.5, "산본": 13.5, "금정": 18,
@@ -63,7 +63,7 @@ func GetRealtimeSubway(campus int) RealtimeDataResult {
 		}
 		status, _ = strconv.Atoi(item.Status)
 
-		if !strings.Contains(item.TerminalStation, "급행"){
+		if !strings.Contains(item.TerminalStation, "급행") && item.LineID == strconv.Itoa(lineID){
 			if strings.Contains(item.UpDown, "상행") || strings.Contains(item.UpDown, "내선"){
 				result.UpLine = append(result.UpLine, RealtimeDataItem{item.TerminalStation, item.CurrentStation, remainedTime, statusCode[status]})
 			} else{
