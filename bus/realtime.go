@@ -29,9 +29,11 @@ func GetRealtimeBusDeparture(stopID string, busID string) []DepartureItem {
 	}
 
 	item := xmlObj.MsgBody.BusArrivalItem
-	result = append(result, DepartureItem{Location: item.LocationNo1, RemainedTime: item.PredictTime1, RemainedSeat: item.RemainSeatCnt1})
-	if item.LocationNo2 != 0{
-		result = append(result, DepartureItem{Location: item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2})
+	if item.PredictTime1 > 0{
+		result = append(result, DepartureItem{Location: item.LocationNo1, RemainedTime: item.PredictTime1, RemainedSeat: item.RemainSeatCnt1})
+		if item.LocationNo2 != 0{
+			result = append(result, DepartureItem{Location: item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2})
+		}
 	}
 	return result
 }
