@@ -44,8 +44,7 @@ func Shuttle(c *fiber.Ctx) error {
 	// 현재 시간 로딩 (KST)
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
-
-	busForStation, busForTerminal := shuttle.GetShuttle(busStop, now)
+	busForStation, busForTerminal := shuttle.GetShuttle(busStop, now, loc)
 	message = ""
 	switch busStop {
 	case "Residence":
@@ -178,7 +177,7 @@ func ShuttleStop(c *fiber.Ctx) error {
 
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
-	busForStationFirst, busForStationLast, busForTerminalFirst, busForTerminalLast := shuttle.GetFirstLastShuttle(busStop, now)
+	busForStationFirst, busForStationLast, busForTerminalFirst, busForTerminalLast := shuttle.GetFirstLastShuttle(busStop, now, loc)
 	switch busStop {
 	case "Residence", "Shuttlecock_O":
 		message += "한대앞 : "

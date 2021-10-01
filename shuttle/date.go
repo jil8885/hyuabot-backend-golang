@@ -2,13 +2,14 @@ package shuttle
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/Lofanmi/chinese-calendar-golang/calendar"
 	"io/ioutil"
 	"os"
 	"time"
 )
 
-func GetDate(now time.Time) (string, string) {
+func GetDate(now time.Time, loc *time.Location) (string, string) {
 	// 학기중, 계절학기, 방학 중인지 구별 코드
 	// json 파일 로드
 	var dateInfo DateJson
@@ -33,8 +34,11 @@ func GetDate(now time.Time) (string, string) {
 			start, _ := time.Parse(layout, item.StartDate)
 			end, _ := time.Parse(layout, item.EndDate)
 			yearToADD := now.Year() - start.Year()
-			start = start.AddDate(yearToADD, 0, 0)
-			end = end.AddDate(yearToADD, 0, 0)
+			start = start.AddDate(yearToADD, 0, 0).In(loc).Add(-9 * time.Duration(time.Hour))
+			end = end.AddDate(yearToADD, 0, 0).In(loc).Add(15 * time.Duration(time.Hour) - 1 * time.Duration(time.Second))
+			fmt.Println(start)
+			fmt.Println(end)
+			fmt.Println(now)
 			if now.After(start) && now.Before(end){
 				correct = index
 				break

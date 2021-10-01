@@ -21,11 +21,10 @@ func GetShuttleDeparture(c *fiber.Ctx) error {
 	// 현재 시간 로딩 (KST)
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
-
 	busStopList := [5]string{"Residence", "Shuttlecock_O", "Subway", "Terminal", "Shuttlecock_I"}
 	response := map[string]ShuttleDepartureByStop{}
 	for _, item := range busStopList{
-		busForStation, busForTerminal := shuttle.GetShuttle(item, now)
+		busForStation, busForTerminal := shuttle.GetShuttle(item, now, loc)
 		response[item] = ShuttleDepartureByStop{BusForStation: busForStation, BusForTerminal: busForTerminal}
 	}
 	return c.JSON(response)
@@ -36,7 +35,7 @@ func GetShuttleDepartureByStop(c *fiber.Ctx) error {
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
 
-	busForStation, busForTerminal := shuttle.GetShuttle(parseShuttleStop(c), now)
+	busForStation, busForTerminal := shuttle.GetShuttle(parseShuttleStop(c), now, loc)
 	response := ShuttleDepartureByStop{BusForStation: busForStation, BusForTerminal: busForTerminal}
 	return c.JSON(response)
 }
@@ -47,9 +46,9 @@ func GetShuttleStopInfoByStop(c *fiber.Ctx) error {
 	now := time.Now().In(loc)
 
 	busStop := parseShuttleStop(c)
-	firstBusForStation, lastBusForStation, firstBusForTerminal, lastBusForTerminal := shuttle.GetFirstLastShuttle(busStop, now)
-	weekBusForStation, weekBusForTerminal := shuttle.GetShuttleTimetable(busStop, now, "week")
-	weekendBusForStation, weekendBusForTerminal := shuttle.GetShuttleTimetable(busStop, now, "weekend")
+	firstBusForStation, lastBusForStation, firstBusForTerminal, lastBusForTerminal := shuttle.GetFirstLastShuttle(busStop, now, loc)
+	weekBusForStation, weekBusForTerminal := shuttle.GetShuttleTimetable(busStop, now, loc, "week")
+	weekendBusForStation, weekendBusForTerminal := shuttle.GetShuttleTimetable(busStop, now, loc, "weekend")
 	roadViewMap := map[string]string{"Shuttlecock_I": "http://kko.to/TyWyjU3Yp", "Subway": "http://kko.to/c93C0UFYj", "Residence": "http://kko.to/R-l1jU3DT", "Terminal": "http://kko.to/7mzoYUFY0", "Shuttlecock_O": "http://kko.to/v-3DYI3YM"}
 
 	return c.JSON(ShuttleStop{
@@ -67,7 +66,8 @@ func GetSubwayDeparture(c *fiber.Ctx) error {
 	campus := strings.ToLower(parseCampus(c)) == "seoul"
 
 	now := time.Now()
-	_, isWeekends := shuttle.GetDate(now)
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	_, isWeekends := shuttle.GetDate(now, loc)
 	isHoliday := shuttle.IsHoliday(now)
 
 	if campus {

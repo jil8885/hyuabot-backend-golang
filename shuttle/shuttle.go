@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-func GetShuttle(busStop string, now time.Time) ([]Departure, []Departure) {
-	category1, category2 := GetDate(now)
+func GetShuttle(busStop string, now time.Time, loc *time.Location) ([]Departure, []Departure) {
+	category1, category2 := GetDate(now, loc)
 	path, _ := os.Getwd()
 	dateJson := path + "/shuttle/timetable/" + category1 + "/" + category2 + "/" + busStop + "_" + category2 + ".json"
 
@@ -59,8 +59,8 @@ func GetShuttle(busStop string, now time.Time) ([]Departure, []Departure) {
 	return busForStation, busForTerminal
 }
 
-func GetShuttleTimetable(busStop string, now time.Time, category string) ([]Departure, []Departure) {
-	category1, _ := GetDate(now)
+func GetShuttleTimetable(busStop string, now time.Time, loc *time.Location, category string) ([]Departure, []Departure) {
+	category1, _ := GetDate(now, loc)
 	path, _ := os.Getwd()
 	dateJson := path + "/shuttle/timetable/" + category1 + "/" + category + "/" + busStop + "_" + category + ".json"
 
@@ -96,8 +96,8 @@ func GetShuttleTimetable(busStop string, now time.Time, category string) ([]Depa
 	return busForStation, busForTerminal
 }
 
-func GetFirstLastShuttle(busStop string, now time.Time) (Departure, Departure, Departure, Departure) {
-	category1, category2 := GetDate(now)
+func GetFirstLastShuttle(busStop string, now time.Time, loc *time.Location) (Departure, Departure, Departure, Departure) {
+	category1, category2 := GetDate(now, loc)
 	path, _ := os.Getwd()
 	dateJson := path + "/shuttle/timetable/" + category1 + "/" + category2 + "/" + busStop + "_" + category2 + ".json"
 
