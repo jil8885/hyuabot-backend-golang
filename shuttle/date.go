@@ -78,6 +78,18 @@ func GetDate(now time.Time, loc *time.Location) (string, string) {
 	if now.Weekday() == 0 || now.Weekday() == 6 || IsHoliday(now){
 		day = "weekend"
 	}
+
+	for _, holiday := range dateInfo.Holiday{
+		date, _ := time.Parse(layout, holiday)
+		yearToADD := now.Year() - date.Year()
+		date = date.AddDate(yearToADD, 0, 0).In(loc).Add(-9 * time.Duration(time.Hour))
+		fmt.Println(date)
+		fmt.Println(now)
+		if now.Year() == date.Year() && now.Month() == date.Month() && now.Day() == date.Day() {
+			day = "weekend"
+			break
+		}
+	}
 	return term, day
 }
 
