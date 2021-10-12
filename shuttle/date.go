@@ -36,9 +36,6 @@ func GetDate(now time.Time, loc *time.Location) (string, string) {
 			yearToADD := now.Year() - start.Year()
 			start = start.AddDate(yearToADD, 0, 0).In(loc).Add(-9 * time.Duration(time.Hour))
 			end = end.AddDate(yearToADD, 0, 0).In(loc).Add(15 * time.Duration(time.Hour) - 1 * time.Duration(time.Second))
-			fmt.Println(start)
-			fmt.Println(end)
-			fmt.Println(now)
 			if now.After(start) && now.Before(end){
 				correct = index
 				break
