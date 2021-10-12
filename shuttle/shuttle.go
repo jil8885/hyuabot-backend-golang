@@ -29,7 +29,6 @@ func GetShuttle(busStop string, now time.Time, loc *time.Location) ([]Departure,
 	// 반환할 데이터 선택
 	var busForStation []Departure
 	var busForTerminal []Departure
-
 	for _, item := range departureList{
 		if compareTimetable(item.Time, now){
 			if busStop == "Shuttlecock_I" || busStop == "Terminal" {
@@ -56,6 +55,13 @@ func GetShuttle(busStop string, now time.Time, loc *time.Location) ([]Departure,
 		}
 	}
 
+	if busForStation == nil {
+		busForStation = []Departure{}
+	}
+
+	if busForTerminal == nil {
+		busForTerminal = []Departure{}
+	}
 	return busForStation, busForTerminal
 }
 

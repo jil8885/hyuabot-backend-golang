@@ -2,7 +2,6 @@ package shuttle
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/Lofanmi/chinese-calendar-golang/calendar"
 	"io/ioutil"
 	"os"
@@ -80,8 +79,6 @@ func GetDate(now time.Time, loc *time.Location) (string, string) {
 		date, _ := time.Parse(layout, holiday)
 		yearToADD := now.Year() - date.Year()
 		date = date.AddDate(yearToADD, 0, 0).In(loc).Add(-9 * time.Duration(time.Hour))
-		fmt.Println(date)
-		fmt.Println(now)
 		if now.Year() == date.Year() && now.Month() == date.Month() && now.Day() == date.Day() {
 			day = "weekend"
 			break

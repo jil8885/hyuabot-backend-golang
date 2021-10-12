@@ -2,25 +2,16 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cache"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/jil8885/hyuabot-backend-golang/app"
 	"github.com/jil8885/hyuabot-backend-golang/common"
 	"github.com/jil8885/hyuabot-backend-golang/kakao"
 	"log"
-	"time"
 )
 
 // 실제 서버 실행코드
 func main()  {
 	server := fiber.New()
-	server.Use(cache.New(cache.Config{
-		Next: func(c *fiber.Ctx) bool {
-			return c.Query("refresh") == "true"
-		},
-		Expiration: time.Minute,
-		CacheControl: true,
-	}))
 	server.Use(logger.New())
 
 	// 카카오 i 라우트

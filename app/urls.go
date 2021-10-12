@@ -151,6 +151,7 @@ func GetBusDeparture(c *fiber.Ctx) error {
 	}
 	timetable := bus.GetTimetable()
 	response.LineGreenToStation.Timetable = timetable.Line10_1
+	response.LineGreenToCampus.Timetable = timetable.Line10_1
 	response.LineBlue.Timetable = timetable.Line707_1
 	response.LineRed.Timetable = timetable.Line3102
 	return c.JSON(response)
