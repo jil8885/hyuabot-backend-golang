@@ -29,12 +29,16 @@ func GetAllShuttle(c *fiber.Ctx) error{
 	now := time.Now().In(loc)
 
 	for _, busStop := range stopName{
-		busForStation, busForTerminal := shuttle.GetShuttle(busStop, now, loc)
+		count := 2
+		if busStop == "Terminal" || busStop == "Shuttlecock_I"{
+			count = 6
+		}
+		busForStation, busForTerminal := shuttle.GetShuttle(busStop, now, loc, count)
 		message = ""
 		title := ""
 		switch busStop {
 			case "Residence":
-				title = "기숙사"
+				title = "🏘️ 기숙사"
 				message += "기숙사→한대앞\n"
 				if len(busForStation) > 0{
 					for _, item := range busForStation{
@@ -56,7 +60,7 @@ func GetAllShuttle(c *fiber.Ctx) error{
 				}
 				message += "기숙사 출발 버스는 셔틀콕을 경유합니다.\n"
 			case "Shuttlecock_O":
-				title = "셔틀콕"
+				title = "🏫 셔틀콕"
 				message += "셔틀콕→한대앞\n"
 				if len(busForStation) > 0{
 					for _, item := range busForStation{
@@ -78,7 +82,7 @@ func GetAllShuttle(c *fiber.Ctx) error{
 				}
 				message += "한대앞 방면은 순환, 직행 중 앞에 오는 것이 빠릅니다.\n"
 			case "Subway":
-				title = "한대앞역"
+				title = "🚆 한대앞역"
 				message += "한대앞→셔틀콕,기숙사\n"
 				if len(busForStation) > 0{
 					for _, item := range busForStation{
@@ -101,7 +105,7 @@ func GetAllShuttle(c *fiber.Ctx) error{
 
 				message += "캠퍼스 방면은 순환, 직행 중 앞에 오는 것이 빠릅니다.\n"
 			case "Terminal":
-				title = "예술인"
+				title = "🚍 예술인"
 				message += "예술인→셔틀콕,기숙사\n"
 				if len(busForTerminal) > 0{
 					for _, item := range busForTerminal{
@@ -112,7 +116,7 @@ func GetAllShuttle(c *fiber.Ctx) error{
 					message += "운행 종료\n\n"
 				}
 			case "Shuttlecock_I":
-				title = "셔틀콕 건너편"
+				title = "🏫 셔틀콕 건너편"
 				message += "셔틀콕 건너편→기숙사\n"
 				if len(busForTerminal) > 0{
 					for _, item := range busForTerminal{
@@ -159,7 +163,7 @@ func Shuttle(c *fiber.Ctx) error {
 	// 현재 시간 로딩 (KST)
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
-	busForStation, busForTerminal := shuttle.GetShuttle(busStop, now, loc)
+	busForStation, busForTerminal := shuttle.GetShuttle(busStop, now, loc, 2)
 	message = ""
 	switch busStop {
 	case "Residence":

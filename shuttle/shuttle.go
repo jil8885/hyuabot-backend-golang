@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func GetShuttle(busStop string, now time.Time, loc *time.Location) ([]Departure, []Departure) {
+func GetShuttle(busStop string, now time.Time, loc *time.Location, count int) ([]Departure, []Departure) {
 	category1, category2 := GetDate(now, loc)
 	path, _ := os.Getwd()
 	dateJson := path + "/shuttle/timetable/" + category1 + "/" + category2 + ".json"
@@ -99,21 +99,21 @@ func GetShuttle(busStop string, now time.Time, loc *time.Location) ([]Departure,
 		}
 
 
-		if len(busForStation) >= 2 && len(busForTerminal) >= 2{
+		if len(busForStation) >= count && len(busForTerminal) >= count{
 			break
 		}
 	}
 
 	if busForStation == nil {
 		busForStation = []Departure{}
-	} else if len(busForStation) >= 2{
+	} else if len(busForStation) >= count{
 		busForStation = busForStation[0:2]
 	}
 
 	if busForTerminal == nil {
 		busForTerminal = []Departure{}
-	} else if len(busForTerminal) >= 2{
-		busForTerminal = busForTerminal[0:2]
+	} else if len(busForTerminal) >= count{
+		busForTerminal = busForTerminal[0:count]
 	}
 	return busForStation, busForTerminal
 }

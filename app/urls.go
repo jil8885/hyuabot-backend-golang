@@ -24,7 +24,7 @@ func GetShuttleDeparture(c *fiber.Ctx) error {
 	busStopList := [5]string{"Residence", "Shuttlecock_O", "Subway", "Terminal", "Shuttlecock_I"}
 	response := map[string]ShuttleDepartureByStop{}
 	for _, item := range busStopList{
-		busForStation, busForTerminal := shuttle.GetShuttle(item, now, loc)
+		busForStation, busForTerminal := shuttle.GetShuttle(item, now, loc, 2)
 		response[item] = ShuttleDepartureByStop{BusForStation: busForStation, BusForTerminal: busForTerminal}
 	}
 	return c.JSON(response)
@@ -35,7 +35,7 @@ func GetShuttleDepartureByStop(c *fiber.Ctx) error {
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
 
-	busForStation, busForTerminal := shuttle.GetShuttle(parseShuttleStop(c), now, loc)
+	busForStation, busForTerminal := shuttle.GetShuttle(parseShuttleStop(c), now, loc, 2)
 	response := ShuttleDepartureByStop{BusForStation: busForStation, BusForTerminal: busForTerminal}
 	return c.JSON(response)
 }
