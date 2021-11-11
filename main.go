@@ -17,6 +17,7 @@ func main()  {
 	// 카카오 i 라우트
 	kakaoUrl := server.Group("/kakao", kakao.Middleware)
 	kakaoUrl.Post("/shuttle", kakao.Shuttle)
+	kakaoUrl.Post("/shuttle/all", kakao.GetAllShuttle)
 	kakaoUrl.Post("/shuttle/by-stop", kakao.ShuttleStop)
 	kakaoUrl.Post("/subway", kakao.Subway)
 	kakaoUrl.Post("/bus", kakao.Bus)

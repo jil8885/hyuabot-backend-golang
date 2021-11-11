@@ -18,6 +18,121 @@ func Middleware(c *fiber.Ctx) error {
 	return c.Next()
 }
 
+// 카카오 i 셔틀 도착 전체 정보 제공
+func GetAllShuttle(c *fiber.Ctx) error{
+	message := parseAnswer(c)
+	// 사용자 메세지에서 셔틀버스 정보 추출
+	stopName := [5]string{"Residence", "Shuttlecock_O", "Subway", "Terminal", "Shuttlecock_I"}
+	var cardList []TextCard
+	// 현재 시간 로딩 (KST)
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+
+	for _, busStop := range stopName{
+		busForStation, busForTerminal := shuttle.GetShuttle(busStop, now, loc)
+		message = ""
+		title := ""
+		switch busStop {
+			case "Residence":
+				title = "기숙사"
+				message += "기숙사→한대앞\n"
+				if len(busForStation) > 0{
+					for _, item := range busForStation{
+						message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
+					}
+					message += "\n"
+				} else {
+					message += "운행 종료\n\n"
+				}
+
+				message += "기숙사→예술인\n"
+				if len(busForTerminal) > 0{
+					for _, item := range busForTerminal{
+						message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
+					}
+					message += "\n"
+				} else {
+					message += "운행 종료\n\n"
+				}
+				message += "기숙사 출발 버스는 셔틀콕을 경유합니다.\n"
+			case "Shuttlecock_O":
+				title = "셔틀콕"
+				message += "셔틀콕→한대앞\n"
+				if len(busForStation) > 0{
+					for _, item := range busForStation{
+						message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
+					}
+					message += "\n"
+				} else {
+					message += "운행 종료\n\n"
+				}
+
+				message += "셔틀콕→예술인\n"
+				if len(busForTerminal) > 0{
+					for _, item := range busForTerminal{
+						message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
+					}
+					message += "\n"
+				} else {
+					message += "운행 종료\n\n"
+				}
+				message += "한대앞 방면은 순환, 직행 중 앞에 오는 것이 빠릅니다.\n"
+			case "Subway":
+				title = "한대앞역"
+				message += "한대앞→셔틀콕,기숙사\n"
+				if len(busForStation) > 0{
+					for _, item := range busForStation{
+						message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
+					}
+					message += "\n"
+				} else {
+					message += "운행 종료\n\n"
+				}
+
+				message += "한대앞→예술인\n"
+				if len(busForTerminal) > 0{
+					for _, item := range busForTerminal{
+						message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
+					}
+					message += "\n"
+				} else {
+					message += "운행 종료\n\n"
+				}
+
+				message += "캠퍼스 방면은 순환, 직행 중 앞에 오는 것이 빠릅니다.\n"
+			case "Terminal":
+				title = "예술인"
+				message += "예술인→셔틀콕,기숙사\n"
+				if len(busForTerminal) > 0{
+					for _, item := range busForTerminal{
+						message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
+					}
+					message += "\n"
+				} else {
+					message += "운행 종료\n\n"
+				}
+			case "Shuttlecock_I":
+				title = "셔틀콕 건너편"
+				message += "셔틀콕 건너편→기숙사\n"
+				if len(busForTerminal) > 0{
+					for _, item := range busForTerminal{
+						message += strings.Replace(item.Time, ":", "시 ", 1) + "분 출발(" + strings.Replace(strings.Replace(item.Heading, "C", "순환", 1), "DH", "직행", 1) + ")\n"
+					}
+					message += "\n"
+				} else {
+					message += "운행 종료\n\n"
+				}
+				message += "일부 차량 기숙사 종착\n"
+		}
+		cardList = append(cardList, TextCard{
+			Title: title, Description: strings.TrimSpace(message), Buttons: []CardButton{},
+		})
+	}
+
+	response := setResponse(setTemplate([]Components{setBasicCardCarousel(cardList)}, []QuickReply{}))
+	return c.JSON(response)
+}
+
 // 카카오 i 셔틀 도착 정보 제공
 func Shuttle(c *fiber.Ctx) error {
 	message := parseAnswer(c)
