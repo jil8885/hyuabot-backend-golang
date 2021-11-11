@@ -16,6 +16,6 @@ func setBasicCard(title string, message string, buttons []CardButton) TextCard {
 	return TextCard{Title: title, Description: message, Buttons: buttons}
 }
 
-func setBasicCardCarousel(cards []TextCard) Carousel {
-	return Carousel{Type: "basicCard", Items: cards}
+func setBasicCardCarousel(cards []TextCard) CarouselResponse {
+	return CarouselResponse{Carousel: Carousel{Type: "basicCard", Items: cards}}
 }

@@ -44,11 +44,14 @@ type TextCard struct {
 	Buttons []CardButton `json:"buttons"`
 }
 
+type CarouselResponse struct {
+	Carousel Carousel `json:"carousel"`
+}
+
 type Carousel struct {
 	Type  string     `json:"type"`
 	Items []TextCard `json:"items"`
 }
-
 
 // Quick Reply Template
 type QuickReply struct {
