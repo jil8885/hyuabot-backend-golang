@@ -598,7 +598,12 @@ func Food(c *fiber.Ctx) error {
 		return c.JSON(response)
 	} else{
 		var cardList []TextCard
-		queryResult := food.GetFoodMenuByName(strings.TrimSuffix(message, "의 식단입니다."))
+		var queryResult food.Restaurant
+		if strings.Contains(message, "의 식단입니다."){
+			queryResult = food.GetFoodMenuByName(strings.TrimSuffix(message, "의 식단입니다."))
+		} else {
+			queryResult = food.GetFoodMenuByName(message)
+		}
 		typeList := [5]string{"조식", "중식", "석식", "중식/석식", "분식"}
 		for _, item := range typeList {
 			answer = ""
