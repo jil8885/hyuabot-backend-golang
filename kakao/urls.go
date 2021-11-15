@@ -570,10 +570,14 @@ func Food(c *fiber.Ctx) error {
 		for _, item := range food.GetRestaurantNames(){
 			quickReplies = append(quickReplies, QuickReply{Action: "block", Label: item, MessageText: item + "의 식단입니다.", BlockID: blockID})
 		}
+		response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, quickReplies))
+		return c.JSON(response)
 	} else{
+		var cardList []TextCard
 		queryResult := food.GetFoodMenuByName(strings.TrimSuffix(message, "의 식단입니다."))
 		typeList := [5]string{"조식", "중식", "석식", "중식/석식", "분식"}
 		for _, item := range typeList {
+			answer = ""
 			menuList, contains := queryResult.MenuList[item]
 			if contains{
 				answer += item + "\n"
@@ -581,11 +585,15 @@ func Food(c *fiber.Ctx) error {
 					answer += menuItem.Menu +"\n" + menuItem.Price +"원\n\n"
 				}
 			}
+			cardList = append(cardList, TextCard{
+				Title:       item,
+				Description: answer,
+				Buttons:     []CardButton{},
+			})
 		}
+		response := setResponse(setTemplate([]Components{setBasicCardCarousel(cardList)}, []QuickReply{}))
+		return c.JSON(response)
 	}
-
-	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, quickReplies))
-	return c.JSON(response)
 }
 
 // 카카오 i 열람실 정보 제공
