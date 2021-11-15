@@ -353,6 +353,21 @@ func ShuttleStop(c *fiber.Ctx) error {
 
 // Subway 카카오 i 전철 도착 정보 제공
 func Subway(c *fiber.Ctx) error {
+	if common.GetPrimaryServer() != ""{
+		var cache ServerResponse
+		url := common.GetPrimaryServer() + "/kakao/subway"
+		// API 서버 데이터
+		model := new(UserMessage)
+		if err := c.BodyParser(model); err == nil{
+			modelBytes, _ := json.Marshal(model)
+			buff := bytes.NewBuffer(modelBytes)
+			response, _ := http.Post(url, "application/json", buff)
+			body, _ := ioutil.ReadAll(response.Body)
+			err := json.Unmarshal(body, &cache)
+			if err == nil{
+				return c.JSON(cache)
+			}}
+	}
 	realtimeResult := subway.GetRealtimeSubway(0, 1004)
 	message := ""
 
