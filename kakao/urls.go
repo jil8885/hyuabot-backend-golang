@@ -598,33 +598,29 @@ func Food(c *fiber.Ctx) error {
 
 // 카카오 i 열람실 정보 제공
 func Library(c *fiber.Ctx) error {
-	message := parseAnswer(c)
 	answer := ""
-
-	if message == "열람실" {
-		var quickReplies []QuickReply
-		answer += "학술정보관 잔여 좌석\n\n"
-		queryResult := library.GetLibrary()
-		if len(queryResult) > 0{
-			for _, item := range queryResult{
-				answer += item.Name + " "
-				if item.IsReservable{
-					answer += strconv.Itoa(item.Available) + "/" + strconv.Itoa(item.ActiveTotal)
-					quickReplies = append(quickReplies, QuickReply{Action: "block", Label: "📖 " + item.Name, MessageText: item.Name + "의 좌석정보입니다.", BlockID: "5e0df82cffa74800014bc838"})
-				} else {
-					answer += "예약 불가\n"
-				}
+	queryResult := library.GetLibrary()
+	if len(queryResult) > 0{
+		var cardList []TextCard
+		for _, item := range queryResult{
+			answer = ""
+			if item.IsReservable{
+				answer += "총 좌석 : " + strconv.Itoa(item.ActiveTotal) + "석\n"
+				answer += "사용중 : " + strconv.Itoa(item.Occupied) + "석\n"
+				answer += "잔여 좌석 : " + strconv.Itoa(item.Available) + "석"
+			} else {
+				answer = "예약 불가\n"
 			}
-		} else {
-			answer += "Google Firebase 서버 에러\n"
+			cardList = append(cardList, TextCard{
+				Title:       item.Name,
+				Description: answer,
+				Buttons:     []CardButton{},
+			})
 		}
-		response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, quickReplies))
+		response := setResponse(setTemplate([]Components{setBasicCardCarousel(cardList)}, []QuickReply{}))
 		return c.JSON(response)
 	} else {
-		item := library.GetLibraryByName(strings.TrimSuffix(message, "의 좌석정보입니다."))
-		answer += item.Name + "\n\n"
-		answer += "총 " + strconv.Itoa(item.ActiveTotal) + "석\n"
-		answer += "예약 가능 " + strconv.Itoa(item.Available) + "석\n"
+		answer += "Google Firebase 서버 에러\n"
 		response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(answer))}, []QuickReply{}))
 		return c.JSON(response)
 	}
