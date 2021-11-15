@@ -2,6 +2,7 @@ package subway
 
 import (
 	"encoding/json"
+	"github.com/bxcodec/httpcache"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -33,6 +34,11 @@ func GetRealtimeSubway(campus int, lineID int) RealtimeDataResult {
 	// API 서버 데이터 요청
 	result := RealtimeDataResult{[]RealtimeDataItem{}, []RealtimeDataItem{}}
 	client := http.Client{Timeout: 3*time.Second}
+	_, err := httpcache.NewWithInmemoryCache(&client, true, time.Second * 60)
+	if err != nil {
+		return result
+	}
+
 	response, err := client.Get(url)
 	var apiResult RealtimeAPIResult
 	var remainedTime float64
