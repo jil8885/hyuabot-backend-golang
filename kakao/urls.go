@@ -449,8 +449,11 @@ func Bus(c *fiber.Ctx) error {
 	}
 
 	message += "실시간 도착 정보\n"
+	contains := false
+
 	for _, lineItem := range guestHouseRealtime.MsgBody.BusArrivalList{
 		if lineItem.RouteID == 216000061 {
+			contains = true
 			if lineItem.PredictTime1 > 0{
 				message += strconv.Itoa(lineItem.LocationNo1) + " 전/" + strconv.Itoa(lineItem.PredictTime1) + "분 후 도착(" + strconv.Itoa(lineItem.RemainSeatCnt1) + "석)\n"
 				if lineItem.PredictTime2 > 0{
@@ -461,6 +464,9 @@ func Bus(c *fiber.Ctx) error {
 			}
 		}
 		break
+	}
+	if !contains{
+		message += "출발지 대기\n"
 	}
 
 	message += "\n시점(새솔고) 출발 시간표\n"
@@ -484,8 +490,10 @@ func Bus(c *fiber.Ctx) error {
 	})
 	
 	message = "실시간 도착 정보\n"
+	contains = false
 	for _, lineItem := range guestHouseRealtime.MsgBody.BusArrivalList{
 		if lineItem.RouteID == 216000068 {
+			contains = true
 			if lineItem.PredictTime1 > 0{
 				message += strconv.Itoa(lineItem.LocationNo1) + " 전/" + strconv.Itoa(lineItem.PredictTime1) + "분 후 도착\n"
 				if lineItem.PredictTime2 > 0{
@@ -496,6 +504,9 @@ func Bus(c *fiber.Ctx) error {
 			}
 		}
 		break
+	}
+	if !contains{
+		message += "출발지 대기\n"
 	}
 
 	timetableCount = 0
