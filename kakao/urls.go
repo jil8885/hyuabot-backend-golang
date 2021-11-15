@@ -1,12 +1,17 @@
 package kakao
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jil8885/hyuabot-backend-golang/bus"
+	"github.com/jil8885/hyuabot-backend-golang/common"
 	"github.com/jil8885/hyuabot-backend-golang/food"
 	"github.com/jil8885/hyuabot-backend-golang/library"
 	"github.com/jil8885/hyuabot-backend-golang/shuttle"
 	"github.com/jil8885/hyuabot-backend-golang/subway"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -20,6 +25,21 @@ func Middleware(c *fiber.Ctx) error {
 
 // 카카오 i 셔틀 도착 전체 정보 제공
 func GetAllShuttle(c *fiber.Ctx) error{
+	if common.GetPrimaryServer() != ""{
+		var cache ServerResponse
+		url := common.GetPrimaryServer() + "/kakao/shuttle/all"
+		// API 서버 데이터
+		model := new(UserMessage)
+		if err := c.BodyParser(model); err == nil{
+			modelBytes, _ := json.Marshal(model)
+			buff := bytes.NewBuffer(modelBytes)
+			response, _ := http.Post(url, "application/json", buff)
+			body, _ := ioutil.ReadAll(response.Body)
+			err := json.Unmarshal(body, &cache)
+			if err == nil{
+				return c.JSON(cache)
+			}}
+	}
 	message := parseAnswer(c)
 	// 사용자 메세지에서 셔틀버스 정보 추출
 	stopName := [5]string{"Residence", "Shuttlecock_O", "Subway", "Terminal", "Shuttlecock_I"}
