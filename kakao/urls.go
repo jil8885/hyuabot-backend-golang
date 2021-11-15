@@ -636,7 +636,7 @@ func Library(c *fiber.Ctx) error {
 		var cardList []TextCard
 		for _, item := range queryResult{
 			answer = ""
-			if item.IsReservable{
+			if item.IsActive{
 				answer += "총 좌석 : " + strconv.Itoa(item.ActiveTotal) + "석\n"
 				answer += "사용중 : " + strconv.Itoa(item.Occupied) + "석\n"
 				answer += "잔여 좌석 : " + strconv.Itoa(item.Available) + "석"
