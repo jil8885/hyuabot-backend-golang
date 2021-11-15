@@ -438,59 +438,52 @@ func Bus(c *fiber.Ctx) error {
 	now := time.Now().In(loc)
 
 	// 3102 실시간 + 시간표
-	realtimeCount := 0
 	for _, lineItem := range guestHouseRealtime.MsgBody.BusArrivalList{
 		if lineItem.RouteID == 216000061 {
 			if lineItem.PredictTime1 > 0{
 				message += strconv.Itoa(lineItem.LocationNo1) + " 전/" + strconv.Itoa(lineItem.PredictTime1) + "분 후 도착(" + strconv.Itoa(lineItem.RemainSeatCnt1) + "석)\n"
-				realtimeCount = 1
 				if lineItem.PredictTime2 > 0{
 					message += strconv.Itoa(lineItem.LocationNo2) + " 전/" + strconv.Itoa(lineItem.PredictTime2) + "분 후 도착(" + strconv.Itoa(lineItem.RemainSeatCnt2) + "석)\n"
-					realtimeCount = 2
 				}
 			}
 		}
 		break
 	}
 
+	message += "\n시점(새솔고) 출발 시간표\n"
 	timetableCount := 0
-	if realtimeCount < 2{
-		var lineTimeTable []bus.BusTimeTableItem
-		if now.Weekday() == 0 {
-			lineTimeTable = timetable.Line3102.Sun
-		} else if now.Weekday() == 6 {
-			lineTimeTable = timetable.Line3102.Sat
-		} else {
-			lineTimeTable = timetable.Line3102.Weekdays
-		}
+	var lineTimeTable []bus.BusTimeTableItem
+	if now.Weekday() == 0 {
+		lineTimeTable = timetable.Line3102.Sun
+	} else if now.Weekday() == 6 {
+		lineTimeTable = timetable.Line3102.Sat
+	} else {
+		lineTimeTable = timetable.Line3102.Weekdays
+	}
 
-		for _, item := range  lineTimeTable{
-			if compareTimetable(item.Time, now){
-				message += "종점 "+ strings.ReplaceAll(item.Time, ":", "시 ") +"분 출발\n"
-				timetableCount += 1
-			}
-			if timetableCount >= 2 - realtimeCount{
-				break
-			}
+	for _, item := range  lineTimeTable{
+		if compareTimetable(item.Time, now){
+			message += strings.ReplaceAll(item.Time, ":", "시 ") +"분 출발\n"
+			timetableCount += 1
+		}
+		if timetableCount >= 5{
+			break
 		}
 	}
 
 	cardList = append(cardList, TextCard{
-		Title:       "3102번(한양대 게스트하우스)",
+		Title:       "3102번(게스트하우스➔강남역)",
 		Description: message,
 		Buttons:     []CardButton{},
 	})
 	
 	message = ""
-	realtimeCount = 0
 	for _, lineItem := range guestHouseRealtime.MsgBody.BusArrivalList{
 		if lineItem.RouteID == 216000068 {
 			if lineItem.PredictTime1 > 0{
 				message += strconv.Itoa(lineItem.LocationNo1) + " 전/" + strconv.Itoa(lineItem.PredictTime1) + "분 후 도착\n"
-				realtimeCount = 1
 				if lineItem.PredictTime2 > 0{
 					message += strconv.Itoa(lineItem.LocationNo2) + " 전/" + strconv.Itoa(lineItem.PredictTime2) + "분 후 도착\n"
-					realtimeCount = 2
 				}
 			}
 		}
@@ -498,28 +491,27 @@ func Bus(c *fiber.Ctx) error {
 	}
 
 	timetableCount = 0
-	if realtimeCount < 2{
-		var lineTimeTable []bus.BusTimeTableItem
-		if now.Weekday() == 0 {
-			lineTimeTable = timetable.Line10_1.Sun
-		} else if now.Weekday() == 6 {
-			lineTimeTable = timetable.Line10_1.Sat
-		} else {
-			lineTimeTable = timetable.Line10_1.Weekdays
-		}
+	message += "\n시점(푸르지오6차후문) 출발 시간표\n"
+	if now.Weekday() == 0 {
+		lineTimeTable = timetable.Line10_1.Sun
+	} else if now.Weekday() == 6 {
+		lineTimeTable = timetable.Line10_1.Sat
+	} else {
+		lineTimeTable = timetable.Line10_1.Weekdays
+	}
 
-		for _, item := range  lineTimeTable{
-			if compareTimetable(item.Time, now){
-				message += "종점 "+ strings.ReplaceAll(item.Time, ":", "시 ") +"분 출발\n"
-				timetableCount += 1
-			}
-			if timetableCount >= 2 - realtimeCount{
-				break
-			}
+	for _, item := range  lineTimeTable{
+		if compareTimetable(item.Time, now){
+			message += strings.ReplaceAll(item.Time, ":", "시 ") +"분 출발\n"
+			timetableCount += 1
+		}
+		if timetableCount >= 5{
+			break
 		}
 	}
+
 	cardList = append(cardList, TextCard{
-		Title:       "10-1번(게스트하우스)",
+		Title:       "10-1번(게스트하우스➔상록수역)",
 		Description: message,
 		Buttons:     []CardButton{},
 	})
@@ -529,28 +521,28 @@ func Bus(c *fiber.Ctx) error {
 		message += strconv.Itoa(departureItem.Location) + " 전/" + strconv.Itoa(departureItem.RemainedTime) + "분 후 도착(" + strconv.Itoa(departureItem.RemainedSeat) + "석)\n"
 	}
 	timetableCount = 0
-	if len(line707Realtime) < 2{
-		var lineTimeTable []bus.BusTimeTableItem
-		if now.Weekday() == 0 {
-			lineTimeTable = timetable.Line707_1.Sun
-		} else if now.Weekday() == 6 {
-			lineTimeTable = timetable.Line707_1.Sat
-		} else {
-			lineTimeTable = timetable.Line707_1.Weekdays
-		}
+	message += "\n시점(신안산대) 출발 시간표\n"
 
-		for _, item := range  lineTimeTable{
-			if compareTimetable(item.Time, now){
-				message += "종점 "+ strings.ReplaceAll(item.Time, ":", "시 ") +"분 출발\n"
-				timetableCount += 1
-			}
-			if timetableCount >= 2 - len(line707Realtime){
-				break
-			}
+	if now.Weekday() == 0 {
+		lineTimeTable = timetable.Line707_1.Sun
+	} else if now.Weekday() == 6 {
+		lineTimeTable = timetable.Line707_1.Sat
+	} else {
+		lineTimeTable = timetable.Line707_1.Weekdays
+	}
+
+	for _, item := range  lineTimeTable{
+		if compareTimetable(item.Time, now){
+			message += strings.ReplaceAll(item.Time, ":", "시 ") +"분 출발\n"
+			timetableCount += 1
+		}
+		if timetableCount >= 5{
+			break
 		}
 	}
+
 	cardList = append(cardList, TextCard{
-		Title:       "707-1번(한양대정문)",
+		Title:       "707-1번(한양대정문➔수원역)",
 		Description: message,
 		Buttons:     []CardButton{},
 	})
