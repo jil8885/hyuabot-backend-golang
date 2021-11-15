@@ -585,11 +585,14 @@ func Food(c *fiber.Ctx) error {
 					answer += menuItem.Menu +"\n" + menuItem.Price +"원\n\n"
 				}
 			}
-			cardList = append(cardList, TextCard{
-				Title:       item,
-				Description: answer,
-				Buttons:     []CardButton{},
-			})
+
+			if answer != ""{
+				cardList = append(cardList, TextCard{
+					Title:       item,
+					Description: answer,
+					Buttons:     []CardButton{},
+				})
+			}
 		}
 		response := setResponse(setTemplate([]Components{setBasicCardCarousel(cardList)}, []QuickReply{}))
 		return c.JSON(response)
