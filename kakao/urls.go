@@ -413,8 +413,26 @@ func Subway(c *fiber.Ctx) error {
 
 // 카카오 i 버스 도착 정보 제공
 func Bus(c *fiber.Ctx) error {
+	if common.GetPrimaryServer() != ""{
+		var cache ServerResponse
+		url := common.GetPrimaryServer() + "/kakao/bus"
+		// API 서버 데이터
+		model := new(UserMessage)
+		if err := c.BodyParser(model); err == nil{
+			modelBytes, _ := json.Marshal(model)
+			buff := bytes.NewBuffer(modelBytes)
+			response, _ := http.Post(url, "application/json", buff)
+			body, _ := ioutil.ReadAll(response.Body)
+			err := json.Unmarshal(body, &cache)
+			if err == nil{
+				return c.JSON(cache)
+			}}
+	}
+
+	var cardList []TextCard
+
 	line707Realtime, guestHouseRealtime, timetable := bus.GetBusDepartureInfo()
-	message := "3102번(게스트하우스)\n"
+	message := ""
 
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
@@ -457,7 +475,13 @@ func Bus(c *fiber.Ctx) error {
 		}
 	}
 
-	message += "\n10-1번(게스트하우스)\n"
+	cardList = append(cardList, TextCard{
+		Title:       "3102번(한양대 게스트하우스)",
+		Description: message,
+		Buttons:     []CardButton{},
+	})
+	
+	message = ""
 	realtimeCount = 0
 	for _, lineItem := range guestHouseRealtime.MsgBody.BusArrivalList{
 		if lineItem.RouteID == 216000068 {
@@ -494,8 +518,13 @@ func Bus(c *fiber.Ctx) error {
 			}
 		}
 	}
+	cardList = append(cardList, TextCard{
+		Title:       "10-1번(게스트하우스)",
+		Description: message,
+		Buttons:     []CardButton{},
+	})
 
-	message += "\n707-1번(한양대정문)\n"
+	message = ""
 	for _, departureItem := range line707Realtime{
 		message += strconv.Itoa(departureItem.Location) + " 전/" + strconv.Itoa(departureItem.RemainedTime) + "분 후 도착(" + strconv.Itoa(departureItem.RemainedSeat) + "석)\n"
 	}
@@ -520,7 +549,12 @@ func Bus(c *fiber.Ctx) error {
 			}
 		}
 	}
-	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(message))}, []QuickReply{}))
+	cardList = append(cardList, TextCard{
+		Title:       "707-1번(한양대정문)",
+		Description: message,
+		Buttons:     []CardButton{},
+	})
+	response := setResponse(setTemplate([]Components{setBasicCardCarousel(cardList)}, []QuickReply{}))
 	return c.JSON(response)
 }
 
