@@ -369,34 +369,44 @@ func Subway(c *fiber.Ctx) error {
 			}}
 	}
 	realtimeResult := subway.GetRealtimeSubway(0, 1004)
+
+	var cardList []TextCard
 	message := ""
 
 	if realtimeResult.UpLine == nil{
-		message += "4호선(상/하행)\nAPI 서버 문제입니다.\n\n"
+		message += "실시간 지하철 API 서버 문제입니다.\n\n"
 	} else {
-		message += "4호선(상행-실시간)\n"
+		message += "서울 방면(실시간)\n"
 		for _, item := range realtimeResult.UpLine{
 			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착\n"
 		}
-		message += "\n4호선(하행-실시간)\n"
+		message += "\n오이도 방면(실시간)\n"
 		for _, item := range realtimeResult.DownLine{
 			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime)) + "분 후 도착\n"
 		}
 	}
-
+	cardList = append(cardList, TextCard{
+		Title:       "4호선(한대앞역)",
+		Description: strings.TrimSpace(message),
+		Buttons:     []CardButton{},
+	})
 	timetableResult := subway.GetTimetableSubway()
 	
-	message += "\n수인분당선(상행-시간표)\n"
+	message = "수원 방면(시간표)\n"
 	for _, item := range timetableResult.UpLine{
 		slice := strings.Split(item.Time, ":")
 		message += item.TerminalStation + "행 " + slice[0] + "시 " + slice[1] + "분 도착\n"
 	}
-	message += "\n수인분당선(하행-시간표)\n"
+	message += "\n인천 방면(시간표)\n"
 	for _, item := range timetableResult.DownLine{
 		slice := strings.Split(item.Time, ":")
 		message += item.TerminalStation + "행 " + slice[0] + "시 " + slice[1] + "분 도착\n"
 	}
-
+	cardList = append(cardList, TextCard{
+		Title:       "수인분당선(한대앞역)",
+		Description: strings.TrimSpace(message),
+		Buttons:     []CardButton{},
+	})
 	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(message))}, []QuickReply{}))
 	return c.JSON(response)
 }
