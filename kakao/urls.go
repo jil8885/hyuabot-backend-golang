@@ -407,7 +407,7 @@ func Subway(c *fiber.Ctx) error {
 		Description: strings.TrimSpace(message),
 		Buttons:     []CardButton{},
 	})
-	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(message))}, []QuickReply{}))
+	response := setResponse(setTemplate([]Components{setBasicCardCarousel(cardList)}, []QuickReply{}))
 	return c.JSON(response)
 }
 
