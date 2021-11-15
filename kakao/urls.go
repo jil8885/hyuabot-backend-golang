@@ -373,7 +373,7 @@ func Subway(c *fiber.Ctx) error {
 	var cardList []TextCard
 	message := ""
 
-	if realtimeResult.UpLine == nil{
+	if realtimeResult.UpLine == nil || (len(realtimeResult.UpLine) == 0 && len(realtimeResult.DownLine) == 0){
 		message += "실시간 지하철 API 서버 문제입니다.\n\n"
 	} else {
 		message += "서울 방면(실시간)\n"
