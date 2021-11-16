@@ -160,7 +160,7 @@ func GetAllShuttle(c *fiber.Ctx) error{
 	quickReplies = append(quickReplies, QuickReply{Action: "block", Label: "🏫 셔틀콕", MessageText: "🏫 셔틀콕", BlockID: "619305b2c820c737f2dd96dd"})
 	quickReplies = append(quickReplies, QuickReply{Action: "block", Label: "🏘️ 기숙사", MessageText: "🏘️ 기숙사", BlockID: "619305b2c820c737f2dd96dd"})
 
-	response := setResponse(setTemplate([]Components{setBasicCardCarousel(cardList)}, []QuickReply{}))
+	response := setResponse(setTemplate([]Components{setBasicCardCarousel(cardList)}, quickReplies))
 	return c.JSON(response)
 }
 
