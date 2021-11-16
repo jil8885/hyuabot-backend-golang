@@ -73,7 +73,7 @@ func GetRealtimeSubway(campus int, lineID int) RealtimeDataResult {
 			return
 		}
 	}(client)
-	return RealtimeDataResult{}
+	return result
 }
 
 func FetchSubwayRealtime(campus int, lineID int)  {
