@@ -4,10 +4,11 @@ import "time"
 
 // 전철 도착 정보
 type RealtimeDataItem struct {
-	TerminalStation string `json:"endStn"`
-	Position string `json:"pos"`
-	RemainedTime float64 `json:"time"`
-	Status string `json:"status"`
+	UpdatedTime time.Time `firestore:"updatedTime"`
+	TerminalStation string `firestore:"terminalStation"`
+	Position string `firestore:"position"`
+	RemainedTime float64 `firestore:"remainedTime"`
+	Status string `firestore:"status"`
 }
 
 
@@ -34,6 +35,7 @@ type RealtimeAPIError struct {
 }
 
 type RealtimeAPIItem struct {
+	UpdatedTime string `json:"recptnDt"`
 	LineID string `json:"subwayId"`
 	UpDown string `json:"updnLine"`
 	TerminalStation string `json:"bstatnNm"`
