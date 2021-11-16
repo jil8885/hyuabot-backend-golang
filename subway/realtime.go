@@ -163,15 +163,13 @@ func FetchSubwayRealtime(campus int, lineID int)  {
 					return err
 				}
 			} else {
-				for _, item := range result.UpLine{
 					_, err = collection.Doc(strconv.Itoa(i)).Set(ctx, map[string]interface{}{
-						"updatedTime": item.UpdatedTime,
-						"terminalStation": item.TerminalStation,
-						"position": item.Position,
-						"remainedTime": item.RemainedTime,
-						"status": item.Status,
-					}, firestore.MergeAll)
-				}
+					"updatedTime": result.UpLine[i].UpdatedTime,
+					"terminalStation": result.UpLine[i].TerminalStation,
+					"position": result.UpLine[i].Position,
+					"remainedTime": result.UpLine[i].RemainedTime,
+					"status": result.UpLine[i].Status,
+				}, firestore.MergeAll)
 			}
 		}
 
@@ -183,15 +181,13 @@ func FetchSubwayRealtime(campus int, lineID int)  {
 					return err
 				}
 			} else {
-				for _, item := range result.DownLine{
-					_, err = collection.Doc(strconv.Itoa(i)).Set(ctx, map[string]interface{}{
-						"updatedTime": item.UpdatedTime,
-						"terminalStation": item.TerminalStation,
-						"position": item.Position,
-						"remainedTime": item.RemainedTime,
-						"status": item.Status,
-					}, firestore.MergeAll)
-				}
+				_, err = collection.Doc(strconv.Itoa(i)).Set(ctx, map[string]interface{}{
+					"updatedTime": result.DownLine[i].UpdatedTime,
+					"terminalStation": result.DownLine[i].TerminalStation,
+					"position": result.DownLine[i].Position,
+					"remainedTime": result.DownLine[i].RemainedTime,
+					"status": result.DownLine[i].Status,
+				}, firestore.MergeAll)
 			}
 		}
 		return err
