@@ -153,6 +153,13 @@ func GetAllShuttle(c *fiber.Ctx) error{
 		})
 	}
 
+	var quickReplies []QuickReply
+	quickReplies = append(quickReplies, QuickReply{Action: "block", Label: "🏫 셔틀콕 건너편", MessageText: "🏫 셔틀콕 건너편", BlockID: "619305b2c820c737f2dd96dd"})
+	quickReplies = append(quickReplies, QuickReply{Action: "block", Label: "🚍 예술인A", MessageText: "🚍 예술인A", BlockID: "619305b2c820c737f2dd96dd"})
+	quickReplies = append(quickReplies, QuickReply{Action: "block", Label: "🚆 한대앞역", MessageText: "🚆 한대앞역", BlockID: "619305b2c820c737f2dd96dd"})
+	quickReplies = append(quickReplies, QuickReply{Action: "block", Label: "🏫 셔틀콕", MessageText: "🏫 셔틀콕", BlockID: "619305b2c820c737f2dd96dd"})
+	quickReplies = append(quickReplies, QuickReply{Action: "block", Label: "🏘️ 기숙사", MessageText: "🏘️ 기숙사", BlockID: "619305b2c820c737f2dd96dd"})
+
 	response := setResponse(setTemplate([]Components{setBasicCardCarousel(cardList)}, []QuickReply{}))
 	return c.JSON(response)
 }
@@ -280,7 +287,7 @@ func Shuttle(c *fiber.Ctx) error {
 	replies = append(replies, QuickReply{"block", "🚫 오류제보", "셔틀 오류 제보하기", "5cc3fced384c5508fceec5bb"})
 
 	for _, stop := range otherStops{
-		replies = append(replies, QuickReply{"block", stop, stop, "5cc3dc8ee82127558b7e6eba"})
+		replies = append(replies, QuickReply{"block", stop, stop, "619305b2c820c737f2dd96dd"})
 	}
 
 	response := setResponse(setTemplate([]Components{setSimpleText(strings.TrimSpace(message))}, replies))
