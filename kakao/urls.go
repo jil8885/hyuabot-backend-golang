@@ -379,11 +379,15 @@ func Subway(c *fiber.Ctx) error {
 	} else {
 		message += "서울 방면(실시간)\n"
 		for _, item := range realtimeResult.UpLine{
-			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime + now.Sub(item.UpdatedTime).Minutes())) + "분 후 도착\n"
+			if now.Sub(item.UpdatedTime).Minutes() >= 0{
+				message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime + now.Sub(item.UpdatedTime).Minutes())) + "분 후 도착\n"
+			}
 		}
 		message += "\n오이도 방면(실시간)\n"
 		for _, item := range realtimeResult.DownLine{
-			message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime + now.Sub(item.UpdatedTime).Minutes())) + "분 후 도착\n"
+			if now.Sub(item.UpdatedTime).Minutes() >= 0{
+				message += item.TerminalStation + "행 " + strconv.Itoa(int(item.RemainedTime + now.Sub(item.UpdatedTime).Minutes())) + "분 후 도착\n"
+			}
 		}
 	}
 	cardList = append(cardList, TextCard{
