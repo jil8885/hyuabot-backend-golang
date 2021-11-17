@@ -20,6 +20,8 @@ func GetRealtimeSubway(campus int, lineID int) RealtimeDataResult {
 	ctx := context.Background()
 	app, err := firebase.NewApp(ctx, nil)
 
+	loc, _ := time.LoadLocation("Asia/Seoul")
+
 	if err != nil {
 		return RealtimeDataResult{}
 	}
@@ -46,6 +48,7 @@ func GetRealtimeSubway(campus int, lineID int) RealtimeDataResult {
 		if err != nil {
 			continue
 		}
+		realtimeDataItem.UpdatedTime = realtimeDataItem.UpdatedTime.In(loc)
 		result.UpLine = append(result.UpLine, realtimeDataItem)
 	}
 
@@ -63,6 +66,7 @@ func GetRealtimeSubway(campus int, lineID int) RealtimeDataResult {
 		if err != nil {
 			continue
 		}
+		realtimeDataItem.UpdatedTime = realtimeDataItem.UpdatedTime.In(loc)
 		result.DownLine = append(result.DownLine, realtimeDataItem)
 	}
 
