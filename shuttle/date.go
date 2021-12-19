@@ -16,7 +16,7 @@ func GetDate(now time.Time, loc *time.Location) (string, string) {
 	path, _ := os.Getwd()
 	dateJson := path + "/shuttle/timetable/date.json"
 	data, err := os.Open(dateJson)
-	if err != nil{
+	if err != nil {
 		return "", ""
 	}
 	byteValue, _ := ioutil.ReadAll(data)
@@ -24,18 +24,22 @@ func GetDate(now time.Time, loc *time.Location) (string, string) {
 	if err != nil {
 		return "", ""
 	}
-	
+
 	// json 파일을 통해 학기/방학/계절학기 구분
 	correct := -1
 	const layout = "1/2/2006"
-	for index, group := range [][]SectionJson{dateInfo.Semester, dateInfo.Vacation, dateInfo.VacationSession}{
-		for _, item := range group{
+	for index, group := range [][]SectionJson{dateInfo.Semester, dateInfo.Vacation, dateInfo.VacationSession} {
+		for _, item := range group {
 			start, _ := time.Parse(layout, item.StartDate)
 			end, _ := time.Parse(layout, item.EndDate)
 			yearToADD := now.Year() - start.Year()
+			if start.Month() > end.Month() {
+				yearToADD -= 1
+			}
 			start = start.AddDate(yearToADD, 0, 0).In(loc).Add(-9 * time.Duration(time.Hour))
-			end = end.AddDate(yearToADD, 0, 0).In(loc).Add(15 * time.Duration(time.Hour) - 1 * time.Duration(time.Second))
-			if now.After(start) && now.Before(end){
+			end = end.AddDate(yearToADD, 0, 0).In(loc).Add(15*time.Duration(time.Hour) - 1*time.Duration(time.Second))
+
+			if now.After(start) && now.Before(end) {
 				correct = index
 				break
 			}
@@ -60,10 +64,10 @@ func GetDate(now time.Time, loc *time.Location) (string, string) {
 		term = "vacation"
 	}
 
-	if !working{
-		for _, item := range dateInfo.Halt{
+	if !working {
+		for _, item := range dateInfo.Halt {
 			date, _ := time.Parse(layout, item)
-			if now.Month() == date.Month() && now.Day() == date.Day(){
+			if now.Month() == date.Month() && now.Day() == date.Day() {
 				term = "halt"
 				break
 			}
@@ -71,11 +75,11 @@ func GetDate(now time.Time, loc *time.Location) (string, string) {
 	}
 
 	day := "week"
-	if now.Weekday() == 0 || now.Weekday() == 6 || IsHoliday(now){
+	if now.Weekday() == 0 || now.Weekday() == 6 || IsHoliday(now) {
 		day = "weekend"
 	}
 
-	for _, holiday := range dateInfo.Holiday{
+	for _, holiday := range dateInfo.Holiday {
 		date, _ := time.Parse(layout, holiday)
 		yearToADD := now.Year() - date.Year()
 		date = date.AddDate(yearToADD, 0, 0).In(loc).Add(-9 * time.Duration(time.Hour))
@@ -88,11 +92,11 @@ func GetDate(now time.Time, loc *time.Location) (string, string) {
 }
 
 func IsHoliday(time time.Time) bool {
-	lunarHoliday := []*calendar.Calendar{calendar.ByLunar(int64(time.Year()), 4, 8, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 8, 14, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 8, 15, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 8, 16, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()) - 1, 12, 30, 0, 0, 0, false),calendar.ByLunar(int64(time.Year()), 1, 1, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 1, 2, 0, 0, 0, false)}
+	lunarHoliday := []*calendar.Calendar{calendar.ByLunar(int64(time.Year()), 4, 8, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 8, 14, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 8, 15, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 8, 16, 0, 0, 0, false), calendar.ByLunar(int64(time.Year())-1, 12, 30, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 1, 1, 0, 0, 0, false), calendar.ByLunar(int64(time.Year()), 1, 2, 0, 0, 0, false)}
 	boolean := false
-	for _, date := range lunarHoliday{
+	for _, date := range lunarHoliday {
 		solarData := date.Solar
-		if solarData.GetYear() == int64(time.Year()) && solarData.GetMonth() == int64(time.Month()) && solarData.GetDay() == int64(time.Day()){
+		if solarData.GetYear() == int64(time.Year()) && solarData.GetMonth() == int64(time.Month()) && solarData.GetDay() == int64(time.Day()) {
 			boolean = true
 			break
 		}
