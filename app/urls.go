@@ -23,7 +23,7 @@ func GetShuttleDeparture(c *fiber.Ctx) error {
 	now := time.Now().In(loc)
 	busStopList := [5]string{"Residence", "Shuttlecock_O", "Subway", "Terminal", "Shuttlecock_I"}
 	response := map[string]ShuttleDepartureByStop{}
-	for _, item := range busStopList{
+	for _, item := range busStopList {
 		busForStation, busForTerminal := shuttle.GetShuttle(item, now, loc, 2)
 		response[item] = ShuttleDepartureByStop{BusForStation: busForStation, BusForTerminal: busForTerminal}
 	}
@@ -47,8 +47,8 @@ func GetShuttleStopInfoByStop(c *fiber.Ctx) error {
 
 	busStop := parseShuttleStop(c)
 	firstBusForStation, lastBusForStation, firstBusForTerminal, lastBusForTerminal := shuttle.GetFirstLastShuttle(busStop, now, loc)
-	weekBusForStation, weekBusForTerminal := shuttle.GetShuttleTimetable(busStop, now, loc, "week")
-	weekendBusForStation, weekendBusForTerminal := shuttle.GetShuttleTimetable(busStop, now, loc, "weekend")
+	weekBusForStation, weekBusForTerminal := shuttle.GetShuttleTimetable(busStop, now, loc, "week", true)
+	weekendBusForStation, weekendBusForTerminal := shuttle.GetShuttleTimetable(busStop, now, loc, "weekend", true)
 	roadViewMap := map[string]string{"Shuttlecock_I": "http://kko.to/TyWyjU3Yp", "Subway": "http://kko.to/c93C0UFYj", "Residence": "http://kko.to/R-l1jU3DT", "Terminal": "http://kko.to/7mzoYUFY0", "Shuttlecock_O": "http://kko.to/v-3DYI3YM"}
 
 	return c.JSON(ShuttleStop{
@@ -74,11 +74,11 @@ func GetSubwayDeparture(c *fiber.Ctx) error {
 		return c.JSON(SubwayDepartureSeoul{
 			Line2: subway.GetRealtimeSubway(1, 1002),
 		})
-	} else{
+	} else {
 		timetableWeekdaysLine4, timetableWeekendsLine4 := subway.GetTimetableSubwayAll(1004)
 		timetableWeekdaysLineSuin, timetableWeekendsLineSuin := subway.GetTimetableSubwayAll(1071)
 
-		if isWeekends == "weekend" || isHoliday{
+		if isWeekends == "weekend" || isHoliday {
 			return c.JSON(SubwayDepartureERICA{
 				Line4: SubwayDepartureByLine{
 					RealtimeList:  subway.GetRealtimeSubway(0, 1004),
@@ -125,25 +125,25 @@ func GetBusDeparture(c *fiber.Ctx) error {
 			Timetable: bus.BusTimeTableLine{Weekdays: []bus.BusTimeTableItem{}, Sat: []bus.BusTimeTableItem{}, Sun: []bus.BusTimeTableItem{}},
 		},
 	}
-	for _, item := range responseRealtimeByStop.MsgBody.BusArrivalList{
-		if item.PredictTime1 > 0{
-			if item.RouteID == 216000061{
+	for _, item := range responseRealtimeByStop.MsgBody.BusArrivalList {
+		if item.PredictTime1 > 0 {
+			if item.RouteID == 216000061 {
 				response.LineRed.Realtime = append(response.LineRed.Realtime, bus.DepartureItem{
-					Location : item.LocationNo1, RemainedTime: item.PredictTime1, RemainedSeat: item.RemainSeatCnt1,
+					Location: item.LocationNo1, RemainedTime: item.PredictTime1, RemainedSeat: item.RemainSeatCnt1,
 				})
-			} else if item.RouteID == 216000068{
+			} else if item.RouteID == 216000068 {
 				response.LineGreenToStation.Realtime = append(response.LineGreenToStation.Realtime, bus.DepartureItem{
-					Location : item.LocationNo1, RemainedTime: item.PredictTime1, RemainedSeat: item.RemainSeatCnt1,
+					Location: item.LocationNo1, RemainedTime: item.PredictTime1, RemainedSeat: item.RemainSeatCnt1,
 				})
 			}
-			if item.PredictTime2 > 0{
-				if item.RouteID == 216000061{
+			if item.PredictTime2 > 0 {
+				if item.RouteID == 216000061 {
 					response.LineRed.Realtime = append(response.LineRed.Realtime, bus.DepartureItem{
-						Location : item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2,
+						Location: item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2,
 					})
-				} else if item.RouteID == 216000068{
+				} else if item.RouteID == 216000068 {
 					response.LineGreenToStation.Realtime = append(response.LineGreenToStation.Realtime, bus.DepartureItem{
-						Location : item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2,
+						Location: item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2,
 					})
 				}
 			}
@@ -160,18 +160,18 @@ func GetBusDeparture(c *fiber.Ctx) error {
 func GetBusDepartureByLine(c *fiber.Ctx) error {
 	routeID := parseBusRouteID(c)
 	responseTimetable := bus.GetTimetable()
-	if routeID == "10-1"{
+	if routeID == "10-1" {
 		responseRealtimeByStop := bus.GetRealtimeStopDeparture("216000379")
 		var responseRealtime []bus.DepartureItem
-		for _, item := range responseRealtimeByStop.MsgBody.BusArrivalList{
-			if item.RouteID == 216000068{
-				if item.PredictTime1 > 0{
+		for _, item := range responseRealtimeByStop.MsgBody.BusArrivalList {
+			if item.RouteID == 216000068 {
+				if item.PredictTime1 > 0 {
 					responseRealtime = append(responseRealtime, bus.DepartureItem{
-						Location : item.LocationNo1, RemainedTime: item.PredictTime1, RemainedSeat: item.RemainSeatCnt1,
+						Location: item.LocationNo1, RemainedTime: item.PredictTime1, RemainedSeat: item.RemainSeatCnt1,
 					})
-					if item.PredictTime2 > 0{
+					if item.PredictTime2 > 0 {
 						responseRealtime = append(responseRealtime, bus.DepartureItem{
-							Location : item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2,
+							Location: item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2,
 						})
 					}
 				}
@@ -185,15 +185,15 @@ func GetBusDepartureByLine(c *fiber.Ctx) error {
 	} else if routeID == "3102" {
 		responseRealtimeByStop := bus.GetRealtimeStopDeparture("216000379")
 		var responseRealtime []bus.DepartureItem
-		for _, item := range responseRealtimeByStop.MsgBody.BusArrivalList{
-			if item.RouteID == 216000061{
-				if item.PredictTime1 > 0{
+		for _, item := range responseRealtimeByStop.MsgBody.BusArrivalList {
+			if item.RouteID == 216000061 {
+				if item.PredictTime1 > 0 {
 					responseRealtime = append(responseRealtime, bus.DepartureItem{
-						Location : item.LocationNo1, RemainedTime: item.PredictTime1, RemainedSeat: item.RemainSeatCnt1,
+						Location: item.LocationNo1, RemainedTime: item.PredictTime1, RemainedSeat: item.RemainSeatCnt1,
 					})
-					if item.PredictTime2 > 0{
+					if item.PredictTime2 > 0 {
 						responseRealtime = append(responseRealtime, bus.DepartureItem{
-							Location : item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2,
+							Location: item.LocationNo2, RemainedTime: item.PredictTime2, RemainedSeat: item.RemainSeatCnt2,
 						})
 					}
 				}
@@ -204,7 +204,7 @@ func GetBusDepartureByLine(c *fiber.Ctx) error {
 			Realtime:  responseRealtime,
 			Timetable: responseTimetable.Line3102,
 		})
-	} else if routeID == "707-1"{
+	} else if routeID == "707-1" {
 		return c.JSON(BusByRoute{
 			Realtime:  bus.GetRealtimeBusDeparture("216000719", "216000070"),
 			Timetable: responseTimetable.Line707_1,
@@ -216,31 +216,32 @@ func GetBusDepartureByLine(c *fiber.Ctx) error {
 	})
 }
 
-func GetBusTimetableByRoute(c *fiber.Ctx) error  {
+func GetBusTimetableByRoute(c *fiber.Ctx) error {
 	routeID := parseBusRouteID(c)
 	responseTimetable := bus.GetTimetable()
-	if routeID == "10-1"{
+	if routeID == "10-1" {
 		return c.JSON(responseTimetable.Line10_1)
 	} else if routeID == "3102" {
 		return c.JSON(responseTimetable.Line3102)
-	} else if routeID == "707-1"{
+	} else if routeID == "707-1" {
 		return c.JSON(responseTimetable.Line707_1)
 	}
 	return c.JSON(BusByRoute{
 		Realtime:  []bus.DepartureItem{},
 		Timetable: bus.BusTimeTableLine{},
-	})}
+	})
+}
 
-func GetReadingRoomSeatByCampus(c *fiber.Ctx) error{
+func GetReadingRoomSeatByCampus(c *fiber.Ctx) error {
 	campus := strings.ToLower(parseCampus(c)) == "seoul"
 
 	if campus {
 		return c.JSON(ReadingRoomByCampus{OpenedRooms: nil})
-	} else{
+	} else {
 		return c.JSON(ReadingRoomByCampus{OpenedRooms: library.GetLibrary()})
 	}
 }
 
-func GetFoodMenuByCampus(c *fiber.Ctx) error  {
+func GetFoodMenuByCampus(c *fiber.Ctx) error {
 	return c.JSON(food.GetFoodMenuAll())
 }
