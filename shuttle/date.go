@@ -33,12 +33,11 @@ func GetDate(now time.Time, loc *time.Location) (string, string) {
 			start, _ := time.Parse(layout, item.StartDate)
 			end, _ := time.Parse(layout, item.EndDate)
 			yearToADD := now.Year() - start.Year()
-			if start.Month() > end.Month() {
+			if start.Month() > end.Month() && now.Month() <= end.Month() {
 				yearToADD -= 1
 			}
 			start = start.AddDate(yearToADD, 0, 0).In(loc).Add(-9 * time.Duration(time.Hour))
 			end = end.AddDate(yearToADD, 0, 0).In(loc).Add(15*time.Duration(time.Hour) - 1*time.Duration(time.Second))
-
 			if now.After(start) && now.Before(end) {
 				correct = index
 				break
