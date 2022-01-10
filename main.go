@@ -32,7 +32,6 @@ func main() {
 	appUrl.Post("/shuttle/by-stop", app.GetShuttleStopInfoByStopBackport) // Backport
 	appUrl.Get("/subway", app.GetSubwayDepartureWithParams)
 	appUrl.Post("/subway", app.GetSubwayDepartureBackport) // Backport
-	appUrl.Get("/bus", app.GetBusDeparture)
 	appUrl.Get("/bus", app.GetBusDepartureByLineWithParams)
 	appUrl.Post("/bus", app.GetBusDepartureByLineBackport) // Backport
 	appUrl.Get("/bus/timetable", app.GetBusTimetableByRouteWithParams)
