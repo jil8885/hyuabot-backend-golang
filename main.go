@@ -10,7 +10,7 @@ import (
 )
 
 // 실제 서버 실행코드
-func main()  {
+func main() {
 	server := fiber.New()
 	server.Use(logger.New())
 
@@ -27,13 +27,18 @@ func main()  {
 	// 휴아봇 앱 라우트
 	appUrl := server.Group("/app", app.Middleware)
 	appUrl.Get("/shuttle", app.GetShuttleDeparture)
-	appUrl.Post("/shuttle", app.GetShuttleDepartureByStop)
-	appUrl.Post("/shuttle/by-stop", app.GetShuttleStopInfoByStop)
-	appUrl.Post("/subway", app.GetSubwayDeparture)
+	appUrl.Post("/shuttle", app.GetShuttleDepartureByStopBackport) // Backport
+	appUrl.Get("/shuttle/by-stop", app.GetShuttleStopInfoByStopWithParams)
+	appUrl.Post("/shuttle/by-stop", app.GetShuttleStopInfoByStopBackport) // Backport
+	appUrl.Get("/subway", app.GetSubwayDepartureWithParams)
+	appUrl.Post("/subway", app.GetSubwayDepartureBackport) // Backport
 	appUrl.Get("/bus", app.GetBusDeparture)
-	appUrl.Post("/bus", app.GetBusDepartureByLine)
-	appUrl.Post("/bus/timetable", app.GetBusTimetableByRoute)
-	appUrl.Post("/library", app.GetReadingRoomSeatByCampus)
+	appUrl.Get("/bus", app.GetBusDepartureByLineWithParams)
+	appUrl.Post("/bus", app.GetBusDepartureByLineBackport) // Backport
+	appUrl.Get("/bus/timetable", app.GetBusTimetableByRouteWithParams)
+	appUrl.Post("/bus/timetable", app.GetBusTimetableByRouteBackport) // Backport
+	appUrl.Get("/library", app.GetReadingRoomSeatByCampusWithParams)
+	appUrl.Post("/library", app.GetReadingRoomSeatByCampusBackport) // Backport
 	appUrl.Get("/food", app.GetFoodMenuByCampus)
 
 	// 공통 기능 라우트

@@ -8,15 +8,15 @@ import (
 )
 
 type ShuttleStopRequest struct {
-	BusStop string `json:"busStop"`
+	BusStop string `query:"stop" json:"busStop"`
 }
 
 type CampusRequest struct {
-	Campus string `json:"campus"`
+	Campus string `query:"campus" json:"campus"`
 }
 
 type BusRouteRequest struct {
-	Route string `json:"routeID"`
+	Route string `query:"route_id" json:"routeID"`
 }
 
 type ShuttleDepartureByStop struct {
@@ -25,13 +25,13 @@ type ShuttleDepartureByStop struct {
 }
 
 type ShuttleStop struct {
-	RoadViewLink string `json:"roadViewLink"`
-	FirstBusForStation string `json:"firstBusForStation"`
-	LastBusForStation string `json:"lastBusForStation"`
-	FirstBusForTerminal string `json:"firstBusForTerminal"`
-	LastBusForTerminal string `json:"lastBusForTerminal"`
-	Weekdays ShuttleDepartureByStop `json:"weekdays"`
-	Weekends ShuttleDepartureByStop `json:"weekends"`
+	RoadViewLink        string                 `json:"roadViewLink"`
+	FirstBusForStation  string                 `json:"firstBusForStation"`
+	LastBusForStation   string                 `json:"lastBusForStation"`
+	FirstBusForTerminal string                 `json:"firstBusForTerminal"`
+	LastBusForTerminal  string                 `json:"lastBusForTerminal"`
+	Weekdays            ShuttleDepartureByStop `json:"weekdays"`
+	Weekends            ShuttleDepartureByStop `json:"weekends"`
 }
 
 type SubwayDepartureSeoul struct {
@@ -39,24 +39,24 @@ type SubwayDepartureSeoul struct {
 }
 
 type SubwayDepartureByLine struct {
-	RealtimeList subway.RealtimeDataResult `json:"realtime"`
+	RealtimeList  subway.RealtimeDataResult  `json:"realtime"`
 	TimetableList subway.TimetableDataResult `json:"timetable"`
 }
 
 type SubwayDepartureERICA struct {
-	Line4 SubwayDepartureByLine `json:"main"`
+	Line4    SubwayDepartureByLine `json:"main"`
 	LineSuin SubwayDepartureByLine `json:"sub"`
 }
 
 type Bus struct {
-	LineRed BusByRoute `json:"3102"`
-	LineBlue BusByRoute `json:"707-1"`
+	LineRed            BusByRoute `json:"3102"`
+	LineBlue           BusByRoute `json:"707-1"`
 	LineGreenToStation BusByRoute `json:"10-1_station"`
-	LineGreenToCampus BusByRoute `json:"10-1_campus"`
+	LineGreenToCampus  BusByRoute `json:"10-1_campus"`
 }
 
 type BusByRoute struct {
-	Realtime []bus.DepartureItem `json:"realtime"`
+	Realtime  []bus.DepartureItem  `json:"realtime"`
 	Timetable bus.BusTimeTableLine `json:"timetable"`
 }
 
