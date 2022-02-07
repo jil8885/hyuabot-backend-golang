@@ -196,7 +196,7 @@ func GetBusDepartureByLineWithParams(c *fiber.Ctx) error {
 	request := new(BusRouteRequest)
 
 	err := c.QueryParser(request)
-	if err != nil {
+	if err != nil || request.Route == "" {
 		return GetBusDeparture(c)
 	}
 	return GetBusDepartureByLine(c, request.Route)
