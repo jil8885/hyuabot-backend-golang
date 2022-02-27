@@ -33,8 +33,8 @@ func GetShuttle(busStop string, now time.Time, loc *time.Location, count int) ([
 	var timedelta = 0
 
 	for _, item := range departureList {
-		if busStop == "Residence" {
-			timedelta = -15
+		if busStop == "Residence" && item.StartStop == "Dormitory" {
+			timedelta = -5
 			if compareTimetable(item.Time, now, timedelta) {
 				item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 				if item.Heading == "DH" {
@@ -47,7 +47,7 @@ func GetShuttle(busStop string, now time.Time, loc *time.Location, count int) ([
 				}
 			}
 		} else if busStop == "Shuttlecock_O" {
-			timedelta = -10
+			timedelta = 0
 			if compareTimetable(item.Time, now, timedelta) {
 				item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 				if item.Heading == "DH" {
@@ -60,7 +60,7 @@ func GetShuttle(busStop string, now time.Time, loc *time.Location, count int) ([
 				}
 			}
 		} else if busStop == "Subway" {
-			timedelta = 0
+			timedelta = 10
 			if compareTimetable(item.Time, now, timedelta) {
 				item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 				if item.Heading == "DH" {
@@ -71,16 +71,16 @@ func GetShuttle(busStop string, now time.Time, loc *time.Location, count int) ([
 				}
 			}
 		} else if busStop == "Terminal" {
-			timedelta = 5
+			timedelta = 15
 			if compareTimetable(item.Time, now, timedelta) {
 				item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 				if item.Heading == "DY" || item.Heading == "C" {
 					busForTerminal = append(busForTerminal, item)
 				}
 			}
-		} else if busStop == "Shuttlecock_I" {
+		} else if busStop == "Shuttlecock_I" && item.StartStop == "Dormitory" {
 			if item.Heading == "DH" || item.Heading == "DY" {
-				timedelta = 10
+				timedelta = 20
 				if compareTimetable(item.Time, now, timedelta) {
 					item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 					if item.Heading == "DY" || item.Heading == "C" {
@@ -88,7 +88,7 @@ func GetShuttle(busStop string, now time.Time, loc *time.Location, count int) ([
 					}
 				}
 			} else if item.Heading == "C" {
-				timedelta = 15
+				timedelta = 25
 				if compareTimetable(item.Time, now, timedelta) {
 					item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 					if item.Heading == "DY" || item.Heading == "C" {
@@ -140,8 +140,8 @@ func GetShuttleTimetable(busStop string, now time.Time, loc *time.Location, cate
 
 	var timedelta = 0
 	for _, item := range departureList {
-		if busStop == "Residence" {
-			timedelta = -15
+		if busStop == "Residence" && item.StartStop == "Dormitory" {
+			timedelta = -5
 			if compareTimetable(item.Time, now, timedelta) || getAll {
 				item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 				if item.Heading == "DH" {
@@ -154,7 +154,7 @@ func GetShuttleTimetable(busStop string, now time.Time, loc *time.Location, cate
 				}
 			}
 		} else if busStop == "Shuttlecock_O" {
-			timedelta = -10
+			timedelta = 0
 			if compareTimetable(item.Time, now, timedelta) || getAll {
 				item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 				if item.Heading == "DH" {
@@ -167,7 +167,7 @@ func GetShuttleTimetable(busStop string, now time.Time, loc *time.Location, cate
 				}
 			}
 		} else if busStop == "Subway" {
-			timedelta = 0
+			timedelta = 10
 			if compareTimetable(item.Time, now, timedelta) || getAll {
 				item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 				if item.Heading == "DH" {
@@ -178,16 +178,16 @@ func GetShuttleTimetable(busStop string, now time.Time, loc *time.Location, cate
 				}
 			}
 		} else if busStop == "Terminal" {
-			timedelta = 5
+			timedelta = 15
 			if compareTimetable(item.Time, now, timedelta) || getAll {
 				item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 				if item.Heading == "DY" || item.Heading == "C" {
 					busForTerminal = append(busForTerminal, item)
 				}
 			}
-		} else if busStop == "Shuttlecock_I" {
+		} else if busStop == "Shuttlecock_I" && item.StartStop == "Dormitory" {
 			if item.Heading == "DH" || item.Heading == "DY" {
-				timedelta = 10
+				timedelta = 20
 				if compareTimetable(item.Time, now, timedelta) || getAll {
 					item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 					if item.Heading == "DY" || item.Heading == "C" {
@@ -195,7 +195,7 @@ func GetShuttleTimetable(busStop string, now time.Time, loc *time.Location, cate
 					}
 				}
 			} else if item.Heading == "C" {
-				timedelta = 15
+				timedelta = 25
 				if compareTimetable(item.Time, now, timedelta) || getAll {
 					item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 					if item.Heading == "DY" || item.Heading == "C" {
