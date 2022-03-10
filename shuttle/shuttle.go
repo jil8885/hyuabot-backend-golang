@@ -71,7 +71,11 @@ func GetShuttle(busStop string, now time.Time, loc *time.Location, count int) ([
 				}
 			}
 		} else if busStop == "Terminal" {
-			timedelta = 15
+			if item.Heading == "DY" {
+				timedelta = 10
+			} else if item.Heading == "C" {
+				timedelta = 15
+			}
 			if compareTimetable(item.Time, now, timedelta) {
 				item.Time = getTimeFromTimeDelta(item.Time, timedelta)
 				if item.Heading == "DY" || item.Heading == "C" {
