@@ -67,7 +67,7 @@ func CreateRouteStopItem(stopName string, timetableList []shuttle.Timetable) Rou
 }
 
 func CreateTimetable(timetableList []shuttle.Timetable) []string {
-	var timetable []string
+	var timetable = make([]string, 0)
 	for _, timetableItem := range timetableList {
 		timetable = append(timetable, fmt.Sprintf(
 			"%02d:%02d",
