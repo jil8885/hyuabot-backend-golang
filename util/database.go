@@ -15,7 +15,7 @@ type DBInstance struct {
 	Database *gorm.DB
 }
 
-var instance DBInstance
+var DB DBInstance
 
 func ConnectDB() {
 	url := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Seoul",
@@ -30,7 +30,7 @@ func ConnectDB() {
 	}
 	db.Logger = logger.Default.LogMode(logger.Info)
 	shuttle.SetupDatabase(db)
-	instance = DBInstance{Database: db}
+	DB = DBInstance{Database: db}
 }
 
 type Tabler interface {

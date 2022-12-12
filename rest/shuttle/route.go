@@ -1,10 +1,17 @@
 package shuttle
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	model "github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
+	response "github.com/hyuabot-developers/hyuabot-backend-golang/response/shuttle"
+	"github.com/hyuabot-developers/hyuabot-backend-golang/util"
+)
 
 // 셔틀버스 노선 목록 조회
 func GetShuttleRouteList(c *fiber.Ctx) error {
-	return c.SendString("GetShuttleRouteList")
+	var routeList []model.RouteItem
+	util.DB.Database.Model(&model.Route{}).Find(&routeList)
+	return c.JSON(response.CreateRouteListResponse(routeList))
 }
 
 // 셔틀버스 노선 항목 조회
