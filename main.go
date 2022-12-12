@@ -7,9 +7,11 @@ import (
 	"github.com/hyuabot-developers/hyuabot-backend-golang/rest/library"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/rest/shuttle"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/rest/subway"
+	"github.com/hyuabot-developers/hyuabot-backend-golang/util"
 )
 
 func main() {
+	util.ConnectDB()
 	app := fiber.New()
 	// RestAPI Routes
 	rest := app.Group("/rest")
