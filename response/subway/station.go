@@ -26,6 +26,13 @@ type StationItemResponse struct {
 	Timetable   StationTimetableHeadingGroup `json:"timetable"`
 }
 
+type StationArrivalResponse struct {
+	StationID   string                     `json:"stationID"`
+	StationName string                     `json:"stationName"`
+	RouteID     int                        `json:"routeID"`
+	Arrival     StationArrivalHeadingGroup `json:"arrival"`
+}
+
 type StationRealtimeHeadingGroup struct {
 	Up   []StationRealtimeItem `json:"up"`
 	Down []StationRealtimeItem `json:"down"`
@@ -49,6 +56,19 @@ type StationTimetableHeadingGroup struct {
 type StationTimetableItem struct {
 	TerminalStationName string `json:"terminal"`
 	DepartureTime       string `json:"departureTime"`
+}
+
+type StationArrivalHeadingGroup struct {
+	Up   []StationArrivalItem `json:"up"`
+	Down []StationArrivalItem `json:"down"`
+}
+
+type StationArrivalItem struct {
+	TerminalStationName string `json:"terminal"`
+	RemainingTime       int    `json:"time"`
+	RemainingStop       int    `json:"stop"`
+	CurrentStationName  string `json:"current"`
+	DataType            string `json:"type"`
 }
 
 func CreateStationListResponse(stationList []subway.RouteStationListItem) StationListResponse {
@@ -142,4 +162,78 @@ func CreateStationTimetableItem(timetableItem subway.Timetable) StationTimetable
 		TerminalStationName: timetableItem.TerminalStation.StationName,
 		DepartureTime:       timetableItem.DepartureTime,
 	}
+}
+
+func CreateArrivalItemResponse(stationItem subway.RouteStationItem) StationArrivalResponse {
+	return StationArrivalResponse{
+		StationID:   stationItem.StationID,
+		StationName: stationItem.StationName,
+		RouteID:     stationItem.RouteID,
+		Arrival:     CreateStationArrivalGroup(stationItem.RealtimeList, stationItem.TimetableList),
+	}
+}
+
+func CreateStationArrivalGroup(realtimeList []subway.Realtime, timetableList []subway.Timetable) StationArrivalHeadingGroup {
+	// 현재 시간 로딩 (KST)
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+
+	sort.Slice(realtimeList, func(i, j int) bool {
+		return realtimeList[i].ArrivalSequence < realtimeList[j].ArrivalSequence
+	})
+	sort.Slice(timetableList, func(i, j int) bool {
+		return timetableList[i].DepartureTime < timetableList[j].DepartureTime
+	})
+	var up = make([]StationArrivalItem, 0)
+	var down = make([]StationArrivalItem, 0)
+	var maxUp = 0
+	var maxDown = 0
+	for _, realtimeItem := range realtimeList {
+		if realtimeItem.Heading {
+			if maxUp < realtimeItem.RemainingTime {
+				maxUp = realtimeItem.RemainingTime
+			}
+			up = append(up, StationArrivalItem{
+				TerminalStationName: realtimeItem.TerminalStation.StationName,
+				RemainingTime:       realtimeItem.RemainingTime,
+				RemainingStop:       realtimeItem.RemainingStop,
+				CurrentStationName:  realtimeItem.Current,
+				DataType:            "realtime",
+			})
+		} else {
+			if maxDown < realtimeItem.RemainingTime {
+				maxDown = realtimeItem.RemainingTime
+			}
+			down = append(down, StationArrivalItem{
+				TerminalStationName: realtimeItem.TerminalStation.StationName,
+				RemainingTime:       realtimeItem.RemainingTime,
+				RemainingStop:       realtimeItem.RemainingStop,
+				CurrentStationName:  realtimeItem.Current,
+				DataType:            "realtime",
+			})
+		}
+	}
+	for _, timetableItem := range timetableList {
+		hour, _ := strconv.Atoi(strings.Split(timetableItem.DepartureTime, ":")[0])
+		minute, _ := strconv.Atoi(strings.Split(timetableItem.DepartureTime, ":")[1])
+		remainingTime := (hour-now.Hour())*60 + (minute - now.Minute())
+		if timetableItem.Heading == "up" && remainingTime > maxUp {
+			up = append(up, StationArrivalItem{
+				TerminalStationName: timetableItem.TerminalStation.StationName,
+				RemainingTime:       remainingTime,
+				RemainingStop:       -1,
+				CurrentStationName:  "",
+				DataType:            "timetable",
+			})
+		} else if timetableItem.Heading == "down" && remainingTime > maxDown {
+			down = append(down, StationArrivalItem{
+				TerminalStationName: timetableItem.TerminalStation.StationName,
+				RemainingTime:       remainingTime,
+				RemainingStop:       -1,
+				CurrentStationName:  "",
+				DataType:            "timetable",
+			})
+		}
+	}
+	return StationArrivalHeadingGroup{Up: up, Down: down}
 }

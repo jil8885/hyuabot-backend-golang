@@ -69,7 +69,22 @@ func DeleteStationItem(c *fiber.Ctx) error {
 
 // 전철역 도착 정보 조회
 func GetStationArrival(c *fiber.Ctx) error {
-	return c.SendString("GetStationArrival")
+	// 기준 날짜 로딩
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+
+	var stationItem model.RouteStationItem
+	stationID := c.Params("station_id")
+	util.DB.Database.
+		Model(&model.RouteStation{}).
+		Preload("RealtimeList.TerminalStation").
+		Preload("TimetableList", "weekday = ? and departure_time > ?",
+			isWeekend(now),
+			fmt.Sprintf("%02d:%02d:%02d", now.Hour(), now.Minute(), now.Second())).
+		Preload("TimetableList.TerminalStation").
+		Where("station_id = ?", stationID).
+		First(&stationItem)
+	return c.JSON(response.CreateArrivalItemResponse(stationItem))
 }
 
 // 전철역 시간표 일괄 조회
