@@ -18,5 +18,12 @@ func GetLibraryRoomList(c *fiber.Ctx) error {
 
 // 열람실 항목 조회
 func GetLibraryRoomItem(c *fiber.Ctx) error {
-	return c.SendString("GetLibraryRoomItem")
+	var roomItem model.Room
+	result := util.DB.Database.Model(&model.Room{}).
+		Where("campus_id = ? and room_id = ?", c.Params("campus_id"), c.Params("room_id")).
+		First(&roomItem)
+	if result.Error != nil {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
+	return c.JSON(response.CreateRoomItemResponse(roomItem))
 }
