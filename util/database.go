@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"github.com/hyuabot-developers/hyuabot-backend-golang/model/library"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -30,6 +31,7 @@ func ConnectDB() {
 	}
 	db.Logger = logger.Default.LogMode(logger.Info)
 	shuttle.SetupDatabase(db)
+	library.SetupDatabase(db)
 	DB = DBInstance{Database: db}
 }
 
