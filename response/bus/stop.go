@@ -44,6 +44,12 @@ type RealtimeItem struct {
 	LowPlate      bool `json:"lowPlate"`
 }
 
+type RouteTimetableResponse struct {
+	Weekdays []string `json:"weekdays"`
+	Saturday []string `json:"saturday"`
+	Sunday   []string `json:"sunday"`
+}
+
 func CreateStopListResponse(stopList []bus.Stop) StopListResponse {
 	var stopListItems []StopListItem
 	for _, stop := range stopList {
@@ -106,5 +112,26 @@ func CreateRealtimeItem(realtime bus.Realtime) RealtimeItem {
 		RemainingTime: realtime.RemainingTime,
 		RemainingSeat: realtime.RemainingSeatCount,
 		LowPlate:      realtime.LowPlate,
+	}
+}
+
+func CreateRouteTimetableResponse(timetable []bus.Timetable) RouteTimetableResponse {
+	var weekdays = make([]string, 0)
+	var saturday = make([]string, 0)
+	var sunday = make([]string, 0)
+	for _, time := range timetable {
+		switch time.Weekday {
+		case "weekdays":
+			weekdays = append(weekdays, time.DepartureTime)
+		case "saturday":
+			saturday = append(saturday, time.DepartureTime)
+		case "sunday":
+			sunday = append(sunday, time.DepartureTime)
+		}
+	}
+	return RouteTimetableResponse{
+		Weekdays: weekdays,
+		Saturday: saturday,
+		Sunday:   sunday,
 	}
 }

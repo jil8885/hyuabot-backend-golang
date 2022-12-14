@@ -54,7 +54,17 @@ func DeleteBusRouteItem(c *fiber.Ctx) error {
 
 // 버스 노선별 시간표 조회
 func GetBusRouteTimeTable(c *fiber.Ctx) error {
-	return c.SendString("GetBusRouteTimeTable")
+	var BusRouteStopItem model.RouteStop
+	routeID := c.Params("route_id")
+	startStopID := c.Params("stop_id")
+	result := util.DB.Database.Model(&model.RouteStop{}).
+		Preload("TimetableList").
+		Where("route_id = ? and start_stop_id = ?", routeID, startStopID).
+		First(&BusRouteStopItem)
+	if result.Error != nil {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
+	return c.JSON(response.CreateRouteTimetableResponse(BusRouteStopItem.TimetableList))
 }
 
 // 버스 노선별 시간표 삭제
