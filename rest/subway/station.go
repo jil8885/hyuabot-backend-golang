@@ -89,5 +89,13 @@ func GetStationArrival(c *fiber.Ctx) error {
 
 // 전철역 시간표 일괄 조회
 func GetStationTimeTable(c *fiber.Ctx) error {
-	return c.SendString("GetStationTimeTable")
+	var stationItem model.RouteStationItem
+	stationID := c.Params("station_id")
+	util.DB.Database.
+		Model(&model.RouteStation{}).
+		Preload("RealtimeList.TerminalStation").
+		Preload("TimetableList.TerminalStation").
+		Where("station_id = ?", stationID).
+		First(&stationItem)
+	return c.JSON(response.CreateStationTimetableResponse(stationItem.TimetableList))
 }

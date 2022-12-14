@@ -71,6 +71,11 @@ type StationArrivalItem struct {
 	DataType            string `json:"type"`
 }
 
+type StationTimetableResponse struct {
+	Weekdays StationTimetableHeadingGroup `json:"weekdays"`
+	Weekends StationTimetableHeadingGroup `json:"weekends"`
+}
+
 func CreateStationListResponse(stationList []subway.RouteStationListItem) StationListResponse {
 	station := make([]StationListItem, 0)
 	for _, stationItem := range stationList {
@@ -157,6 +162,19 @@ func CreateStationTimetableGroup(timetableList []subway.Timetable, maxUp int, ma
 	return StationTimetableHeadingGroup{Up: up, Down: down}
 }
 
+func CreateStationEntireTimetableGroup(timetableList []subway.Timetable) StationTimetableHeadingGroup {
+	var up = make([]StationTimetableItem, 0)
+	var down = make([]StationTimetableItem, 0)
+	for _, timetableItem := range timetableList {
+		if timetableItem.Heading == "up" {
+			up = append(up, CreateStationTimetableItem(timetableItem))
+		} else if timetableItem.Heading == "down" {
+			down = append(down, CreateStationTimetableItem(timetableItem))
+		}
+	}
+	return StationTimetableHeadingGroup{Up: up, Down: down}
+}
+
 func CreateStationTimetableItem(timetableItem subway.Timetable) StationTimetableItem {
 	return StationTimetableItem{
 		TerminalStationName: timetableItem.TerminalStation.StationName,
@@ -236,4 +254,23 @@ func CreateStationArrivalGroup(realtimeList []subway.Realtime, timetableList []s
 		}
 	}
 	return StationArrivalHeadingGroup{Up: up, Down: down}
+}
+
+func CreateStationTimetableResponse(timetableList []subway.Timetable) StationTimetableResponse {
+	sort.Slice(timetableList, func(i, j int) bool {
+		return timetableList[i].DepartureTime < timetableList[j].DepartureTime
+	})
+	var weekdays = make([]subway.Timetable, 0)
+	var weekends = make([]subway.Timetable, 0)
+	for _, timetableItem := range timetableList {
+		if timetableItem.Weekday == "weekdays" {
+			weekdays = append(weekdays, timetableItem)
+		} else {
+			weekends = append(weekends, timetableItem)
+		}
+	}
+	return StationTimetableResponse{
+		Weekdays: CreateStationEntireTimetableGroup(weekdays),
+		Weekends: CreateStationEntireTimetableGroup(weekends),
+	}
 }
