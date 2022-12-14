@@ -13,13 +13,9 @@ func GetBusRouteList(c *fiber.Ctx) error {
 	var nameQuery = c.Query("name")
 	if nameQuery == "" {
 		util.DB.Database.Model(&model.Route{}).
-			Preload("StartStop").
-			Preload("EndStop").
 			Find(&busRouteList)
 	} else {
 		util.DB.Database.Model(&model.Route{}).
-			Preload("StartStop").
-			Preload("EndStop").
 			Where("route_name like ?", "%"+nameQuery+"%").
 			Find(&busRouteList)
 	}
@@ -28,7 +24,17 @@ func GetBusRouteList(c *fiber.Ctx) error {
 
 // 버스 노선 항목 조회
 func GetBusRouteItem(c *fiber.Ctx) error {
-	return c.SendString("GetBusRouteItem")
+	var busRouteItem model.Route
+	var routeID = c.Params("route_id")
+	result := util.DB.Database.Model(&model.Route{}).
+		Preload("StartStop").
+		Preload("EndStop").
+		Where("route_id = ?", routeID).
+		First(&busRouteItem)
+	if result.Error != nil {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
+	return c.JSON(response.CreateRouteItemResponse(busRouteItem))
 }
 
 // 버스 노선 항목 추가

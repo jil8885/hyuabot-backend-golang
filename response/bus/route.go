@@ -11,6 +11,16 @@ type RouteListItem struct {
 	Name string `json:"name"`
 }
 
+type RouteItemResponse struct {
+	ID          int                   `json:"id"`
+	Name        string                `json:"name"`
+	Type        RouteType             `json:"type"`
+	Company     RouteCompany          `json:"company"`
+	RunningTime RouteRunningTimeGroup `json:"runningTime"`
+	Start       RouteStop             `json:"start"`
+	End         RouteStop             `json:"end"`
+}
+
 type RouteCompany struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`
@@ -85,5 +95,17 @@ func CreateRouteStop(stop bus.Stop) RouteStop {
 	return RouteStop{
 		ID:   stop.StopID,
 		Name: stop.StopName,
+	}
+}
+
+func CreateRouteItemResponse(route bus.Route) RouteItemResponse {
+	return RouteItemResponse{
+		ID:          route.RouteID,
+		Name:        route.RouteName,
+		Type:        CreateRouteType(route),
+		Company:     CreateRouteCompany(route),
+		RunningTime: CreateRouteRunningTimeGroup(route),
+		Start:       CreateRouteStop(route.StartStop),
+		End:         CreateRouteStop(route.EndStop),
 	}
 }

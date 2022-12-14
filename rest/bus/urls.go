@@ -13,5 +13,5 @@ func SetupRoutes(router fiber.Router) {
 	route := bus.Group("/route")
 	route.Get("/", GetBusRouteList)
 	route.Get("/:route_id", GetBusRouteItem)
-	route.Get("/:route_id/timetable/:stop_id", PostBusRouteItem)
+	route.Get("/:route_id/timetable/:stop_id", GetBusRouteTimeTable)
 }
