@@ -1,10 +1,29 @@
 package bus
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	model "github.com/hyuabot-developers/hyuabot-backend-golang/model/bus"
+	response "github.com/hyuabot-developers/hyuabot-backend-golang/response/bus"
+	"github.com/hyuabot-developers/hyuabot-backend-golang/util"
+)
 
 // 버스 노선 목록 조회
 func GetBusRouteList(c *fiber.Ctx) error {
-	return c.SendString("GetBusRouteList")
+	var busRouteList []model.Route
+	var nameQuery = c.Query("name")
+	if nameQuery == "" {
+		util.DB.Database.Model(&model.Route{}).
+			Preload("StartStop").
+			Preload("EndStop").
+			Find(&busRouteList)
+	} else {
+		util.DB.Database.Model(&model.Route{}).
+			Preload("StartStop").
+			Preload("EndStop").
+			Where("route_name like ?", "%"+nameQuery+"%").
+			Find(&busRouteList)
+	}
+	return c.JSON(response.CreateRouteListResponse(busRouteList))
 }
 
 // 버스 노선 항목 조회
