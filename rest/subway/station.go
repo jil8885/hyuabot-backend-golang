@@ -1,10 +1,25 @@
 package subway
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	model "github.com/hyuabot-developers/hyuabot-backend-golang/model/subway"
+	response "github.com/hyuabot-developers/hyuabot-backend-golang/response/subway"
+	"github.com/hyuabot-developers/hyuabot-backend-golang/util"
+)
 
 // 전철역 목록 조회
 func GetStationList(c *fiber.Ctx) error {
-	return c.SendString("GetStationList")
+	var stopList []model.RouteStationListItem
+	nameQuery := c.Query("name")
+	if nameQuery == "" {
+		util.DB.Database.Model(&model.RouteStation{}).Find(&stopList)
+	} else {
+		util.DB.Database.
+			Model(&model.RouteStation{}).
+			Where("station_name like ?", "%"+nameQuery+"%").
+			Find(&stopList)
+	}
+	return c.JSON(response.CreateStationListResponse(stopList))
 }
 
 // 전철역 항목 조회

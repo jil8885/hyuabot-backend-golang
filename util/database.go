@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/model/library"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
+	"github.com/hyuabot-developers/hyuabot-backend-golang/model/subway"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -32,6 +33,7 @@ func ConnectDB() {
 	db.Logger = logger.Default.LogMode(logger.Info)
 	shuttle.SetupDatabase(db)
 	library.SetupDatabase(db)
+	subway.SetupDatabase(db)
 	DB = DBInstance{Database: db}
 }
 
