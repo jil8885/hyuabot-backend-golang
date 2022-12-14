@@ -1,11 +1,21 @@
 package subway
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	model "github.com/hyuabot-developers/hyuabot-backend-golang/model/subway"
 	response "github.com/hyuabot-developers/hyuabot-backend-golang/response/subway"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/util"
+	"time"
 )
+
+// 평일/주말 구분 함수
+func isWeekend(now time.Time) string {
+	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+		return "weekends"
+	}
+	return "weekdays"
+}
 
 // 전철역 목록 조회
 func GetStationList(c *fiber.Ctx) error {
@@ -24,7 +34,22 @@ func GetStationList(c *fiber.Ctx) error {
 
 // 전철역 항목 조회
 func GetStationItem(c *fiber.Ctx) error {
-	return c.SendString("GetStationItem")
+	// 기준 날짜 로딩
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+
+	var stationItem model.RouteStationItem
+	stationID := c.Params("station_id")
+	util.DB.Database.
+		Model(&model.RouteStation{}).
+		Preload("RealtimeList.TerminalStation").
+		Preload("TimetableList", "weekday = ? and departure_time > ?",
+			isWeekend(now),
+			fmt.Sprintf("%02d:%02d:%02d", now.Hour(), now.Minute(), now.Second())).
+		Preload("TimetableList.TerminalStation").
+		Where("station_id = ?", stationID).
+		First(&stationItem)
+	return c.JSON(response.CreateStationItemResponse(stationItem))
 }
 
 // 전철역 항목 추가
