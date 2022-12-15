@@ -3,6 +3,7 @@ package shuttle
 import (
 	"encoding/json"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/hyuabot-developers/hyuabot-backend-golang/response/shuttle"
@@ -76,6 +77,35 @@ func TestShuttleRouteItem(t *testing.T) {
 				if timetable == "" {
 					t.Error("Timetable is empty")
 				}
+			}
+		}
+	}
+}
+
+func TestShuttleRouteLocation(t *testing.T) {
+	// Request Object
+	routeList := [3]string{"DH", "DY", "C"}
+	for _, route := range routeList {
+		request := httptest.NewRequest("GET", "/rest/shuttle/route/"+route+"/location", nil)
+		app := test.InitApp()
+
+		// Test
+		var resp shuttle.RouteLocationResponse
+		response, err := app.Test(request)
+		if err != nil {
+			t.Error(err)
+		} else if response.StatusCode != 200 {
+			t.Error("Status code is not 200")
+		}
+		if err = json.NewDecoder(response.Body).Decode(&resp); err != nil {
+			t.Error(err)
+		}
+		if resp.Location == nil {
+			t.Error("Location list is nil")
+		}
+		for _, location := range resp.Location {
+			if reflect.TypeOf(location) != reflect.TypeOf(float64(0)) {
+				t.Error("Location is not float64")
 			}
 		}
 	}
