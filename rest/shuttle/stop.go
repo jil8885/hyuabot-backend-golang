@@ -69,7 +69,8 @@ func GetShuttleStopRoute(c *fiber.Ctx) error {
 
 	var stopRouteItem model.RouteStop
 	result = util.DB.Database.Model(&model.RouteStop{}).
-		Preload("TimetableList", "period_type = ?", periodItem.Type).
+		Preload("TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
+			periodItem.Type, now, now.Weekday() < 6).
 		Where("stop_name = ? and route_name = ?",
 			c.Params("stop_id"), c.Params("route_id")).
 		First(&stopRouteItem)
