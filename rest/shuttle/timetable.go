@@ -30,7 +30,8 @@ func GetShuttleTimeTable(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.SendStatus(fiber.StatusNotFound)
 	}
-	return c.JSON(response.CreateStopTimetableListResponse(stopList))}
+	return c.JSON(response.CreateStopTimetableListResponse(stopList))
+}
 
 // 셔틀버스 도착 예정 시간 일괄 조회
 func GetShuttleArrivalTime(c *fiber.Ctx) error {
