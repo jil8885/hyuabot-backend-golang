@@ -31,8 +31,18 @@ type StopRouteItem struct {
 
 type StopRouteResponse struct {
 	Name string `json:"name"`
-
 	TimetableList []string `json:"timetable"`
+}
+
+type StopRouteTimetableResponse struct {
+	Name string `json:"name"`
+	Weekdays []string `json:"weekdays"`
+	Weekends []string `json:"weekends"`
+}
+
+type StopRouteArrivalResponse struct {
+	Name string `json:"name"`
+	ArrivalList []int64 `json:"arrival"`
 }
 
 func CreateStopListResponse(stopList []shuttle.StopItem) StopListResponse {
@@ -67,3 +77,28 @@ func CreateStopRouteItem(routeStop shuttle.RouteStop) StopRouteItem {
 		TimetableList: CreateTimetable(routeStop.TimetableList),
 	}
 }
+
+func CreateStopRouteArrivalItem(routeStop shuttle.RouteStop) StopRouteArrivalResponse {
+	return StopRouteArrivalResponse{
+		Name:          routeStop.RouteName,
+		ArrivalList: CreateArrival(routeStop.TimetableList),
+	}
+}
+
+func CreateStopRouteTimetableResponse(routeStop shuttle.RouteStop) StopRouteTimetableResponse {
+	var weekdays = make([]shuttle.Timetable, 0)
+	var weekends = make([]shuttle.Timetable, 0)
+	for _, timetable := range routeStop.TimetableList {
+		if timetable.Weekday {
+			weekdays = append(weekdays, timetable)
+		} else {
+			weekends = append(weekends, timetable)
+		}
+	}
+	return StopRouteTimetableResponse{
+		Name:          routeStop.RouteName,
+		Weekdays: CreateTimetable(weekdays),
+		Weekends: CreateTimetable(weekends),
+	}
+}
+

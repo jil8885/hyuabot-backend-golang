@@ -83,10 +83,50 @@ func GetShuttleStopRoute(c *fiber.Ctx) error {
 
 // 셔틀버스 정류장별 시간표 조회
 func GetShuttleStopRouteTimeTable(c *fiber.Ctx) error {
-	return c.SendString("GetShuttleStopTimeTable")
+	// 현재 시간 로딩 (KST)
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+
+	var periodItem model.Period
+	result := util.DB.Database.Model(&model.Period{}).
+		Where("period_start <= ?", now).
+		Where("period_end >= ?", now).
+		First(&periodItem)
+
+	var stopRouteItem model.RouteStop
+	result = util.DB.Database.Model(&model.RouteStop{}).
+		Preload("TimetableList", "period_type = ?", periodItem.Type).
+		Where("stop_name = ? and route_name = ?", c.Params("stop_id"), c.Params("route_id")).
+		First(&stopRouteItem)
+	// 해당 노선 ID가 존재하지 않는 경우
+	if result.Error != nil {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
+	return c.JSON(response.CreateStopRouteTimetableResponse(stopRouteItem))
 }
 
 // 셔틀버스 정류장별 도착 예정 시간 조회
 func GetShuttleStopRouteArrivalTime(c *fiber.Ctx) error {
-	return c.SendString("GetShuttleStopArrivalTime")
+	// 현재 시간 로딩 (KST)
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+
+	var periodItem model.Period
+	result := util.DB.Database.Model(&model.Period{}).
+		Where("period_start <= ?", now).
+		Where("period_end >= ?", now).
+		First(&periodItem)
+
+	var stopRouteItem model.RouteStop
+	result = util.DB.Database.Model(&model.RouteStop{}).
+		Preload("TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
+			periodItem.Type, now, now.Weekday() < 6).
+		Where("stop_name = ? and route_name = ?",
+			c.Params("stop_id"), c.Params("route_id")).
+		First(&stopRouteItem)
+	// 해당 노선 ID가 존재하지 않는 경우
+	if result.Error != nil {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
+	return c.JSON(response.CreateStopRouteArrivalItem(stopRouteItem))
 }

@@ -81,6 +81,24 @@ func CreateTimetable(timetableList []shuttle.Timetable) []string {
 	return timetable
 }
 
+func CreateArrival(timetableList []shuttle.Timetable) []int64 {
+	// 현재 시간 로딩 (KST)
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	now := time.Now().In(loc)
+
+	var arrival = make([]int64, 0)
+	for _, timetableItem := range timetableList {
+		arrival = append(arrival,
+			(timetableItem.DepartureTime.Microseconds/1000000/60/60 - int64(now.Hour()))*60 +
+			timetableItem.DepartureTime.Microseconds/1000000/60%60 - int64(now.Minute()),
+		)
+	}
+	sort.Slice(arrival, func(i, j int) bool {
+		return arrival[i] < arrival[j]
+	})
+	return arrival
+}
+
 func CreateRouteLocationResponse(routeItem shuttle.Route) RouteLocationResponse {
 	// 현재 시간 로딩 (KST)
 	loc, _ := time.LoadLocation("Asia/Seoul")
