@@ -16,6 +16,7 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           args: --config .golangci.yml
+          working-directory: ./
     build:
       needs: [lint]
       runs-on: self-hosted
