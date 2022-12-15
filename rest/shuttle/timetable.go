@@ -21,7 +21,9 @@ func GetShuttleTimeTable(c *fiber.Ctx) error {
 		Where("period_start <= ?", now).
 		Where("period_end >= ?", now).
 		First(&periodItem)
-
+	if result.Error != nil {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
 	var stopList []model.Stop
 	result = utils.DB.Database.Model(&model.Stop{}).
 		Preload("RouteList.TimetableList", "period_type = ?", periodItem.Type).
@@ -44,6 +46,9 @@ func GetShuttleArrivalTime(c *fiber.Ctx) error {
 		Where("period_start <= ?", now).
 		Where("period_end >= ?", now).
 		First(&periodItem)
+	if result.Error != nil {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
 
 	var stopList []model.Stop
 	result = utils.DB.Database.Model(&model.Stop{}).
