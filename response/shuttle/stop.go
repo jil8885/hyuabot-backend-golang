@@ -29,6 +29,12 @@ type StopRouteItem struct {
 	TimetableList []string `json:"timetable"`
 }
 
+type StopRouteResponse struct {
+	Name string `json:"name"`
+
+	TimetableList []string `json:"timetable"`
+}
+
 func CreateStopListResponse(stopList []shuttle.StopItem) StopListResponse {
 	var stop []StopListItem
 	for _, routeItem := range stopList {
@@ -46,7 +52,7 @@ func CreateStopListResponse(stopList []shuttle.StopItem) StopListResponse {
 func CreateStopItemResponse(stopItem shuttle.Stop) StopItemResponse {
 	var routeStopList []StopRouteItem
 	for _, routeStopItem := range stopItem.RouteList {
-		routeStopList = append(routeStopList, CreateStopRouteItem(routeStopItem.RouteName, routeStopItem.TimetableList))
+		routeStopList = append(routeStopList, CreateStopRouteItem(routeStopItem))
 	}
 	return StopItemResponse{
 		Name:      stopItem.Name,
@@ -55,9 +61,9 @@ func CreateStopItemResponse(stopItem shuttle.Stop) StopItemResponse {
 	}
 }
 
-func CreateStopRouteItem(RouteName string, timetableList []shuttle.Timetable) StopRouteItem {
+func CreateStopRouteItem(routeStop shuttle.RouteStop) StopRouteItem {
 	return StopRouteItem{
-		Name:          RouteName,
-		TimetableList: CreateTimetable(timetableList),
+		Name:          routeStop.RouteName,
+		TimetableList: CreateTimetable(routeStop.TimetableList),
 	}
 }
