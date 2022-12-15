@@ -61,6 +61,7 @@ func CreateStopListResponse(stopList []bus.Stop) StopListResponse {
 func CreateStopListItem(stop bus.Stop) StopListItem {
 	return StopListItem{
 		Name: stop.StopName,
+		ID:   stop.StopID,
 	}
 }
 
