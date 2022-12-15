@@ -36,7 +36,7 @@ func GetRestaurantList(c *fiber.Ctx) error {
 	var restaurantList []model.RestaurantItem
 	utils.DB.Database.Model(&model.Restaurant{}).
 		Preload("MenuList", "feed_date = ? and time_type like ?",
-			fmt.Sprintf(date),
+			date,
 			fmt.Sprintf("%%%s%%", timeType)).
 		Where("campus_id = ?", c.Params("campus_id")).
 		Find(&restaurantList)
@@ -68,7 +68,7 @@ func GetRestaurantItem(c *fiber.Ctx) error {
 	var restaurantItem model.RestaurantItem
 	utils.DB.Database.Model(&model.Restaurant{}).
 		Preload("MenuList", "feed_date = ? and time_type like ?",
-			fmt.Sprintf(date),
+			date,
 			fmt.Sprintf("%%%s%%", timeType)).
 		Where("campus_id = ? and restaurant_id = ?", c.Params("campus_id"), c.Params("restaurant_id")).
 		Find(&restaurantItem)
