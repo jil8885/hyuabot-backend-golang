@@ -71,6 +71,9 @@ func GetShuttleRouteLocation(c *fiber.Ctx) error {
 		Where("period_start <= ?", now).
 		Where("period_end >= ?", now).
 		First(&periodItem)
+	if result.Error != nil {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
 
 	var routeItem model.Route
 	result = utils.DB.Database.Model(&model.Route{}).

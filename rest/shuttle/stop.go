@@ -28,6 +28,9 @@ func GetShuttleStopItem(c *fiber.Ctx) error {
 		Where("period_start <= ?", now).
 		Where("period_end >= ?", now).
 		First(&periodItem)
+	if result.Error != nil {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
 
 	var stopItem model.Stop
 	result = utils.DB.Database.Model(&model.Stop{}).
@@ -68,6 +71,9 @@ func GetShuttleStopRoute(c *fiber.Ctx) error {
 		Where("period_start <= ?", now).
 		Where("period_end >= ?", now).
 		First(&periodItem)
+	if result.Error != nil {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
 
 	var stopRouteItem model.RouteStop
 	result = utils.DB.Database.Model(&model.RouteStop{}).
@@ -118,6 +124,9 @@ func GetShuttleStopRouteArrivalTime(c *fiber.Ctx) error {
 		Where("period_start <= ?", now).
 		Where("period_end >= ?", now).
 		First(&periodItem)
+	if result.Error != nil {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
 
 	var stopRouteItem model.RouteStop
 	result = utils.DB.Database.Model(&model.RouteStop{}).
