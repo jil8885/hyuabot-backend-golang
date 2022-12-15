@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cache"
 
 	"github.com/hyuabot-developers/hyuabot-backend-golang/rest/bus"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/rest/cafeteria"
@@ -15,8 +14,6 @@ import (
 func main() {
 	util.ConnectDB()
 	app := fiber.New()
-	// Cache Middleware
-	app.Use(cache.New())
 	// RestAPI Routes
 	rest := app.Group("/rest")
 	bus.SetupRoutes(rest)
