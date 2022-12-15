@@ -1,17 +1,19 @@
 package shuttle
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+
 	model "github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
 	response "github.com/hyuabot-developers/hyuabot-backend-golang/response/shuttle"
-	"github.com/hyuabot-developers/hyuabot-backend-golang/util"
-	"time"
+	utils "github.com/hyuabot-developers/hyuabot-backend-golang/util"
 )
 
 // 셔틀버스 노선 목록 조회
 func GetShuttleRouteList(c *fiber.Ctx) error {
 	var routeList []model.RouteItem
-	util.DB.Database.Model(&model.Route{}).Find(&routeList)
+	utils.DB.Database.Model(&model.Route{}).Find(&routeList)
 	return c.JSON(response.CreateRouteListResponse(routeList))
 }
 
@@ -22,13 +24,13 @@ func GetShuttleRouteItem(c *fiber.Ctx) error {
 	now := time.Now().In(loc)
 
 	var periodItem model.Period
-	result := util.DB.Database.Model(&model.Period{}).
+	result := utils.DB.Database.Model(&model.Period{}).
 		Where("period_start <= ?", now).
 		Where("period_end >= ?", now).
 		First(&periodItem)
 
 	var routeItem model.Route
-	result = util.DB.Database.Model(&model.Route{}).
+	result = utils.DB.Database.Model(&model.Route{}).
 		Preload("StopList.TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
 			periodItem.Type, now, now.Weekday() < 6).
 		Where("shuttle_route.route_name = ?", c.Params("route_id")).
@@ -62,13 +64,13 @@ func GetShuttleRouteLocation(c *fiber.Ctx) error {
 	now := time.Now().In(loc)
 
 	var periodItem model.Period
-	result := util.DB.Database.Model(&model.Period{}).
+	result := utils.DB.Database.Model(&model.Period{}).
 		Where("period_start <= ?", now).
 		Where("period_end >= ?", now).
 		First(&periodItem)
 
 	var routeItem model.Route
-	result = util.DB.Database.Model(&model.Route{}).
+	result = utils.DB.Database.Model(&model.Route{}).
 		Preload("StopList.TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
 			periodItem.Type, now, now.Weekday() < 6).
 		Where("shuttle_route.route_name = ?", c.Params("route_id")).

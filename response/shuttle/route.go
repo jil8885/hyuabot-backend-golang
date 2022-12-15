@@ -2,9 +2,10 @@ package shuttle
 
 import (
 	"fmt"
-	"github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
 	"sort"
 	"time"
+
+	"github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
 )
 
 type RouteListResponse struct {

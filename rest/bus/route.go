@@ -2,9 +2,10 @@ package bus
 
 import (
 	"github.com/gofiber/fiber/v2"
+
 	model "github.com/hyuabot-developers/hyuabot-backend-golang/model/bus"
 	response "github.com/hyuabot-developers/hyuabot-backend-golang/response/bus"
-	"github.com/hyuabot-developers/hyuabot-backend-golang/util"
+	utils "github.com/hyuabot-developers/hyuabot-backend-golang/util"
 )
 
 // 버스 노선 목록 조회
@@ -12,10 +13,10 @@ func GetBusRouteList(c *fiber.Ctx) error {
 	var busRouteList []model.Route
 	var nameQuery = c.Query("name")
 	if nameQuery == "" {
-		util.DB.Database.Model(&model.Route{}).
+		utils.DB.Database.Model(&model.Route{}).
 			Find(&busRouteList)
 	} else {
-		util.DB.Database.Model(&model.Route{}).
+		utils.DB.Database.Model(&model.Route{}).
 			Where("route_name like ?", "%"+nameQuery+"%").
 			Find(&busRouteList)
 	}
@@ -26,7 +27,7 @@ func GetBusRouteList(c *fiber.Ctx) error {
 func GetBusRouteItem(c *fiber.Ctx) error {
 	var busRouteItem model.Route
 	var routeID = c.Params("route_id")
-	result := util.DB.Database.Model(&model.Route{}).
+	result := utils.DB.Database.Model(&model.Route{}).
 		Preload("StartStop").
 		Preload("EndStop").
 		Where("route_id = ?", routeID).
@@ -57,7 +58,7 @@ func GetBusRouteTimeTable(c *fiber.Ctx) error {
 	var BusRouteStopItem model.RouteStop
 	routeID := c.Params("route_id")
 	startStopID := c.Params("stop_id")
-	result := util.DB.Database.Model(&model.RouteStop{}).
+	result := utils.DB.Database.Model(&model.RouteStop{}).
 		Preload("TimetableList").
 		Where("route_id = ? and start_stop_id = ?", routeID, startStopID).
 		First(&BusRouteStopItem)

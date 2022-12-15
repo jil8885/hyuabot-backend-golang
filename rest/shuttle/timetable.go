@@ -1,11 +1,13 @@
 package shuttle
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+
 	model "github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
 	response "github.com/hyuabot-developers/hyuabot-backend-golang/response/shuttle"
-	"github.com/hyuabot-developers/hyuabot-backend-golang/util"
-	"time"
+	utils "github.com/hyuabot-developers/hyuabot-backend-golang/util"
 )
 
 // 셔틀버스 시간표 일괄 조회
@@ -15,13 +17,13 @@ func GetShuttleTimeTable(c *fiber.Ctx) error {
 	now := time.Now().In(loc)
 
 	var periodItem model.Period
-	result := util.DB.Database.Model(&model.Period{}).
+	result := utils.DB.Database.Model(&model.Period{}).
 		Where("period_start <= ?", now).
 		Where("period_end >= ?", now).
 		First(&periodItem)
 
 	var stopList []model.Stop
-	result = util.DB.Database.Model(&model.Stop{}).
+	result = utils.DB.Database.Model(&model.Stop{}).
 		Preload("RouteList.TimetableList", "period_type = ?", periodItem.Type).
 		Find(&stopList)
 	// 해당 노선 ID가 존재하지 않는 경우
@@ -37,13 +39,13 @@ func GetShuttleArrivalTime(c *fiber.Ctx) error {
 	now := time.Now().In(loc)
 
 	var periodItem model.Period
-	result := util.DB.Database.Model(&model.Period{}).
+	result := utils.DB.Database.Model(&model.Period{}).
 		Where("period_start <= ?", now).
 		Where("period_end >= ?", now).
 		First(&periodItem)
 
 	var stopList []model.Stop
-	result = util.DB.Database.Model(&model.Stop{}).
+	result = utils.DB.Database.Model(&model.Stop{}).
 		Preload("RouteList.TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
 			periodItem.Type, now, now.Weekday() < 6).
 		Find(&stopList)

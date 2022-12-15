@@ -2,11 +2,13 @@ package bus
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+
 	model "github.com/hyuabot-developers/hyuabot-backend-golang/model/bus"
 	response "github.com/hyuabot-developers/hyuabot-backend-golang/response/bus"
-	"github.com/hyuabot-developers/hyuabot-backend-golang/util"
-	"time"
+	utils "github.com/hyuabot-developers/hyuabot-backend-golang/util"
 )
 
 // 평일/주말 구분 함수
@@ -24,10 +26,10 @@ func GetBusStopList(c *fiber.Ctx) error {
 	var busStopList []model.Stop
 	var nameQuery = c.Query("name")
 	if nameQuery == "" {
-		util.DB.Database.Model(&model.Stop{}).
+		utils.DB.Database.Model(&model.Stop{}).
 			Find(&busStopList)
 	} else {
-		util.DB.Database.Model(&model.Stop{}).
+		utils.DB.Database.Model(&model.Stop{}).
 			Where("stop_name like ?", "%"+nameQuery+"%").
 			Find(&busStopList)
 	}
@@ -41,7 +43,7 @@ func GetBusStopItem(c *fiber.Ctx) error {
 	now := time.Now().In(loc)
 
 	var busStopItem model.Stop
-	result := util.DB.Database.Model(&model.Stop{}).
+	result := utils.DB.Database.Model(&model.Stop{}).
 		Preload("RouteList.RouteItem").
 		Preload("RouteList.StartStop").
 		Preload("RouteList.TimetableList", "weekday = ? and departure_time > ?",

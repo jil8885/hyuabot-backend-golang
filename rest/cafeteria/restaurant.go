@@ -2,11 +2,13 @@ package cafeteria
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+
 	model "github.com/hyuabot-developers/hyuabot-backend-golang/model/cafeteria"
 	response "github.com/hyuabot-developers/hyuabot-backend-golang/response/cafeteria"
-	"github.com/hyuabot-developers/hyuabot-backend-golang/util"
-	"time"
+	utils "github.com/hyuabot-developers/hyuabot-backend-golang/util"
 )
 
 // 캠퍼스별 학식 식당 목록 조회
@@ -32,7 +34,7 @@ func GetRestaurantList(c *fiber.Ctx) error {
 	}
 
 	var restaurantList []model.RestaurantItem
-	util.DB.Database.Model(&model.Restaurant{}).
+	utils.DB.Database.Model(&model.Restaurant{}).
 		Preload("MenuList", "feed_date = ? and time_type like ?",
 			fmt.Sprintf(date),
 			fmt.Sprintf("%%%s%%", timeType)).
@@ -64,7 +66,7 @@ func GetRestaurantItem(c *fiber.Ctx) error {
 	}
 
 	var restaurantItem model.RestaurantItem
-	util.DB.Database.Model(&model.Restaurant{}).
+	utils.DB.Database.Model(&model.Restaurant{}).
 		Preload("MenuList", "feed_date = ? and time_type like ?",
 			fmt.Sprintf(date),
 			fmt.Sprintf("%%%s%%", timeType)).

@@ -1,11 +1,12 @@
 package subway
 
 import (
-	"github.com/hyuabot-developers/hyuabot-backend-golang/model/subway"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/hyuabot-developers/hyuabot-backend-golang/model/subway"
 )
 
 type StationListResponse struct {

@@ -2,11 +2,13 @@ package subway
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+
 	model "github.com/hyuabot-developers/hyuabot-backend-golang/model/subway"
 	response "github.com/hyuabot-developers/hyuabot-backend-golang/response/subway"
-	"github.com/hyuabot-developers/hyuabot-backend-golang/util"
-	"time"
+	utils "github.com/hyuabot-developers/hyuabot-backend-golang/util"
 )
 
 // 평일/주말 구분 함수
@@ -22,9 +24,9 @@ func GetStationList(c *fiber.Ctx) error {
 	var stopList []model.RouteStationListItem
 	nameQuery := c.Query("name")
 	if nameQuery == "" {
-		util.DB.Database.Model(&model.RouteStation{}).Find(&stopList)
+		utils.DB.Database.Model(&model.RouteStation{}).Find(&stopList)
 	} else {
-		util.DB.Database.
+		utils.DB.Database.
 			Model(&model.RouteStation{}).
 			Where("station_name like ?", "%"+nameQuery+"%").
 			Find(&stopList)
@@ -40,7 +42,7 @@ func GetStationItem(c *fiber.Ctx) error {
 
 	var stationItem model.RouteStationItem
 	stationID := c.Params("station_id")
-	util.DB.Database.
+	utils.DB.Database.
 		Model(&model.RouteStation{}).
 		Preload("RealtimeList.TerminalStation").
 		Preload("TimetableList", "weekday = ? and departure_time > ?",
@@ -75,7 +77,7 @@ func GetStationArrival(c *fiber.Ctx) error {
 
 	var stationItem model.RouteStationItem
 	stationID := c.Params("station_id")
-	util.DB.Database.
+	utils.DB.Database.
 		Model(&model.RouteStation{}).
 		Preload("RealtimeList.TerminalStation").
 		Preload("TimetableList", "weekday = ? and departure_time > ?",
@@ -91,7 +93,7 @@ func GetStationArrival(c *fiber.Ctx) error {
 func GetStationTimeTable(c *fiber.Ctx) error {
 	var stationItem model.RouteStationItem
 	stationID := c.Params("station_id")
-	util.DB.Database.
+	utils.DB.Database.
 		Model(&model.RouteStation{}).
 		Preload("RealtimeList.TerminalStation").
 		Preload("TimetableList.TerminalStation").
