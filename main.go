@@ -24,5 +24,8 @@ func main() {
 	shuttle.SetupRoutes(rest)
 	subway.SetupRoutes(rest)
 
-	app.Listen(":3000")
+	err := app.Listen(":3000")
+	if err != nil {
+		panic(err)
+	}
 }
