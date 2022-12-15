@@ -90,8 +90,8 @@ func CreateArrival(timetableList []shuttle.Timetable) []int64 {
 	var arrival = make([]int64, 0)
 	for _, timetableItem := range timetableList {
 		arrival = append(arrival,
-			(timetableItem.DepartureTime.Microseconds/1000000/60/60 - int64(now.Hour()))*60 +
-			timetableItem.DepartureTime.Microseconds/1000000/60%60 - int64(now.Minute()),
+			(timetableItem.DepartureTime.Microseconds/1000000/60/60-int64(now.Hour()))*60+
+				timetableItem.DepartureTime.Microseconds/1000000/60%60-int64(now.Minute()),
 		)
 	}
 	sort.Slice(arrival, func(i, j int) bool {

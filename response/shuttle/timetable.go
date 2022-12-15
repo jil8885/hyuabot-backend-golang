@@ -9,7 +9,7 @@ type StopTimetableListResponse struct {
 }
 
 type StopRouteTimetableItem struct {
-	Name string `json:"name"`
+	Name  string                       `json:"name"`
 	Route []StopRouteTimetableResponse `json:"route"`
 }
 
@@ -18,7 +18,7 @@ type StopArrivalListResponse struct {
 }
 
 type StopRouteArrivalItem struct {
-	Name string `json:"name"`
+	Name  string                     `json:"name"`
 	Route []StopRouteArrivalResponse `json:"route"`
 }
 
@@ -43,13 +43,13 @@ func CreateStopTimetableItem(stop model.Stop) StopRouteTimetableItem {
 			}
 		}
 		route = append(route, StopRouteTimetableResponse{
-			Name: routeItem.RouteName,
+			Name:     routeItem.RouteName,
 			Weekdays: CreateTimetable(weekdays),
 			Weekends: CreateTimetable(weekends),
 		})
 	}
 	return StopRouteTimetableItem{
-		Name: stop.Name,
+		Name:  stop.Name,
 		Route: route,
 	}
 }
@@ -66,12 +66,12 @@ func CreateStopArrivalItem(stop model.Stop) StopRouteArrivalItem {
 	var route = make([]StopRouteArrivalResponse, 0)
 	for _, routeItem := range stop.RouteList {
 		route = append(route, StopRouteArrivalResponse{
-			Name: routeItem.RouteName,
+			Name:        routeItem.RouteName,
 			ArrivalList: CreateArrival(routeItem.TimetableList),
 		})
 	}
 	return StopRouteArrivalItem{
-		Name: stop.Name,
+		Name:  stop.Name,
 		Route: route,
 	}
 }
