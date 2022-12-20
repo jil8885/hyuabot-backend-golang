@@ -20,6 +20,7 @@ type RouteListItem struct {
 
 type RouteItemResponse struct {
 	Name        string           `json:"name"`
+	Tag         string           `json:"tag"`
 	Description RouteDescription `json:"description"`
 	StopList    []RouteStopItem  `json:"stop_list"`
 }
@@ -57,6 +58,7 @@ func CreateRouteItemResponse(routeItem shuttle.Route) RouteItemResponse {
 	}
 	return RouteItemResponse{
 		Name:        routeItem.Name,
+		Tag:         routeItem.Tag,
 		Description: RouteDescription{routeItem.DescriptionKorean, routeItem.DescriptionEnglish},
 		StopList:    routeStopList,
 	}
