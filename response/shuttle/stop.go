@@ -2,6 +2,7 @@ package shuttle
 
 import (
 	"fmt"
+
 	"github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
 )
 
