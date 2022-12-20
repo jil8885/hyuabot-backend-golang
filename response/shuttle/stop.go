@@ -1,6 +1,7 @@
 package shuttle
 
 import (
+	"fmt"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
 )
 
@@ -26,6 +27,7 @@ type StopLocation struct {
 
 type StopRouteItem struct {
 	Name          string   `json:"name"`
+	Tag           string   `json:"tag"`
 	TimetableList []string `json:"timetable"`
 }
 
@@ -76,6 +78,7 @@ func CreateStopItemResponse(stopItem shuttle.Stop) StopItemResponse {
 func CreateStopRouteItem(routeStop shuttle.RouteStop) StopRouteItem {
 	return StopRouteItem{
 		Name:          routeStop.RouteName,
+		Tag:           routeStop.ShuttleRoute.Tag,
 		TimetableList: CreateTimetable(routeStop.TimetableList),
 	}
 }
@@ -97,8 +100,10 @@ func CreateStopRouteTimetableResponse(routeStop shuttle.RouteStop) StopRouteTime
 			weekends = append(weekends, timetable)
 		}
 	}
+	fmt.Println(routeStop.ShuttleRoute)
 	return StopRouteTimetableResponse{
 		Name:     routeStop.RouteName,
+		Tag:      routeStop.ShuttleRoute.Tag,
 		Weekdays: CreateTimetable(weekdays),
 		Weekends: CreateTimetable(weekends),
 	}
