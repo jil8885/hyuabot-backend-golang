@@ -14,6 +14,7 @@ type RouteListResponse struct {
 
 type RouteListItem struct {
 	Name        string           `json:"name"`
+	Tag         string           `json:"tag"`
 	Description RouteDescription `json:"description"`
 }
 
@@ -42,6 +43,7 @@ func CreateRouteListResponse(routeList []shuttle.RouteItem) RouteListResponse {
 	for _, routeItem := range routeList {
 		route = append(route, RouteListItem{
 			Name:        routeItem.Name,
+			Tag:         routeItem.Tag,
 			Description: RouteDescription{routeItem.DescriptionKorean, routeItem.DescriptionEnglish},
 		})
 	}
