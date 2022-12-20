@@ -68,6 +68,7 @@ func CreateStopArrivalItem(stop model.Stop) StopRouteArrivalItem {
 	for _, routeItem := range stop.RouteList {
 		route = append(route, StopRouteArrivalResponse{
 			Name:        routeItem.RouteName,
+			Tag:         routeItem.ShuttleRoute.Tag,
 			ArrivalList: CreateArrival(routeItem.TimetableList),
 		})
 	}

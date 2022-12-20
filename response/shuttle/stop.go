@@ -36,12 +36,14 @@ type StopRouteResponse struct {
 
 type StopRouteTimetableResponse struct {
 	Name     string   `json:"name"`
+	Tag      string   `json:"tag"`
 	Weekdays []string `json:"weekdays"`
 	Weekends []string `json:"weekends"`
 }
 
 type StopRouteArrivalResponse struct {
 	Name        string  `json:"name"`
+	Tag         string  `json:"tag"`
 	ArrivalList []int64 `json:"arrival"`
 }
 
