@@ -86,6 +86,7 @@ func CreateStopRouteItem(routeStop shuttle.RouteStop) StopRouteItem {
 func CreateStopRouteArrivalItem(routeStop shuttle.RouteStop) StopRouteArrivalResponse {
 	return StopRouteArrivalResponse{
 		Name:        routeStop.RouteName,
+		Tag:         routeStop.ShuttleRoute.Tag,
 		ArrivalList: CreateArrival(routeStop.TimetableList),
 	}
 }

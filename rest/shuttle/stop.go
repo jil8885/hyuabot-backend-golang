@@ -109,6 +109,7 @@ func GetShuttleStopRouteTimeTable(c *fiber.Ctx) error {
 	var stopRouteItem model.RouteStop
 	result = utils.DB.Database.Model(&model.RouteStop{}).
 		Preload("TimetableList", "period_type = ?", periodItem.Type).
+		Preload("ShuttleRoute").
 		Where("stop_name = ? and route_name = ?", c.Params("stop_id"), c.Params("route_id")).
 		First(&stopRouteItem)
 	// 해당 노선 ID가 존재하지 않는 경우
@@ -137,6 +138,7 @@ func GetShuttleStopRouteArrivalTime(c *fiber.Ctx) error {
 	result = utils.DB.Database.Model(&model.RouteStop{}).
 		Preload("TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
 			periodItem.Type, now, now.Weekday() < 6).
+		Preload("ShuttleRoute").
 		Where("stop_name = ? and route_name = ?",
 			c.Params("stop_id"), c.Params("route_id")).
 		First(&stopRouteItem)
