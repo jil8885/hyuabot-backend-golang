@@ -14,11 +14,13 @@ type RouteListResponse struct {
 
 type RouteListItem struct {
 	Name        string           `json:"name"`
+	Tag         string           `json:"tag"`
 	Description RouteDescription `json:"description"`
 }
 
 type RouteItemResponse struct {
 	Name        string           `json:"name"`
+	Tag         string           `json:"tag"`
 	Description RouteDescription `json:"description"`
 	StopList    []RouteStopItem  `json:"stop_list"`
 }
@@ -42,6 +44,7 @@ func CreateRouteListResponse(routeList []shuttle.RouteItem) RouteListResponse {
 	for _, routeItem := range routeList {
 		route = append(route, RouteListItem{
 			Name:        routeItem.Name,
+			Tag:         routeItem.Tag,
 			Description: RouteDescription{routeItem.DescriptionKorean, routeItem.DescriptionEnglish},
 		})
 	}
@@ -55,6 +58,7 @@ func CreateRouteItemResponse(routeItem shuttle.Route) RouteItemResponse {
 	}
 	return RouteItemResponse{
 		Name:        routeItem.Name,
+		Tag:         routeItem.Tag,
 		Description: RouteDescription{routeItem.DescriptionKorean, routeItem.DescriptionEnglish},
 		StopList:    routeStopList,
 	}

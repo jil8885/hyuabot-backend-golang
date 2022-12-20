@@ -44,6 +44,7 @@ func CreateStopTimetableItem(stop model.Stop) StopRouteTimetableItem {
 		}
 		route = append(route, StopRouteTimetableResponse{
 			Name:     routeItem.RouteName,
+			Tag:      routeItem.ShuttleRoute.Tag,
 			Weekdays: CreateTimetable(weekdays),
 			Weekends: CreateTimetable(weekends),
 		})
@@ -67,6 +68,7 @@ func CreateStopArrivalItem(stop model.Stop) StopRouteArrivalItem {
 	for _, routeItem := range stop.RouteList {
 		route = append(route, StopRouteArrivalResponse{
 			Name:        routeItem.RouteName,
+			Tag:         routeItem.ShuttleRoute.Tag,
 			ArrivalList: CreateArrival(routeItem.TimetableList),
 		})
 	}

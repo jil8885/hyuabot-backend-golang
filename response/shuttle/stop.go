@@ -1,6 +1,8 @@
 package shuttle
 
 import (
+	"fmt"
+
 	"github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
 )
 
@@ -26,6 +28,7 @@ type StopLocation struct {
 
 type StopRouteItem struct {
 	Name          string   `json:"name"`
+	Tag           string   `json:"tag"`
 	TimetableList []string `json:"timetable"`
 }
 
@@ -36,12 +39,14 @@ type StopRouteResponse struct {
 
 type StopRouteTimetableResponse struct {
 	Name     string   `json:"name"`
+	Tag      string   `json:"tag"`
 	Weekdays []string `json:"weekdays"`
 	Weekends []string `json:"weekends"`
 }
 
 type StopRouteArrivalResponse struct {
 	Name        string  `json:"name"`
+	Tag         string  `json:"tag"`
 	ArrivalList []int64 `json:"arrival"`
 }
 
@@ -74,6 +79,7 @@ func CreateStopItemResponse(stopItem shuttle.Stop) StopItemResponse {
 func CreateStopRouteItem(routeStop shuttle.RouteStop) StopRouteItem {
 	return StopRouteItem{
 		Name:          routeStop.RouteName,
+		Tag:           routeStop.ShuttleRoute.Tag,
 		TimetableList: CreateTimetable(routeStop.TimetableList),
 	}
 }
@@ -81,6 +87,7 @@ func CreateStopRouteItem(routeStop shuttle.RouteStop) StopRouteItem {
 func CreateStopRouteArrivalItem(routeStop shuttle.RouteStop) StopRouteArrivalResponse {
 	return StopRouteArrivalResponse{
 		Name:        routeStop.RouteName,
+		Tag:         routeStop.ShuttleRoute.Tag,
 		ArrivalList: CreateArrival(routeStop.TimetableList),
 	}
 }
@@ -95,8 +102,10 @@ func CreateStopRouteTimetableResponse(routeStop shuttle.RouteStop) StopRouteTime
 			weekends = append(weekends, timetable)
 		}
 	}
+	fmt.Println(routeStop.ShuttleRoute)
 	return StopRouteTimetableResponse{
 		Name:     routeStop.RouteName,
+		Tag:      routeStop.ShuttleRoute.Tag,
 		Weekdays: CreateTimetable(weekdays),
 		Weekends: CreateTimetable(weekends),
 	}
