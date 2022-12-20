@@ -44,6 +44,7 @@ func CreateStopTimetableItem(stop model.Stop) StopRouteTimetableItem {
 		}
 		route = append(route, StopRouteTimetableResponse{
 			Name:     routeItem.RouteName,
+			Tag:      routeItem.ShuttleRoute.Tag,
 			Weekdays: CreateTimetable(weekdays),
 			Weekends: CreateTimetable(weekends),
 		})
