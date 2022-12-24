@@ -17,8 +17,7 @@ func main() {
 	app := fiber.New()
 	// CORS middleware
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "https://prod.backend.hyuabot.app, https://dev.backend.hyuabot.app, https://www.hyuabot.app, " +
-			"http://localhost:8100, http://192.168.*.*:8100",
+		AllowOrigins: "https://*.hyuabot.app, http://localhost:8100, http://192.168.*.*:8100",
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 	// RestAPI Routes
