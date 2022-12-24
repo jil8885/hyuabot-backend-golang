@@ -5,7 +5,7 @@ type RouteStation struct {
 	RouteID         int         `gorm:"column:route_id;primaryKey"`
 	StationName     string      `gorm:"column:station_name"`
 	StationSequence int         `gorm:"column:station_sequence"`
-	CumulativeTime  int         `gorm:"column:cumulative_time"`
+	CumulativeTime  float64     `gorm:"column:cumulative_time"`
 	RealtimeList    []Realtime  `gorm:"foreignKey:StationID;references:StationID"`
 	TimetableList   []Timetable `gorm:"foreignKey:StationID;references:StationID"`
 }
