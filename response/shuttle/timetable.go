@@ -55,22 +55,30 @@ func CreateStopTimetableItem(stop model.Stop) StopRouteTimetableItem {
 	}
 }
 
-func CreateStopArrivalListResponse(stopList []model.Stop) StopArrivalListResponse {
+func CreateStopArrivalListResponse(holidayType string, stopList []model.Stop) StopArrivalListResponse {
 	var stop = make([]StopRouteArrivalItem, 0)
 	for _, stopItem := range stopList {
-		stop = append(stop, CreateStopArrivalItem(stopItem))
+		stop = append(stop, CreateStopArrivalItem(holidayType, stopItem))
 	}
 	return StopArrivalListResponse{Stop: stop}
 }
 
-func CreateStopArrivalItem(stop model.Stop) StopRouteArrivalItem {
+func CreateStopArrivalItem(holidayType string, stop model.Stop) StopRouteArrivalItem {
 	var route = make([]StopRouteArrivalResponse, 0)
 	for _, routeItem := range stop.RouteList {
-		route = append(route, StopRouteArrivalResponse{
-			Name:        routeItem.RouteName,
-			Tag:         routeItem.ShuttleRoute.Tag,
-			ArrivalList: CreateArrival(routeItem.TimetableList),
-		})
+		if holidayType == "halt" {
+			route = append(route, StopRouteArrivalResponse{
+				Name:        routeItem.RouteName,
+				Tag:         routeItem.ShuttleRoute.Tag,
+				ArrivalList: make([]int64, 0),
+			})
+		} else {
+			route = append(route, StopRouteArrivalResponse{
+				Name:        routeItem.RouteName,
+				Tag:         routeItem.ShuttleRoute.Tag,
+				ArrivalList: CreateArrival(routeItem.TimetableList),
+			})
+		}
 	}
 	return StopRouteArrivalItem{
 		Name:  stop.Name,
