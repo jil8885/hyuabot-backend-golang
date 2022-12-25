@@ -1,7 +1,10 @@
 package shuttle
 
 import (
+	"fmt"
 	"time"
+
+	"github.com/golang-module/carbon/v2"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -22,7 +25,13 @@ func GetShuttleStopItem(c *fiber.Ctx) error {
 	// 현재 시간 로딩 (KST)
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
+	lunarYear, lunarMonth, lunarDay := carbon.Now().Lunar().Date()
 
+	var holidayItem model.Holiday
+	utils.DB.Database.Model(&model.Holiday{}).
+		Where("(holiday_date = ? and calendar_type = ?) or (holiday_date = ? and calendar_type = ?)",
+			now.Format("2006-01-02"), "solar", fmt.Sprintf("%d-%d-%d", lunarYear, lunarMonth, lunarDay), "lunar").
+		First(&holidayItem)
 	var periodItem model.Period
 	result := utils.DB.Database.Model(&model.Period{}).
 		Where("period_start <= ?", now).
@@ -31,11 +40,14 @@ func GetShuttleStopItem(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.SendStatus(fiber.StatusNotFound)
 	}
-
+	var holiday = now.Weekday() != time.Saturday && now.Weekday() != time.Sunday
+	if holidayItem.HolidayType == "weekends" {
+		holiday = true
+	}
 	var stopItem model.Stop
 	result = utils.DB.Database.Model(&model.Stop{}).
 		Preload("RouteList.TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
-			periodItem.Type, now, now.Weekday() < 6).
+			periodItem.Type, now, holiday).
 		Preload("RouteList.ShuttleRoute").
 		Where("shuttle_stop.stop_name = ?", c.Params("stop_id")).
 		First(&stopItem)
@@ -43,7 +55,7 @@ func GetShuttleStopItem(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.SendStatus(fiber.StatusNotFound)
 	}
-	return c.JSON(response.CreateStopItemResponse(stopItem))
+	return c.JSON(response.CreateStopItemResponse(holidayItem.HolidayType, stopItem))
 }
 
 // 셔틀버스 정류장 항목 추가
@@ -66,7 +78,13 @@ func GetShuttleStopRoute(c *fiber.Ctx) error {
 	// 현재 시간 로딩 (KST)
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
+	lunarYear, lunarMonth, lunarDay := carbon.Now().Lunar().Date()
 
+	var holidayItem model.Holiday
+	utils.DB.Database.Model(&model.Holiday{}).
+		Where("(holiday_date = ? and calendar_type = ?) or (holiday_date = ? and calendar_type = ?)",
+			now.Format("2006-01-02"), "solar", fmt.Sprintf("%d-%d-%d", lunarYear, lunarMonth, lunarDay), "lunar").
+		First(&holidayItem)
 	var periodItem model.Period
 	result := utils.DB.Database.Model(&model.Period{}).
 		Where("period_start <= ?", now).
@@ -75,11 +93,15 @@ func GetShuttleStopRoute(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.SendStatus(fiber.StatusNotFound)
 	}
+	var holiday = now.Weekday() != time.Saturday && now.Weekday() != time.Sunday
+	if holidayItem.HolidayType == "weekends" {
+		holiday = true
+	}
 
 	var stopRouteItem model.RouteStop
 	result = utils.DB.Database.Model(&model.RouteStop{}).
 		Preload("TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
-			periodItem.Type, now, now.Weekday() < 6).
+			periodItem.Type, now, holiday).
 		Preload("ShuttleRoute").
 		Where("stop_name = ? and route_name = ?",
 			c.Params("stop_id"), c.Params("route_id")).
@@ -88,7 +110,7 @@ func GetShuttleStopRoute(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.SendStatus(fiber.StatusNotFound)
 	}
-	return c.JSON(response.CreateStopRouteItem(stopRouteItem))
+	return c.JSON(response.CreateStopRouteItem(holidayItem.HolidayType, stopRouteItem))
 }
 
 // 셔틀버스 정류장별 시간표 조회
@@ -137,7 +159,7 @@ func GetShuttleStopRouteArrivalTime(c *fiber.Ctx) error {
 	var stopRouteItem model.RouteStop
 	result = utils.DB.Database.Model(&model.RouteStop{}).
 		Preload("TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
-			periodItem.Type, now, now.Weekday() < 6).
+			periodItem.Type, now, now.Weekday() != time.Saturday && now.Weekday() != time.Sunday).
 		Preload("ShuttleRoute").
 		Where("stop_name = ? and route_name = ?",
 			c.Params("stop_id"), c.Params("route_id")).

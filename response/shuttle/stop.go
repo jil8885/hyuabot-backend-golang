@@ -64,10 +64,10 @@ func CreateStopListResponse(stopList []shuttle.StopItem) StopListResponse {
 	return StopListResponse{Stop: stop}
 }
 
-func CreateStopItemResponse(stopItem shuttle.Stop) StopItemResponse {
+func CreateStopItemResponse(holidayType string, stopItem shuttle.Stop) StopItemResponse {
 	var routeStopList []StopRouteItem
 	for _, routeStopItem := range stopItem.RouteList {
-		routeStopList = append(routeStopList, CreateStopRouteItem(routeStopItem))
+		routeStopList = append(routeStopList, CreateStopRouteItem(holidayType, routeStopItem))
 	}
 	return StopItemResponse{
 		Name:      stopItem.Name,
@@ -76,11 +76,11 @@ func CreateStopItemResponse(stopItem shuttle.Stop) StopItemResponse {
 	}
 }
 
-func CreateStopRouteItem(routeStop shuttle.RouteStop) StopRouteItem {
+func CreateStopRouteItem(holidayType string, routeStop shuttle.RouteStop) StopRouteItem {
 	return StopRouteItem{
 		Name:          routeStop.RouteName,
 		Tag:           routeStop.ShuttleRoute.Tag,
-		TimetableList: CreateTimetable(routeStop.TimetableList),
+		TimetableList: CreateTimetable(holidayType, routeStop.TimetableList),
 	}
 }
 
@@ -106,7 +106,7 @@ func CreateStopRouteTimetableResponse(routeStop shuttle.RouteStop) StopRouteTime
 	return StopRouteTimetableResponse{
 		Name:     routeStop.RouteName,
 		Tag:      routeStop.ShuttleRoute.Tag,
-		Weekdays: CreateTimetable(weekdays),
-		Weekends: CreateTimetable(weekends),
+		Weekdays: CreateTimetable("", weekdays),
+		Weekends: CreateTimetable("", weekends),
 	}
 }

@@ -51,10 +51,10 @@ func CreateRouteListResponse(routeList []shuttle.RouteItem) RouteListResponse {
 	return RouteListResponse{Route: route}
 }
 
-func CreateRouteItemResponse(routeItem shuttle.Route) RouteItemResponse {
+func CreateRouteItemResponse(holidayType string, routeItem shuttle.Route) RouteItemResponse {
 	var routeStopList []RouteStopItem
 	for _, routeStopItem := range routeItem.StopList {
-		routeStopList = append(routeStopList, CreateRouteStopItem(routeStopItem.StopName, routeStopItem.TimetableList))
+		routeStopList = append(routeStopList, CreateRouteStopItem(holidayType, routeStopItem.StopName, routeStopItem.TimetableList))
 	}
 	return RouteItemResponse{
 		Name:        routeItem.Name,
@@ -64,21 +64,23 @@ func CreateRouteItemResponse(routeItem shuttle.Route) RouteItemResponse {
 	}
 }
 
-func CreateRouteStopItem(stopName string, timetableList []shuttle.Timetable) RouteStopItem {
+func CreateRouteStopItem(holidayType string, stopName string, timetableList []shuttle.Timetable) RouteStopItem {
 	return RouteStopItem{
 		Name:          stopName,
-		TimetableList: CreateTimetable(timetableList),
+		TimetableList: CreateTimetable(holidayType, timetableList),
 	}
 }
 
-func CreateTimetable(timetableList []shuttle.Timetable) []string {
+func CreateTimetable(holidayType string, timetableList []shuttle.Timetable) []string {
 	var timetable = make([]string, 0)
-	for _, timetableItem := range timetableList {
-		timetable = append(timetable, fmt.Sprintf(
-			"%02d:%02d",
-			timetableItem.DepartureTime.Microseconds/1000000/60/60,
-			timetableItem.DepartureTime.Microseconds/1000000/60%60,
-		))
+	if holidayType != "halt" {
+		for _, timetableItem := range timetableList {
+			timetable = append(timetable, fmt.Sprintf(
+				"%02d:%02d",
+				timetableItem.DepartureTime.Microseconds/1000000/60/60,
+				timetableItem.DepartureTime.Microseconds/1000000/60%60,
+			))
+		}
 	}
 	sort.Slice(timetable, func(i, j int) bool {
 		return timetable[i] < timetable[j]
@@ -104,7 +106,7 @@ func CreateArrival(timetableList []shuttle.Timetable) []int64 {
 	return arrival
 }
 
-func CreateRouteLocationResponse(routeItem shuttle.Route) RouteLocationResponse {
+func CreateRouteLocationResponse(holidayType string, routeItem shuttle.Route) RouteLocationResponse {
 	// 현재 시간 로딩 (KST)
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
@@ -116,20 +118,22 @@ func CreateRouteLocationResponse(routeItem shuttle.Route) RouteLocationResponse 
 	timetable := routeItem.StopList[len(routeItem.StopList)-1].TimetableList
 	remainingTime := 0
 	var location = make([]float64, 0)
-	for _, timetableItem := range timetable {
-		remainingTime = int((timetableItem.DepartureTime.Microseconds/1000000/60/60-int64(now.Hour()))*60 +
-			(timetableItem.DepartureTime.Microseconds/1000000/60%60 - int64(now.Minute())))
-		if remainingTime > cumulativeTimeList[0] {
-			continue
-		}
-		idx := len(cumulativeTimeList)
-		for i, cumulativeTime := range cumulativeTimeList {
-			if remainingTime > cumulativeTime || (remainingTime == cumulativeTime && i > 0) {
-				idx = i
-				break
+	if holidayType != "halt" {
+		for _, timetableItem := range timetable {
+			remainingTime = int((timetableItem.DepartureTime.Microseconds/1000000/60/60-int64(now.Hour()))*60 +
+				(timetableItem.DepartureTime.Microseconds/1000000/60%60 - int64(now.Minute())))
+			if remainingTime > cumulativeTimeList[0] {
+				continue
 			}
+			idx := len(cumulativeTimeList)
+			for i, cumulativeTime := range cumulativeTimeList {
+				if remainingTime > cumulativeTime || (remainingTime == cumulativeTime && i > 0) {
+					idx = i
+					break
+				}
+			}
+			location = append(location, float64(idx)-float64(remainingTime-cumulativeTimeList[idx])/float64(cumulativeTimeList[idx]-cumulativeTimeList[idx-1]))
 		}
-		location = append(location, float64(idx)-float64(remainingTime-cumulativeTimeList[idx])/float64(cumulativeTimeList[idx]-cumulativeTimeList[idx-1]))
 	}
 	sort.Slice(location, func(i, j int) bool {
 		return location[i] < location[j]
