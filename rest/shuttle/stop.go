@@ -2,8 +2,9 @@ package shuttle
 
 import (
 	"fmt"
-	"github.com/golang-module/carbon/v2"
 	"time"
+
+	"github.com/golang-module/carbon/v2"
 
 	"github.com/gofiber/fiber/v2"
 
