@@ -96,7 +96,7 @@ func CreateStopRouteItem(routeStop bus.RouteStop) StopRouteItem {
 }
 
 func CreateStartStop(stop bus.Stop, timetable []bus.Timetable) StartStop {
-	var timetableList []string
+	var timetableList = make([]string, 0)
 	for _, time := range timetable {
 		timetableList = append(timetableList, time.DepartureTime)
 	}
