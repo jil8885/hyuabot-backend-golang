@@ -28,12 +28,12 @@ func GetShuttleStopItem(c *fiber.Ctx) error {
 	lunarYear, lunarMonth, lunarDay := carbon.Now().Lunar().Date()
 
 	var holidayItem model.Holiday
-	result := utils.DB.Database.Model(&model.Holiday{}).
+	utils.DB.Database.Model(&model.Holiday{}).
 		Where("(holiday_date = ? and calendar_type = ?) or (holiday_date = ? and calendar_type = ?)",
 			now.Format("2006-01-02"), "solar", fmt.Sprintf("%d-%d-%d", lunarYear, lunarMonth, lunarDay), "lunar").
 		First(&holidayItem)
 	var periodItem model.Period
-	result = utils.DB.Database.Model(&model.Period{}).
+	result := utils.DB.Database.Model(&model.Period{}).
 		Where("period_start <= ?", now).
 		Where("period_end >= ?", now).
 		First(&periodItem)
@@ -81,12 +81,12 @@ func GetShuttleStopRoute(c *fiber.Ctx) error {
 	lunarYear, lunarMonth, lunarDay := carbon.Now().Lunar().Date()
 
 	var holidayItem model.Holiday
-	result := utils.DB.Database.Model(&model.Holiday{}).
+	utils.DB.Database.Model(&model.Holiday{}).
 		Where("(holiday_date = ? and calendar_type = ?) or (holiday_date = ? and calendar_type = ?)",
 			now.Format("2006-01-02"), "solar", fmt.Sprintf("%d-%d-%d", lunarYear, lunarMonth, lunarDay), "lunar").
 		First(&holidayItem)
 	var periodItem model.Period
-	result = utils.DB.Database.Model(&model.Period{}).
+	result := utils.DB.Database.Model(&model.Period{}).
 		Where("period_start <= ?", now).
 		Where("period_end >= ?", now).
 		First(&periodItem)
