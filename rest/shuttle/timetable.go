@@ -54,7 +54,7 @@ func GetShuttleArrivalTime(c *fiber.Ctx) error {
 	var stopList []model.Stop
 	result = utils.DB.Database.Model(&model.Stop{}).
 		Preload("RouteList.TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
-			periodItem.Type, now, now.Weekday() < 6).
+			periodItem.Type, now, now.Weekday() != time.Saturday && now.Weekday() != time.Sunday).
 		Preload("RouteList.ShuttleRoute").
 		Find(&stopList)
 	// 해당 노선 ID가 존재하지 않는 경우

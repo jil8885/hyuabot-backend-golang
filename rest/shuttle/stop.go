@@ -35,7 +35,7 @@ func GetShuttleStopItem(c *fiber.Ctx) error {
 	var stopItem model.Stop
 	result = utils.DB.Database.Model(&model.Stop{}).
 		Preload("RouteList.TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
-			periodItem.Type, now, now.Weekday() < 6).
+			periodItem.Type, now, now.Weekday() != time.Saturday && now.Weekday() != time.Sunday).
 		Preload("RouteList.ShuttleRoute").
 		Where("shuttle_stop.stop_name = ?", c.Params("stop_id")).
 		First(&stopItem)
@@ -79,7 +79,7 @@ func GetShuttleStopRoute(c *fiber.Ctx) error {
 	var stopRouteItem model.RouteStop
 	result = utils.DB.Database.Model(&model.RouteStop{}).
 		Preload("TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
-			periodItem.Type, now, now.Weekday() < 6).
+			periodItem.Type, now, now.Weekday() != time.Saturday && now.Weekday() != time.Sunday).
 		Preload("ShuttleRoute").
 		Where("stop_name = ? and route_name = ?",
 			c.Params("stop_id"), c.Params("route_id")).
@@ -137,7 +137,7 @@ func GetShuttleStopRouteArrivalTime(c *fiber.Ctx) error {
 	var stopRouteItem model.RouteStop
 	result = utils.DB.Database.Model(&model.RouteStop{}).
 		Preload("TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
-			periodItem.Type, now, now.Weekday() < 6).
+			periodItem.Type, now, now.Weekday() != time.Saturday && now.Weekday() != time.Sunday).
 		Preload("ShuttleRoute").
 		Where("stop_name = ? and route_name = ?",
 			c.Params("stop_id"), c.Params("route_id")).
