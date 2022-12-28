@@ -144,7 +144,11 @@ func CreateStationTimetableGroup(timetableList []subway.Timetable, maxUp int, ma
 	// 현재 시간 로딩 (KST)
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
-
+	for i := 0; i < len(timetableList); i++ {
+		if strings.HasPrefix(timetableList[i].DepartureTime, "00:") {
+			timetableList[i].DepartureTime = strings.Replace(timetableList[i].DepartureTime, "00:", "24:", 1)
+		}
+	}
 	sort.Slice(timetableList, func(i, j int) bool {
 		return timetableList[i].DepartureTime < timetableList[j].DepartureTime
 	})
@@ -235,6 +239,9 @@ func CreateStationArrivalGroup(realtimeList []subway.Realtime, timetableList []s
 	for _, timetableItem := range timetableList {
 		hour, _ := strconv.Atoi(strings.Split(timetableItem.DepartureTime, ":")[0])
 		minute, _ := strconv.Atoi(strings.Split(timetableItem.DepartureTime, ":")[1])
+		if hour < 4 {
+			hour += 24
+		}
 		remainingTime := (hour-now.Hour())*60 + (minute - now.Minute())
 		if timetableItem.Heading == "up" && remainingTime > maxUp {
 			up = append(up, StationArrivalItem{

@@ -46,7 +46,7 @@ func GetBusStopItem(c *fiber.Ctx) error {
 	result := utils.DB.Database.Model(&model.Stop{}).
 		Preload("RouteList.RouteItem").
 		Preload("RouteList.StartStop").
-		Preload("RouteList.TimetableList", "weekday = ? and departure_time > ?",
+		Preload("RouteList.TimetableList", "weekday = ? and (departure_time > ? or departure_time < '04:00:00')",
 			isWeekend(now),
 			fmt.Sprintf("%02d:%02d:%02d", now.Hour(), now.Minute(), now.Second())).
 		Preload("RouteList.RealtimeList").
