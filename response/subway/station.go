@@ -55,6 +55,7 @@ type StationTimetableHeadingGroup struct {
 }
 
 type StationTimetableItem struct {
+	StartStationName    string `json:"start"`
 	TerminalStationName string `json:"terminal"`
 	DepartureTime       string `json:"departureTime"`
 }
@@ -182,6 +183,7 @@ func CreateStationEntireTimetableGroup(timetableList []subway.Timetable) Station
 
 func CreateStationTimetableItem(timetableItem subway.Timetable) StationTimetableItem {
 	return StationTimetableItem{
+		StartStationName:    timetableItem.StartStation.StationName,
 		TerminalStationName: timetableItem.TerminalStation.StationName,
 		DepartureTime:       timetableItem.DepartureTime,
 	}
