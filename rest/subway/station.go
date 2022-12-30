@@ -39,7 +39,11 @@ func GetStationItem(c *fiber.Ctx) error {
 	// 기준 날짜 로딩
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
-
+	entireTimetable := false
+	entireTimetableQuery := c.Query("all")
+	if entireTimetableQuery == "true" {
+		entireTimetable = true
+	}
 	var stationItem model.RouteStationItem
 	stationID := c.Params("station_id")
 	utils.DB.Database.
@@ -52,7 +56,7 @@ func GetStationItem(c *fiber.Ctx) error {
 		Preload("TimetableList.TerminalStation").
 		Where("station_id = ?", stationID).
 		First(&stationItem)
-	return c.JSON(response.CreateStationItemResponse(stationItem))
+	return c.JSON(response.CreateStationItemResponse(stationItem, entireTimetable))
 }
 
 // 전철역 항목 추가

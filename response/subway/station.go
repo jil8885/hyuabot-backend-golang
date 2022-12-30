@@ -94,14 +94,14 @@ func CreateStationListItem(stationItem subway.RouteStationListItem) StationListI
 	}
 }
 
-func CreateStationItemResponse(stationItem subway.RouteStationItem) StationItemResponse {
+func CreateStationItemResponse(stationItem subway.RouteStationItem, entireTimetable bool) StationItemResponse {
 	realtime, maxUP, maxDown := CreateStationRealtimeGroup(stationItem.RealtimeList)
 	return StationItemResponse{
 		StationID:   stationItem.StationID,
 		StationName: stationItem.StationName,
 		RouteID:     stationItem.RouteID,
 		Realtime:    realtime,
-		Timetable:   CreateStationTimetableGroup(stationItem.TimetableList, maxUP, maxDown),
+		Timetable:   CreateStationTimetableGroup(stationItem.TimetableList, maxUP, maxDown, entireTimetable),
 	}
 }
 
@@ -141,7 +141,7 @@ func CreateStationRealtimeItem(realtimeItem subway.Realtime) StationRealtimeItem
 	}
 }
 
-func CreateStationTimetableGroup(timetableList []subway.Timetable, maxUp int, maxDown int) StationTimetableHeadingGroup {
+func CreateStationTimetableGroup(timetableList []subway.Timetable, maxUp int, maxDown int, entireTimetable bool) StationTimetableHeadingGroup {
 	// 현재 시간 로딩 (KST)
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	now := time.Now().In(loc)
@@ -159,9 +159,9 @@ func CreateStationTimetableGroup(timetableList []subway.Timetable, maxUp int, ma
 		hour, _ := strconv.Atoi(strings.Split(timetableItem.DepartureTime, ":")[0])
 		minute, _ := strconv.Atoi(strings.Split(timetableItem.DepartureTime, ":")[1])
 		remainingTime := (hour-now.Hour())*60 + (minute - now.Minute())
-		if timetableItem.Heading == "up" && remainingTime > maxUp {
+		if timetableItem.Heading == "up" && (remainingTime > maxUp || entireTimetable) {
 			up = append(up, CreateStationTimetableItem(timetableItem))
-		} else if timetableItem.Heading == "down" && remainingTime > maxDown {
+		} else if timetableItem.Heading == "down" && (remainingTime > maxDown || entireTimetable) {
 			down = append(down, CreateStationTimetableItem(timetableItem))
 		}
 	}
