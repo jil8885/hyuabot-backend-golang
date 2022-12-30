@@ -48,6 +48,7 @@ func GetStationItem(c *fiber.Ctx) error {
 		Preload("TimetableList", "weekday = ? and (departure_time > ? or departure_time < '01:00:00')",
 			isWeekend(now),
 			fmt.Sprintf("%02d:%02d:%02d", now.Hour(), now.Minute(), now.Second())).
+		Preload("TimetableList.StartStation").
 		Preload("TimetableList.TerminalStation").
 		Where("station_id = ?", stationID).
 		First(&stationItem)
@@ -83,6 +84,7 @@ func GetStationArrival(c *fiber.Ctx) error {
 		Preload("TimetableList", "weekday = ? and (departure_time > ? or departure_time < '01:00:00')",
 			isWeekend(now),
 			fmt.Sprintf("%02d:%02d:%02d", now.Hour(), now.Minute(), now.Second())).
+		Preload("TimetableList.StartStation").
 		Preload("TimetableList.TerminalStation").
 		Where("station_id = ?", stationID).
 		First(&stationItem)
@@ -96,6 +98,7 @@ func GetStationTimeTable(c *fiber.Ctx) error {
 	utils.DB.Database.
 		Model(&model.RouteStation{}).
 		Preload("RealtimeList.TerminalStation").
+		Preload("TimetableList.StartStation").
 		Preload("TimetableList.TerminalStation").
 		Where("station_id = ?", stationID).
 		First(&stationItem)
