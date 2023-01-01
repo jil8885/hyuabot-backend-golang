@@ -2,9 +2,10 @@ package shuttle
 
 import (
 	"fmt"
-	"github.com/golang-module/carbon/v2"
 	"sort"
 	"time"
+
+	"github.com/golang-module/carbon/v2"
 
 	"github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
 )
