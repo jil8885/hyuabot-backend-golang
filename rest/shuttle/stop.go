@@ -22,32 +22,33 @@ func GetShuttleStopList(c *fiber.Ctx) error {
 
 // 셔틀버스 정류장 항목 조회
 func GetShuttleStopItem(c *fiber.Ctx) error {
-	// 현재 시간 로딩 (KST)
-	loc, _ := time.LoadLocation("Asia/Seoul")
-	now := time.Now().In(loc)
-	lunarYear, lunarMonth, lunarDay := carbon.Now().Lunar().Date()
-
+	dateQuery := c.Query("date")
+	now := carbon.Now("Asia/Seoul")
+	date := now
+	if dateQuery != "" {
+		date = carbon.Parse(dateQuery, "Asia/Seoul").SetTime(now.Hour(), now.Minute(), now.Second())
+	}
+	lunarYear, lunarMonth, lunarDay := date.Lunar().Date()
 	var holidayItem model.Holiday
 	utils.DB.Database.Model(&model.Holiday{}).
 		Where("(holiday_date = ? and calendar_type = ?) or (holiday_date = ? and calendar_type = ?)",
-			now.Format("2006-01-02"), "solar", fmt.Sprintf("%d-%d-%d", lunarYear, lunarMonth, lunarDay), "lunar").
+			date.ToDateString(), "solar", fmt.Sprintf("%d-%d-%d", lunarYear, lunarMonth, lunarDay), "lunar").
 		First(&holidayItem)
 	var periodItem model.Period
 	result := utils.DB.Database.Model(&model.Period{}).
-		Where("period_start <= ?", now).
-		Where("period_end >= ?", now).
+		Where("period_start <= ?", date).
+		Where("period_end >= ?", date).
 		First(&periodItem)
 	if result.Error != nil {
 		return c.SendStatus(fiber.StatusNotFound)
 	}
-	var holiday = now.Weekday() != time.Saturday && now.Weekday() != time.Sunday
+	holiday := date.IsWeekday()
 	if holidayItem.HolidayType == "weekends" {
 		holiday = true
 	}
 	var stopItem model.Stop
 	result = utils.DB.Database.Model(&model.Stop{}).
-		Preload("RouteList.TimetableList", "period_type = ? and departure_time >= ? and weekday = ?",
-			periodItem.Type, now, holiday).
+		Preload("RouteList.TimetableList", "period_type = ?", periodItem.Type).
 		Preload("RouteList.ShuttleRoute").
 		Where("shuttle_stop.stop_name = ?", c.Params("stop_id")).
 		First(&stopItem)
@@ -55,7 +56,7 @@ func GetShuttleStopItem(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.SendStatus(fiber.StatusNotFound)
 	}
-	return c.JSON(response.CreateStopItemResponse(holidayItem.HolidayType, stopItem))
+	return c.JSON(response.CreateStopItemResponse(holidayItem.HolidayType, holiday, date, stopItem))
 }
 
 // 셔틀버스 정류장 항목 추가
@@ -75,25 +76,27 @@ func DeleteShuttleStopItem(c *fiber.Ctx) error {
 
 // 셔틀버스 정류장 경유 노선 조회
 func GetShuttleStopRoute(c *fiber.Ctx) error {
-	// 현재 시간 로딩 (KST)
-	loc, _ := time.LoadLocation("Asia/Seoul")
-	now := time.Now().In(loc)
-	lunarYear, lunarMonth, lunarDay := carbon.Now().Lunar().Date()
-
+	dateQuery := c.Query("date")
+	now := carbon.Now("Asia/Seoul")
+	date := now
+	if dateQuery != "" {
+		date = carbon.Parse(dateQuery, "Asia/Seoul").SetTime(now.Hour(), now.Minute(), now.Second())
+	}
+	lunarYear, lunarMonth, lunarDay := date.Lunar().Date()
 	var holidayItem model.Holiday
 	utils.DB.Database.Model(&model.Holiday{}).
 		Where("(holiday_date = ? and calendar_type = ?) or (holiday_date = ? and calendar_type = ?)",
-			now.Format("2006-01-02"), "solar", fmt.Sprintf("%d-%d-%d", lunarYear, lunarMonth, lunarDay), "lunar").
+			date.ToDateString(), "solar", fmt.Sprintf("%d-%d-%d", lunarYear, lunarMonth, lunarDay), "lunar").
 		First(&holidayItem)
 	var periodItem model.Period
 	result := utils.DB.Database.Model(&model.Period{}).
-		Where("period_start <= ?", now).
-		Where("period_end >= ?", now).
+		Where("period_start <= ?", date).
+		Where("period_end >= ?", date).
 		First(&periodItem)
 	if result.Error != nil {
 		return c.SendStatus(fiber.StatusNotFound)
 	}
-	var holiday = now.Weekday() != time.Saturday && now.Weekday() != time.Sunday
+	var holiday = now.IsWeekday()
 	if holidayItem.HolidayType == "weekends" {
 		holiday = true
 	}
@@ -110,7 +113,7 @@ func GetShuttleStopRoute(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.SendStatus(fiber.StatusNotFound)
 	}
-	return c.JSON(response.CreateStopRouteItem(holidayItem.HolidayType, stopRouteItem))
+	return c.JSON(response.CreateStopRouteItem(holidayItem.HolidayType, holiday, date, stopRouteItem))
 }
 
 // 셔틀버스 정류장별 시간표 조회

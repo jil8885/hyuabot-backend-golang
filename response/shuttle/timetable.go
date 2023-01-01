@@ -1,6 +1,7 @@
 package shuttle
 
 import (
+	"github.com/golang-module/carbon/v2"
 	model "github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
 )
 
@@ -32,6 +33,7 @@ func CreateStopTimetableListResponse(stopList []model.Stop) StopTimetableListRes
 
 func CreateStopTimetableItem(stop model.Stop) StopRouteTimetableItem {
 	var route = make([]StopRouteTimetableResponse, 0)
+	date := carbon.Now().SetTime(0, 0, 0)
 	for _, routeItem := range stop.RouteList {
 		var weekdays = make([]model.Timetable, 0)
 		var weekends = make([]model.Timetable, 0)
@@ -45,8 +47,8 @@ func CreateStopTimetableItem(stop model.Stop) StopRouteTimetableItem {
 		route = append(route, StopRouteTimetableResponse{
 			Name:     routeItem.RouteName,
 			Tag:      routeItem.ShuttleRoute.Tag,
-			Weekdays: CreateTimetable("", weekdays),
-			Weekends: CreateTimetable("", weekends),
+			Weekdays: CreateTimetable("", true, date, weekdays),
+			Weekends: CreateTimetable("", false, date, weekends),
 		})
 	}
 	return StopRouteTimetableItem{

@@ -5,6 +5,8 @@ import (
 	"sort"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
 )
 
@@ -51,10 +53,10 @@ func CreateRouteListResponse(routeList []shuttle.RouteItem) RouteListResponse {
 	return RouteListResponse{Route: route}
 }
 
-func CreateRouteItemResponse(holidayType string, routeItem shuttle.Route) RouteItemResponse {
+func CreateRouteItemResponse(holidayType string, holiday bool, currentTime carbon.Carbon, routeItem shuttle.Route) RouteItemResponse {
 	var routeStopList []RouteStopItem
 	for _, routeStopItem := range routeItem.StopList {
-		routeStopList = append(routeStopList, CreateRouteStopItem(holidayType, routeStopItem.StopName, routeStopItem.TimetableList))
+		routeStopList = append(routeStopList, CreateRouteStopItem(holidayType, holiday, currentTime, routeStopItem.StopName, routeStopItem.TimetableList))
 	}
 	return RouteItemResponse{
 		Name:        routeItem.Name,
@@ -64,17 +66,21 @@ func CreateRouteItemResponse(holidayType string, routeItem shuttle.Route) RouteI
 	}
 }
 
-func CreateRouteStopItem(holidayType string, stopName string, timetableList []shuttle.Timetable) RouteStopItem {
+func CreateRouteStopItem(holidayType string, holiday bool, currentTime carbon.Carbon, stopName string, timetableList []shuttle.Timetable) RouteStopItem {
 	return RouteStopItem{
 		Name:          stopName,
-		TimetableList: CreateTimetable(holidayType, timetableList),
+		TimetableList: CreateTimetable(holidayType, holiday, currentTime, timetableList),
 	}
 }
 
-func CreateTimetable(holidayType string, timetableList []shuttle.Timetable) []string {
+func CreateTimetable(holidayType string, holiday bool, currentTime carbon.Carbon, timetableList []shuttle.Timetable) []string {
 	var timetable = make([]string, 0)
 	if holidayType != "halt" {
 		for _, timetableItem := range timetableList {
+			if timetableItem.Weekday != holiday ||
+				fmt.Sprintf("%02d:%02d", timetableItem.DepartureTime.Microseconds/1000000/60/60, timetableItem.DepartureTime.Microseconds/1000000/60%60) < currentTime.Format("15:04") {
+				continue
+			}
 			timetable = append(timetable, fmt.Sprintf(
 				"%02d:%02d",
 				timetableItem.DepartureTime.Microseconds/1000000/60/60,

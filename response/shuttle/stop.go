@@ -3,6 +3,7 @@ package shuttle
 import (
 	"fmt"
 
+	"github.com/golang-module/carbon/v2"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/model/shuttle"
 )
 
@@ -27,9 +28,10 @@ type StopLocation struct {
 }
 
 type StopRouteItem struct {
-	Name          string   `json:"name"`
-	Tag           string   `json:"tag"`
-	TimetableList []string `json:"timetable"`
+	Name          string      `json:"name"`
+	Tag           string      `json:"tag"`
+	RunningTime   RunningTime `json:"runningTime"`
+	TimetableList []string    `json:"timetable"`
 }
 
 type StopRouteResponse struct {
@@ -50,6 +52,16 @@ type StopRouteArrivalResponse struct {
 	ArrivalList []int64 `json:"arrival"`
 }
 
+type RunningTime struct {
+	Weekdays FirstLastTime `json:"weekdays"`
+	Weekends FirstLastTime `json:"weekends"`
+}
+
+type FirstLastTime struct {
+	FirstTime string `json:"first"`
+	LastTime  string `json:"last"`
+}
+
 func CreateStopListResponse(stopList []shuttle.StopItem) StopListResponse {
 	var stop []StopListItem
 	for _, routeItem := range stopList {
@@ -64,10 +76,10 @@ func CreateStopListResponse(stopList []shuttle.StopItem) StopListResponse {
 	return StopListResponse{Stop: stop}
 }
 
-func CreateStopItemResponse(holidayType string, stopItem shuttle.Stop) StopItemResponse {
+func CreateStopItemResponse(holidayType string, holiday bool, currentTime carbon.Carbon, stopItem shuttle.Stop) StopItemResponse {
 	var routeStopList []StopRouteItem
 	for _, routeStopItem := range stopItem.RouteList {
-		routeStopList = append(routeStopList, CreateStopRouteItem(holidayType, routeStopItem))
+		routeStopList = append(routeStopList, CreateStopRouteItem(holidayType, holiday, currentTime, routeStopItem))
 	}
 	return StopItemResponse{
 		Name:      stopItem.Name,
@@ -76,11 +88,52 @@ func CreateStopItemResponse(holidayType string, stopItem shuttle.Stop) StopItemR
 	}
 }
 
-func CreateStopRouteItem(holidayType string, routeStop shuttle.RouteStop) StopRouteItem {
+func CreateStopRouteItem(holidayType string, holiday bool, currentTime carbon.Carbon, routeStop shuttle.RouteStop) StopRouteItem {
 	return StopRouteItem{
 		Name:          routeStop.RouteName,
 		Tag:           routeStop.ShuttleRoute.Tag,
-		TimetableList: CreateTimetable(holidayType, routeStop.TimetableList),
+		RunningTime:   CreateRunningTime(routeStop.TimetableList),
+		TimetableList: CreateTimetable(holidayType, holiday, currentTime, routeStop.TimetableList),
+	}
+}
+
+func CreateRunningTime(timetable []shuttle.Timetable) RunningTime {
+	weekdaysFirstTime := ""
+	weekdaysLastTime := ""
+	weekendsFirstTime := ""
+	weekendsLastTime := ""
+	for _, timetableItem := range timetable {
+		if timetableItem.Weekday {
+			if weekdaysFirstTime == "" {
+				weekdaysFirstTime = fmt.Sprintf(
+					"%02d:%02d",
+					timetableItem.DepartureTime.Microseconds/1000000/60/60,
+					timetableItem.DepartureTime.Microseconds/1000000/60%60,
+				)
+			}
+			weekdaysLastTime = fmt.Sprintf(
+				"%02d:%02d",
+				timetableItem.DepartureTime.Microseconds/1000000/60/60,
+				timetableItem.DepartureTime.Microseconds/1000000/60%60,
+			)
+		} else {
+			if weekendsFirstTime == "" {
+				weekendsFirstTime = fmt.Sprintf(
+					"%02d:%02d",
+					timetableItem.DepartureTime.Microseconds/1000000/60/60,
+					timetableItem.DepartureTime.Microseconds/1000000/60%60,
+				)
+			}
+			weekendsLastTime = fmt.Sprintf(
+				"%02d:%02d",
+				timetableItem.DepartureTime.Microseconds/1000000/60/60,
+				timetableItem.DepartureTime.Microseconds/1000000/60%60,
+			)
+		}
+	}
+	return RunningTime{
+		Weekdays: FirstLastTime{FirstTime: weekdaysFirstTime, LastTime: weekdaysLastTime},
+		Weekends: FirstLastTime{FirstTime: weekendsFirstTime, LastTime: weekendsLastTime},
 	}
 }
 
@@ -102,11 +155,11 @@ func CreateStopRouteTimetableResponse(routeStop shuttle.RouteStop) StopRouteTime
 			weekends = append(weekends, timetable)
 		}
 	}
-	fmt.Println(routeStop.ShuttleRoute)
+	date := carbon.Now().SetTime(0, 0, 0)
 	return StopRouteTimetableResponse{
 		Name:     routeStop.RouteName,
 		Tag:      routeStop.ShuttleRoute.Tag,
-		Weekdays: CreateTimetable("", weekdays),
-		Weekends: CreateTimetable("", weekends),
+		Weekdays: CreateTimetable("", true, date, weekdays),
+		Weekends: CreateTimetable("", false, date, weekends),
 	}
 }
