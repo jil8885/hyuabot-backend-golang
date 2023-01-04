@@ -78,7 +78,7 @@ func CreateTimetable(holidayType string, holiday bool, currentTime carbon.Carbon
 	if holidayType != "halt" {
 		for _, timetableItem := range timetableList {
 			if timetableItem.Weekday != holiday ||
-				fmt.Sprintf("%02d:%02d", timetableItem.DepartureTime.Microseconds/1000000/60/60, timetableItem.DepartureTime.Microseconds/1000000/60%60) < currentTime.Format("15:04") {
+				fmt.Sprintf("%02d:%02d", timetableItem.DepartureTime.Microseconds/1000000/60/60, timetableItem.DepartureTime.Microseconds/1000000/60%60) < currentTime.ToTimeString()[0:5] {
 				continue
 			}
 			timetable = append(timetable, fmt.Sprintf(
