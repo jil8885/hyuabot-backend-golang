@@ -38,10 +38,11 @@ type StartStop struct {
 }
 
 type RealtimeItem struct {
-	RemainingStop int  `json:"stop"`
-	RemainingTime int  `json:"time"`
-	RemainingSeat int  `json:"seat"`
-	LowPlate      bool `json:"lowPlate"`
+	RemainingStop int    `json:"stop"`
+	RemainingTime int    `json:"time"`
+	RemainingSeat int    `json:"seat"`
+	LowPlate      bool   `json:"lowPlate"`
+	LastUpdate    string `json:"lastUpdate"`
 }
 
 type RouteTimetableResponse struct {
@@ -113,6 +114,7 @@ func CreateRealtimeItem(realtime bus.Realtime) RealtimeItem {
 		RemainingTime: realtime.RemainingTime,
 		RemainingSeat: realtime.RemainingSeatCount,
 		LowPlate:      realtime.LowPlate,
+		LastUpdate:    realtime.LastUpdateTime.Format("2006-01-02 15:04:05"),
 	}
 }
 

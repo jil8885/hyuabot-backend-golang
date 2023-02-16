@@ -47,6 +47,7 @@ type StationRealtimeItem struct {
 	IsExpress           bool   `json:"express"`
 	IsUp                bool   `json:"heading"`
 	CurrentLocation     string `json:"location"`
+	LastUpdate          string `json:"lastUpdate"`
 }
 
 type StationTimetableHeadingGroup struct {
@@ -71,6 +72,7 @@ type StationArrivalItem struct {
 	RemainingStop       int    `json:"stop"`
 	CurrentStationName  string `json:"current"`
 	DataType            string `json:"type"`
+	LastUpdate          string `json:"lastUpdate"`
 }
 
 type StationTimetableResponse struct {
@@ -138,6 +140,7 @@ func CreateStationRealtimeItem(realtimeItem subway.Realtime) StationRealtimeItem
 		IsExpress:           realtimeItem.IsExpress,
 		IsUp:                realtimeItem.Heading,
 		CurrentLocation:     realtimeItem.Current,
+		LastUpdate:          realtimeItem.LastUpdateTime.Format("2006-01-02 15:04:05"),
 	}
 }
 
@@ -223,6 +226,7 @@ func CreateStationArrivalGroup(realtimeList []subway.Realtime, timetableList []s
 				RemainingTime:       realtimeItem.RemainingTime,
 				RemainingStop:       realtimeItem.RemainingStop,
 				CurrentStationName:  realtimeItem.Current,
+				LastUpdate:          realtimeItem.LastUpdateTime.Format("2006-01-02 15:04:05"),
 				DataType:            "realtime",
 			})
 		} else {
@@ -234,6 +238,7 @@ func CreateStationArrivalGroup(realtimeList []subway.Realtime, timetableList []s
 				RemainingTime:       realtimeItem.RemainingTime,
 				RemainingStop:       realtimeItem.RemainingStop,
 				CurrentStationName:  realtimeItem.Current,
+				LastUpdate:          realtimeItem.LastUpdateTime.Format("2006-01-02 15:04:05"),
 				DataType:            "realtime",
 			})
 		}
@@ -251,6 +256,7 @@ func CreateStationArrivalGroup(realtimeList []subway.Realtime, timetableList []s
 				RemainingTime:       remainingTime,
 				RemainingStop:       -1,
 				CurrentStationName:  "",
+				LastUpdate:          "",
 				DataType:            "timetable",
 			})
 		} else if timetableItem.Heading == "down" && remainingTime > maxDown {
@@ -259,6 +265,7 @@ func CreateStationArrivalGroup(realtimeList []subway.Realtime, timetableList []s
 				RemainingTime:       remainingTime,
 				RemainingStop:       -1,
 				CurrentStationName:  "",
+				LastUpdate:          "",
 				DataType:            "timetable",
 			})
 		}
