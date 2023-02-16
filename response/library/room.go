@@ -7,12 +7,13 @@ type RoomListResponse struct {
 }
 
 type RoomItemResponse struct {
-	RoomID    int    `json:"room_id"`
-	Name      string `json:"name"`
-	Total     int    `json:"total"`
-	Active    int    `json:"active"`
-	Occupied  int    `json:"occupied"`
-	Available int    `json:"available"`
+	RoomID     int    `json:"room_id"`
+	Name       string `json:"name"`
+	Total      int    `json:"total"`
+	Active     int    `json:"active"`
+	Occupied   int    `json:"occupied"`
+	Available  int    `json:"available"`
+	LastUpdate string `json:"lastUpdate"`
 }
 
 func CreateRoomListResponse(roomList []library.Room) RoomListResponse {
@@ -25,11 +26,12 @@ func CreateRoomListResponse(roomList []library.Room) RoomListResponse {
 
 func CreateRoomItemResponse(roomItem library.Room) RoomItemResponse {
 	return RoomItemResponse{
-		RoomID:    roomItem.RoomID,
-		Name:      roomItem.Name,
-		Total:     roomItem.Total,
-		Active:    roomItem.Active,
-		Occupied:  roomItem.Occupied,
-		Available: roomItem.Available,
+		RoomID:     roomItem.RoomID,
+		Name:       roomItem.Name,
+		Total:      roomItem.Total,
+		Active:     roomItem.Active,
+		Occupied:   roomItem.Occupied,
+		Available:  roomItem.Available,
+		LastUpdate: roomItem.LastUpdatedTime.Format("2006-01-02 15:04:05"),
 	}
 }
