@@ -122,11 +122,10 @@ func CreateRouteLocationResponse(holidayType string, routeItem shuttle.Route) Ro
 		cumulativeTimeList[i] = routeItem.StopList[len(routeItem.StopList)-1].CumulativeTime - routeStopItem.CumulativeTime
 	}
 	timetable := routeItem.StopList[len(routeItem.StopList)-1].TimetableList
-	remainingTime := 0
 	var location = make([]float64, 0)
 	if holidayType != "halt" {
 		for _, timetableItem := range timetable {
-			remainingTime = int((timetableItem.DepartureTime.Microseconds/1000000/60/60-int64(now.Hour()))*60 +
+			remainingTime := int((timetableItem.DepartureTime.Microseconds/1000000/60/60-int64(now.Hour()))*60 +
 				(timetableItem.DepartureTime.Microseconds/1000000/60%60 - int64(now.Minute())))
 			if remainingTime > cumulativeTimeList[0] {
 				continue

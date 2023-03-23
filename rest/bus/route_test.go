@@ -3,17 +3,18 @@ package bus
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/response/bus"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/util"
 	"github.com/stretchr/testify/assert"
-	"io"
-	"net/http/httptest"
-	"testing"
 )
 
 func TestGetBusRouteList(t *testing.T) {
-	testing := assert.New(t)
+	test := assert.New(t)
 	// Get all bus routes
 	t.Log("TestGetBusRouteList")
 	util.ConnectDB()
@@ -21,22 +22,22 @@ func TestGetBusRouteList(t *testing.T) {
 	app.Get("/rest/bus/route", GetBusRouteList)
 	request := httptest.NewRequest("GET", "/rest/bus/route", nil)
 	res, err := app.Test(request)
-	testing.Nil(err)
-	testing.Equal(200, res.StatusCode)
+	test.Nil(err)
+	test.Equal(200, res.StatusCode)
 
 	body, err := io.ReadAll(res.Body)
-	testing.Nil(err)
+	test.Nil(err)
 
 	var obj bus.RouteListResponse
 	err = json.Unmarshal(body, &obj)
-	testing.Nil(err)
+	test.Nil(err)
 
-	testing.IsType([]bus.RouteListItem{}, obj.Route)
-	testing.Greater(len(obj.Route), 0, "There should be at least one bus route")
+	test.IsType([]bus.RouteListItem{}, obj.Route)
+	test.Greater(len(obj.Route), 0, "There should be at least one bus route")
 	for _, route := range obj.Route {
-		testing.IsType(bus.RouteListItem{}, route)
-		testing.IsType("", route.Name)
-		testing.IsType(0, route.ID)
+		test.IsType(bus.RouteListItem{}, route)
+		test.IsType("", route.Name)
+		test.IsType(0, route.ID)
 	}
 
 	// Get bus routes by name
@@ -45,28 +46,28 @@ func TestGetBusRouteList(t *testing.T) {
 	for _, keyword := range searchKeywords {
 		request = httptest.NewRequest("GET", "/rest/bus/route?name="+keyword, nil)
 		res, err = app.Test(request)
-		testing.Nil(err)
-		testing.Equal(200, res.StatusCode)
+		test.Nil(err)
+		test.Equal(200, res.StatusCode)
 
 		body, err = io.ReadAll(res.Body)
-		testing.Nil(err)
+		test.Nil(err)
 
 		err = json.Unmarshal(body, &obj)
-		testing.Nil(err)
+		test.Nil(err)
 
-		testing.IsType([]bus.RouteListItem{}, obj.Route)
-		testing.Greater(len(obj.Route), 0, "There should be at least one bus route")
+		test.IsType([]bus.RouteListItem{}, obj.Route)
+		test.Greater(len(obj.Route), 0, "There should be at least one bus route")
 		for _, route := range obj.Route {
-			testing.IsType(bus.RouteListItem{}, route)
-			testing.IsType("", route.Name)
-			testing.IsType(0, route.ID)
-			testing.Contains(route.Name, keyword, "The route name should contain the keyword")
+			test.IsType(bus.RouteListItem{}, route)
+			test.IsType("", route.Name)
+			test.IsType(0, route.ID)
+			test.Contains(route.Name, keyword, "The route name should contain the keyword")
 		}
 	}
 }
 
 func TestGetBusRouteItem(t *testing.T) {
-	testing := assert.New(t)
+	test := assert.New(t)
 	// Get bus route item
 	t.Log("TestGetBusRouteItem")
 	util.ConnectDB()
@@ -79,36 +80,36 @@ func TestGetBusRouteItem(t *testing.T) {
 		fmt.Println("Testing route", routeID)
 		request := httptest.NewRequest("GET", fmt.Sprintf("/rest/bus/route/%d", routeID), nil)
 		res, err := app.Test(request)
-		testing.Nil(err)
-		testing.Equal(200, res.StatusCode)
+		test.Nil(err)
+		test.Equal(200, res.StatusCode)
 
 		body, err := io.ReadAll(res.Body)
-		testing.Nil(err)
+		test.Nil(err)
 
 		var obj bus.RouteItemResponse
 		err = json.Unmarshal(body, &obj)
-		testing.Nil(err)
+		test.Nil(err)
 
-		testing.IsType(bus.RouteItemResponse{}, obj)
-		testing.IsType("", obj.Name)
-		testing.IsType(0, obj.ID)
-		testing.IsType(bus.RouteType{}, obj.Type)
-		testing.IsType(bus.RouteCompany{}, obj.Company)
-		testing.IsType(bus.RouteRunningTimeGroup{}, obj.RunningTime)
-		testing.IsType(bus.RouteStop{}, obj.Start)
-		testing.IsType(bus.RouteStop{}, obj.End)
+		test.IsType(bus.RouteItemResponse{}, obj)
+		test.IsType("", obj.Name)
+		test.IsType(0, obj.ID)
+		test.IsType(bus.RouteType{}, obj.Type)
+		test.IsType(bus.RouteCompany{}, obj.Company)
+		test.IsType(bus.RouteRunningTimeGroup{}, obj.RunningTime)
+		test.IsType(bus.RouteStop{}, obj.Start)
+		test.IsType(bus.RouteStop{}, obj.End)
 
-		testing.IsType("", obj.Type.Name)
-		testing.IsType(0, obj.Type.ID)
-		testing.IsType("", obj.Company.Name)
-		testing.IsType(0, obj.Company.ID)
-		testing.IsType("", obj.RunningTime.Up.FirstTime)
-		testing.IsType("", obj.RunningTime.Up.LastTime)
-		testing.IsType("", obj.RunningTime.Down.FirstTime)
-		testing.IsType("", obj.RunningTime.Down.LastTime)
-		testing.IsType("", obj.Start.Name)
-		testing.IsType(0, obj.Start.ID)
-		testing.IsType("", obj.End.Name)
-		testing.IsType(0, obj.End.ID)
+		test.IsType("", obj.Type.Name)
+		test.IsType(0, obj.Type.ID)
+		test.IsType("", obj.Company.Name)
+		test.IsType(0, obj.Company.ID)
+		test.IsType("", obj.RunningTime.Up.FirstTime)
+		test.IsType("", obj.RunningTime.Up.LastTime)
+		test.IsType("", obj.RunningTime.Down.FirstTime)
+		test.IsType("", obj.RunningTime.Down.LastTime)
+		test.IsType("", obj.Start.Name)
+		test.IsType(0, obj.Start.ID)
+		test.IsType("", obj.End.Name)
+		test.IsType(0, obj.End.ID)
 	}
 }
