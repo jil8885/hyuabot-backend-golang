@@ -53,3 +53,62 @@ func TestGetStationList(t *testing.T) {
 		test.IsType(0, station.RouteID)
 	}
 }
+
+func TestGetStationItem(t *testing.T) {
+	test := assert.New(t)
+	t.Log("TestGetStationItem")
+	util.ConnectDB()
+	app := fiber.New()
+	app.Get("/rest/subway/station/:station_id", GetStationItem)
+	stationList := []string{"K456", "K449", "K258", "K251"}
+	for _, stationID := range stationList {
+		request := httptest.NewRequest("GET", "/rest/subway/station/"+stationID, nil)
+		res, err := app.Test(request)
+		test.Nil(err)
+		test.Equal(200, res.StatusCode)
+		body, err := io.ReadAll(res.Body)
+		test.Nil(err)
+		var obj subway.StationItemResponse
+		err = json.Unmarshal(body, &obj)
+		test.Nil(err)
+		test.IsType(subway.StationItemResponse{}, obj)
+		test.IsType("", obj.StationName)
+		test.IsType("", obj.StationID)
+		test.IsType(0, obj.RouteID)
+		test.IsType(subway.StationRealtimeHeadingGroup{}, obj.Realtime)
+		test.IsType([]subway.StationRealtimeItem{}, obj.Realtime.Up)
+		test.IsType([]subway.StationRealtimeItem{}, obj.Realtime.Down)
+		for _, item := range obj.Realtime.Up {
+			test.IsType(subway.StationRealtimeItem{}, item)
+			test.IsType("", item.TerminalStationName)
+			test.IsType("", item.TrainNo)
+			test.IsType(0, item.RemainingTime)
+			test.IsType(0, item.RemainingStop)
+			test.IsType(true, item.IsUp)
+			test.IsType(true, item.IsExpress)
+			test.IsType("", item.CurrentLocation)
+			test.IsType("", item.LastUpdate)
+		}
+		for _, item := range obj.Realtime.Down {
+			test.IsType(subway.StationRealtimeItem{}, item)
+			test.IsType("", item.TerminalStationName)
+			test.IsType("", item.TrainNo)
+			test.IsType(0, item.RemainingTime)
+			test.IsType(0, item.RemainingStop)
+			test.IsType(true, item.IsUp)
+			test.IsType(true, item.IsExpress)
+			test.IsType("", item.CurrentLocation)
+			test.IsType("", item.LastUpdate)
+		}
+
+		test.IsType(subway.StationTimetableHeadingGroup{}, obj.Timetable)
+		test.IsType([]subway.StationTimetableItem{}, obj.Timetable.Up)
+		test.IsType([]subway.StationTimetableItem{}, obj.Timetable.Down)
+		for _, item := range obj.Timetable.Up {
+			test.IsType(subway.StationTimetableItem{}, item)
+			test.IsType("", item.TerminalStationName)
+			test.IsType("", item.StartStationName)
+			test.IsType("", item.DepartureTime)
+		}
+	}
+}
