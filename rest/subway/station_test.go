@@ -158,3 +158,54 @@ func TestGetStationArrival(t *testing.T) {
 		}
 	}
 }
+
+func TestGetStationTimetable(t *testing.T) {
+	test := assert.New(t)
+	t.Log("TestGetStationTimetable")
+	util.ConnectDB()
+	app := fiber.New()
+	app.Get("/rest/subway/station/:station_id/timetable", GetStationTimeTable)
+	stationList := []string{"K456", "K449", "K258", "K251"}
+	for _, stationID := range stationList {
+		request := httptest.NewRequest("GET", fmt.Sprintf("/rest/subway/station/%s/timetable", stationID), nil)
+		res, err := app.Test(request)
+		test.Nil(err)
+		test.Equal(200, res.StatusCode)
+		body, err := io.ReadAll(res.Body)
+		test.Nil(err)
+		var obj subway.StationTimetableResponse
+		err = json.Unmarshal(body, &obj)
+		test.Nil(err)
+		test.IsType(subway.StationTimetableResponse{}, obj)
+		test.IsType(subway.StationTimetableHeadingGroup{}, obj.Weekdays)
+		test.IsType(subway.StationTimetableHeadingGroup{}, obj.Weekends)
+		test.IsType([]subway.StationTimetableItem{}, obj.Weekdays.Up)
+		test.IsType([]subway.StationTimetableItem{}, obj.Weekdays.Down)
+		test.IsType([]subway.StationTimetableItem{}, obj.Weekends.Up)
+		test.IsType([]subway.StationTimetableItem{}, obj.Weekends.Down)
+		for _, item := range obj.Weekdays.Up {
+			test.IsType(subway.StationTimetableItem{}, item)
+			test.IsType("", item.TerminalStationName)
+			test.IsType("", item.StartStationName)
+			test.IsType("", item.DepartureTime)
+		}
+		for _, item := range obj.Weekdays.Down {
+			test.IsType(subway.StationTimetableItem{}, item)
+			test.IsType("", item.TerminalStationName)
+			test.IsType("", item.StartStationName)
+			test.IsType("", item.DepartureTime)
+		}
+		for _, item := range obj.Weekends.Up {
+			test.IsType(subway.StationTimetableItem{}, item)
+			test.IsType("", item.TerminalStationName)
+			test.IsType("", item.StartStationName)
+			test.IsType("", item.DepartureTime)
+		}
+		for _, item := range obj.Weekends.Down {
+			test.IsType(subway.StationTimetableItem{}, item)
+			test.IsType("", item.TerminalStationName)
+			test.IsType("", item.StartStationName)
+			test.IsType("", item.DepartureTime)
+		}
+	}
+}
