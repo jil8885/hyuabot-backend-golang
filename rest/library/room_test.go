@@ -44,3 +44,36 @@ func TestGetLibraryRoomList(t *testing.T) {
 		}
 	}
 }
+
+func TestGetLibraryRoomItem(t *testing.T) {
+	test := assert.New(t)
+	t.Log("TestGetLibraryRoomItem")
+	util.ConnectDB()
+	app := fiber.New()
+	app.Get("/rest/library/campus/:campus_id/room/:room_id", GetLibraryRoomItem)
+	roomList := map[int][]int{
+		1: {1, 53, 54, 55, 56, 57, 58, 59, 68},
+		2: {61, 63, 131, 132},
+	}
+	for campus, rooms := range roomList {
+		for _, room := range rooms {
+			request := httptest.NewRequest("GET", fmt.Sprintf("/rest/library/campus/%d/room/%d", campus, room), nil)
+			res, err := app.Test(request)
+			test.Nil(err)
+			body, err := io.ReadAll(res.Body)
+			test.Nil(err)
+			test.Equal(200, res.StatusCode)
+			var obj library.RoomItemResponse
+			err = json.Unmarshal(body, &obj)
+			test.Nil(err)
+			test.IsType(library.RoomItemResponse{}, obj)
+			test.IsType(0, obj.RoomID)
+			test.IsType("", obj.Name)
+			test.IsType(0, obj.Total)
+			test.IsType(0, obj.Active)
+			test.IsType(0, obj.Occupied)
+			test.IsType(0, obj.Available)
+			test.IsType("", obj.LastUpdate)
+		}
+	}
+}
