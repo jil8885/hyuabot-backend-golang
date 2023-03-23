@@ -2,6 +2,7 @@ package subway
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http/httptest"
 	"testing"
@@ -109,6 +110,51 @@ func TestGetStationItem(t *testing.T) {
 			test.IsType("", item.TerminalStationName)
 			test.IsType("", item.StartStationName)
 			test.IsType("", item.DepartureTime)
+		}
+	}
+}
+
+func TestGetStationArrival(t *testing.T) {
+	test := assert.New(t)
+	t.Log("TestGetStationArrival")
+	util.ConnectDB()
+	app := fiber.New()
+	app.Get("/rest/subway/station/:station_id/arrival", GetStationArrival)
+	stationList := []string{"K456", "K449", "K258", "K251"}
+	for _, stationID := range stationList {
+		request := httptest.NewRequest("GET", fmt.Sprintf("/rest/subway/station/%s/arrival", stationID), nil)
+		res, err := app.Test(request)
+		test.Nil(err)
+		test.Equal(200, res.StatusCode)
+		body, err := io.ReadAll(res.Body)
+		test.Nil(err)
+		var obj subway.StationArrivalResponse
+		err = json.Unmarshal(body, &obj)
+		test.Nil(err)
+		test.IsType(subway.StationArrivalResponse{}, obj)
+		test.IsType("", obj.StationName)
+		test.IsType("", obj.StationID)
+		test.IsType(0, obj.RouteID)
+		test.IsType(subway.StationArrivalHeadingGroup{}, obj.Arrival)
+		test.IsType([]subway.StationArrivalItem{}, obj.Arrival.Up)
+		test.IsType([]subway.StationArrivalItem{}, obj.Arrival.Down)
+		for _, item := range obj.Arrival.Up {
+			test.IsType(subway.StationArrivalItem{}, item)
+			test.IsType("", item.TerminalStationName)
+			test.IsType(0, item.RemainingTime)
+			test.IsType(0, item.RemainingStop)
+			test.IsType("", item.CurrentStationName)
+			test.IsType("", item.DataType)
+			test.IsType("", item.LastUpdate)
+		}
+		for _, item := range obj.Arrival.Down {
+			test.IsType(subway.StationArrivalItem{}, item)
+			test.IsType("", item.TerminalStationName)
+			test.IsType(0, item.RemainingTime)
+			test.IsType(0, item.RemainingStop)
+			test.IsType("", item.CurrentStationName)
+			test.IsType("", item.DataType)
+			test.IsType("", item.LastUpdate)
 		}
 	}
 }
