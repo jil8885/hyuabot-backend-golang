@@ -21,6 +21,9 @@ func ConnectDB() {
 	url := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Seoul",
 		os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_ID"),
 		os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_DB"), os.Getenv("POSTGRES_PORT"))
+	if os.Getenv("POSTGRES_PORT") == "" {
+		url = fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Seoul", os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_ID"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_DB"))
+	}
 	db, err := gorm.Open(postgres.Open(url), &gorm.Config{
 		Logger:         logger.Default.LogMode(logger.Info),
 		NamingStrategy: schema.NamingStrategy{SingularTable: true},
