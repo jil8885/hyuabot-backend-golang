@@ -16,8 +16,28 @@ jobs:
           version: latest
           args: --config .golangci.yml
           skip-pkg-cache: true
-    build:
+    test:
       needs: [lint]
+      runs-on: self-hosted
+      steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19.4
+          cache: true
+      - name: Install dependencies
+        run: go mod download
+      - name: Test
+        run: go test -v ./...
+        env:
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          POSTGRES_ID: ${{ secrets.POSTGRES_ID }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+    build:
+      needs: [test]
       runs-on: self-hosted
       steps:
       - uses: actions/checkout@v3
