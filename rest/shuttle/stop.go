@@ -42,9 +42,9 @@ func GetShuttleStopItem(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.SendStatus(fiber.StatusNotFound)
 	}
-	holiday := date.IsWeekday()
+	weekday := date.IsWeekday()
 	if holidayItem.HolidayType == "weekends" {
-		holiday = true
+		weekday = false
 	}
 	var stopItem model.Stop
 	result = utils.DB.Database.Model(&model.Stop{}).
@@ -56,7 +56,7 @@ func GetShuttleStopItem(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.SendStatus(fiber.StatusNotFound)
 	}
-	return c.JSON(response.CreateStopItemResponse(holidayItem.HolidayType, holiday, date, stopItem))
+	return c.JSON(response.CreateStopItemResponse(holidayItem.HolidayType, weekday, date, stopItem))
 }
 
 // 셔틀버스 정류장 항목 추가
