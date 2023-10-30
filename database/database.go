@@ -6,11 +6,13 @@ import (
 	"log"
 	"os"
 
+	"github.com/go-redis/redis/v7"
 	_ "github.com/lib/pq" //nolint:goimports
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
 var DB *sql.DB
+var Client *redis.Client
 
 func ConnectDB() {
 	var connectionURL = fmt.Sprintf(
@@ -33,4 +35,18 @@ func ConnectDB() {
 	boil.SetDB(db)
 	DB = db
 	log.Println("Connected to database")
+}
+
+func ConnectRedis() {
+	connectionURL := os.Getenv("REDIS_URL")
+	if connectionURL == "" {
+		connectionURL = "localhost:6379"
+	}
+	Client = redis.NewClient(&redis.Options{
+		Addr: connectionURL,
+	})
+	_, err := Client.Ping().Result()
+	if err != nil {
+		panic(err)
+	}
 }
