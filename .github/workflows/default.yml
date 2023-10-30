@@ -1,0 +1,53 @@
+name: HYUabot API Server CI
+
+on:
+  [push, pull_request]
+jobs:
+  lint:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+      - uses: actions/checkout@v3
+      - name: Lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          args: --config .golangci.yml
+          skip-pkg-cache: true
+  test:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.3
+          cache: true
+      - name: Install dependencies
+        run: go mod download
+      - name: Test
+        run: go test -v ./...
+        env:
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          POSTGRES_ID: ${{ secrets.POSTGRES_ID }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+  build:
+    needs: [lint, test]
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.3
+          cache: true
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Build
+        run: go build -v ./...
