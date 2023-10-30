@@ -143,8 +143,6 @@ type (
 	// SubwayTimetableSlice is an alias for a slice of pointers to SubwayTimetable.
 	// This should almost always be used instead of []SubwayTimetable.
 	SubwayTimetableSlice []*SubwayTimetable
-	// SubwayTimetableHook is the signature for custom SubwayTimetable hook methods
-	SubwayTimetableHook func(context.Context, boil.ContextExecutor, *SubwayTimetable) error
 
 	subwayTimetableQuery struct {
 		*queries.Query
@@ -172,179 +170,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var subwayTimetableAfterSelectHooks []SubwayTimetableHook
-
-var subwayTimetableBeforeInsertHooks []SubwayTimetableHook
-var subwayTimetableAfterInsertHooks []SubwayTimetableHook
-
-var subwayTimetableBeforeUpdateHooks []SubwayTimetableHook
-var subwayTimetableAfterUpdateHooks []SubwayTimetableHook
-
-var subwayTimetableBeforeDeleteHooks []SubwayTimetableHook
-var subwayTimetableAfterDeleteHooks []SubwayTimetableHook
-
-var subwayTimetableBeforeUpsertHooks []SubwayTimetableHook
-var subwayTimetableAfterUpsertHooks []SubwayTimetableHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *SubwayTimetable) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayTimetableAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *SubwayTimetable) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayTimetableBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *SubwayTimetable) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayTimetableAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *SubwayTimetable) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayTimetableBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *SubwayTimetable) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayTimetableAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *SubwayTimetable) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayTimetableBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *SubwayTimetable) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayTimetableAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *SubwayTimetable) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayTimetableBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *SubwayTimetable) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayTimetableAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddSubwayTimetableHook registers your hook function for all future operations.
-func AddSubwayTimetableHook(hookPoint boil.HookPoint, subwayTimetableHook SubwayTimetableHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		subwayTimetableAfterSelectHooks = append(subwayTimetableAfterSelectHooks, subwayTimetableHook)
-	case boil.BeforeInsertHook:
-		subwayTimetableBeforeInsertHooks = append(subwayTimetableBeforeInsertHooks, subwayTimetableHook)
-	case boil.AfterInsertHook:
-		subwayTimetableAfterInsertHooks = append(subwayTimetableAfterInsertHooks, subwayTimetableHook)
-	case boil.BeforeUpdateHook:
-		subwayTimetableBeforeUpdateHooks = append(subwayTimetableBeforeUpdateHooks, subwayTimetableHook)
-	case boil.AfterUpdateHook:
-		subwayTimetableAfterUpdateHooks = append(subwayTimetableAfterUpdateHooks, subwayTimetableHook)
-	case boil.BeforeDeleteHook:
-		subwayTimetableBeforeDeleteHooks = append(subwayTimetableBeforeDeleteHooks, subwayTimetableHook)
-	case boil.AfterDeleteHook:
-		subwayTimetableAfterDeleteHooks = append(subwayTimetableAfterDeleteHooks, subwayTimetableHook)
-	case boil.BeforeUpsertHook:
-		subwayTimetableBeforeUpsertHooks = append(subwayTimetableBeforeUpsertHooks, subwayTimetableHook)
-	case boil.AfterUpsertHook:
-		subwayTimetableAfterUpsertHooks = append(subwayTimetableAfterUpsertHooks, subwayTimetableHook)
-	}
-}
-
 // One returns a single subwayTimetable record from the query.
 func (q subwayTimetableQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SubwayTimetable, error) {
 	o := &SubwayTimetable{}
@@ -359,10 +184,6 @@ func (q subwayTimetableQuery) One(ctx context.Context, exec boil.ContextExecutor
 		return nil, errors.Wrap(err, "models: failed to execute a one query for subway_timetable")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -373,14 +194,6 @@ func (q subwayTimetableQuery) All(ctx context.Context, exec boil.ContextExecutor
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to SubwayTimetable slice")
-	}
-
-	if len(subwayTimetableAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -532,14 +345,6 @@ func (subwayTimetableL) LoadStartStation(ctx context.Context, e boil.ContextExec
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for subway_route_station")
 	}
 
-	if len(subwayRouteStationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -652,14 +457,6 @@ func (subwayTimetableL) LoadStation(ctx context.Context, e boil.ContextExecutor,
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for subway_route_station")
 	}
 
-	if len(subwayRouteStationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -770,14 +567,6 @@ func (subwayTimetableL) LoadTerminalStation(ctx context.Context, e boil.ContextE
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for subway_route_station")
-	}
-
-	if len(subwayRouteStationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -985,10 +774,6 @@ func FindSubwayTimetable(ctx context.Context, exec boil.ContextExecutor, station
 		return nil, errors.Wrap(err, "models: unable to select from subway_timetable")
 	}
 
-	if err = subwayTimetableObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return subwayTimetableObj, err
-	}
-
 	return subwayTimetableObj, nil
 }
 
@@ -1000,10 +785,6 @@ func (o *SubwayTimetable) Insert(ctx context.Context, exec boil.ContextExecutor,
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(subwayTimetableColumnsWithDefault, o)
 
@@ -1068,7 +849,7 @@ func (o *SubwayTimetable) Insert(ctx context.Context, exec boil.ContextExecutor,
 		subwayTimetableInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the SubwayTimetable.
@@ -1076,9 +857,6 @@ func (o *SubwayTimetable) Insert(ctx context.Context, exec boil.ContextExecutor,
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *SubwayTimetable) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	subwayTimetableUpdateCacheMut.RLock()
 	cache, cached := subwayTimetableUpdateCache[key]
@@ -1131,7 +909,7 @@ func (o *SubwayTimetable) Update(ctx context.Context, exec boil.ContextExecutor,
 		subwayTimetableUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -1204,10 +982,6 @@ func (o SubwayTimetableSlice) UpdateAll(ctx context.Context, exec boil.ContextEx
 func (o *SubwayTimetable) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no subway_timetable provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(subwayTimetableColumnsWithDefault, o)
@@ -1312,7 +1086,7 @@ func (o *SubwayTimetable) Upsert(ctx context.Context, exec boil.ContextExecutor,
 		subwayTimetableUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single SubwayTimetable record with an executor.
@@ -1320,10 +1094,6 @@ func (o *SubwayTimetable) Upsert(ctx context.Context, exec boil.ContextExecutor,
 func (o *SubwayTimetable) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no SubwayTimetable provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), subwayTimetablePrimaryKeyMapping)
@@ -1342,10 +1112,6 @@ func (o *SubwayTimetable) Delete(ctx context.Context, exec boil.ContextExecutor)
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for subway_timetable")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1378,14 +1144,6 @@ func (o SubwayTimetableSlice) DeleteAll(ctx context.Context, exec boil.ContextEx
 		return 0, nil
 	}
 
-	if len(subwayTimetableBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), subwayTimetablePrimaryKeyMapping)
@@ -1408,14 +1166,6 @@ func (o SubwayTimetableSlice) DeleteAll(ctx context.Context, exec boil.ContextEx
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for subway_timetable")
-	}
-
-	if len(subwayTimetableAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

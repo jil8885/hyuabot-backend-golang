@@ -126,8 +126,6 @@ type (
 	// ShuttleTimetableSlice is an alias for a slice of pointers to ShuttleTimetable.
 	// This should almost always be used instead of []ShuttleTimetable.
 	ShuttleTimetableSlice []*ShuttleTimetable
-	// ShuttleTimetableHook is the signature for custom ShuttleTimetable hook methods
-	ShuttleTimetableHook func(context.Context, boil.ContextExecutor, *ShuttleTimetable) error
 
 	shuttleTimetableQuery struct {
 		*queries.Query
@@ -155,179 +153,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var shuttleTimetableAfterSelectHooks []ShuttleTimetableHook
-
-var shuttleTimetableBeforeInsertHooks []ShuttleTimetableHook
-var shuttleTimetableAfterInsertHooks []ShuttleTimetableHook
-
-var shuttleTimetableBeforeUpdateHooks []ShuttleTimetableHook
-var shuttleTimetableAfterUpdateHooks []ShuttleTimetableHook
-
-var shuttleTimetableBeforeDeleteHooks []ShuttleTimetableHook
-var shuttleTimetableAfterDeleteHooks []ShuttleTimetableHook
-
-var shuttleTimetableBeforeUpsertHooks []ShuttleTimetableHook
-var shuttleTimetableAfterUpsertHooks []ShuttleTimetableHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ShuttleTimetable) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleTimetableAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *ShuttleTimetable) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleTimetableBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *ShuttleTimetable) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleTimetableAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *ShuttleTimetable) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleTimetableBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *ShuttleTimetable) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleTimetableAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *ShuttleTimetable) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleTimetableBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *ShuttleTimetable) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleTimetableAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *ShuttleTimetable) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleTimetableBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *ShuttleTimetable) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleTimetableAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddShuttleTimetableHook registers your hook function for all future operations.
-func AddShuttleTimetableHook(hookPoint boil.HookPoint, shuttleTimetableHook ShuttleTimetableHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		shuttleTimetableAfterSelectHooks = append(shuttleTimetableAfterSelectHooks, shuttleTimetableHook)
-	case boil.BeforeInsertHook:
-		shuttleTimetableBeforeInsertHooks = append(shuttleTimetableBeforeInsertHooks, shuttleTimetableHook)
-	case boil.AfterInsertHook:
-		shuttleTimetableAfterInsertHooks = append(shuttleTimetableAfterInsertHooks, shuttleTimetableHook)
-	case boil.BeforeUpdateHook:
-		shuttleTimetableBeforeUpdateHooks = append(shuttleTimetableBeforeUpdateHooks, shuttleTimetableHook)
-	case boil.AfterUpdateHook:
-		shuttleTimetableAfterUpdateHooks = append(shuttleTimetableAfterUpdateHooks, shuttleTimetableHook)
-	case boil.BeforeDeleteHook:
-		shuttleTimetableBeforeDeleteHooks = append(shuttleTimetableBeforeDeleteHooks, shuttleTimetableHook)
-	case boil.AfterDeleteHook:
-		shuttleTimetableAfterDeleteHooks = append(shuttleTimetableAfterDeleteHooks, shuttleTimetableHook)
-	case boil.BeforeUpsertHook:
-		shuttleTimetableBeforeUpsertHooks = append(shuttleTimetableBeforeUpsertHooks, shuttleTimetableHook)
-	case boil.AfterUpsertHook:
-		shuttleTimetableAfterUpsertHooks = append(shuttleTimetableAfterUpsertHooks, shuttleTimetableHook)
-	}
-}
-
 // One returns a single shuttleTimetable record from the query.
 func (q shuttleTimetableQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ShuttleTimetable, error) {
 	o := &ShuttleTimetable{}
@@ -342,10 +167,6 @@ func (q shuttleTimetableQuery) One(ctx context.Context, exec boil.ContextExecuto
 		return nil, errors.Wrap(err, "models: failed to execute a one query for shuttle_timetable")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -356,14 +177,6 @@ func (q shuttleTimetableQuery) All(ctx context.Context, exec boil.ContextExecuto
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ShuttleTimetable slice")
-	}
-
-	if len(shuttleTimetableAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -504,14 +317,6 @@ func (shuttleTimetableL) LoadPeriodTypeShuttlePeriodType(ctx context.Context, e 
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for shuttle_period_type")
 	}
 
-	if len(shuttlePeriodTypeAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -622,14 +427,6 @@ func (shuttleTimetableL) LoadRouteNameShuttleRoute(ctx context.Context, e boil.C
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for shuttle_route")
-	}
-
-	if len(shuttleRouteAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -790,10 +587,6 @@ func FindShuttleTimetable(ctx context.Context, exec boil.ContextExecutor, seq in
 		return nil, errors.Wrap(err, "models: unable to select from shuttle_timetable")
 	}
 
-	if err = shuttleTimetableObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return shuttleTimetableObj, err
-	}
-
 	return shuttleTimetableObj, nil
 }
 
@@ -805,10 +598,6 @@ func (o *ShuttleTimetable) Insert(ctx context.Context, exec boil.ContextExecutor
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(shuttleTimetableColumnsWithDefault, o)
 
@@ -873,7 +662,7 @@ func (o *ShuttleTimetable) Insert(ctx context.Context, exec boil.ContextExecutor
 		shuttleTimetableInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the ShuttleTimetable.
@@ -881,9 +670,6 @@ func (o *ShuttleTimetable) Insert(ctx context.Context, exec boil.ContextExecutor
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *ShuttleTimetable) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	shuttleTimetableUpdateCacheMut.RLock()
 	cache, cached := shuttleTimetableUpdateCache[key]
@@ -936,7 +722,7 @@ func (o *ShuttleTimetable) Update(ctx context.Context, exec boil.ContextExecutor
 		shuttleTimetableUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -1009,10 +795,6 @@ func (o ShuttleTimetableSlice) UpdateAll(ctx context.Context, exec boil.ContextE
 func (o *ShuttleTimetable) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no shuttle_timetable provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(shuttleTimetableColumnsWithDefault, o)
@@ -1117,7 +899,7 @@ func (o *ShuttleTimetable) Upsert(ctx context.Context, exec boil.ContextExecutor
 		shuttleTimetableUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single ShuttleTimetable record with an executor.
@@ -1125,10 +907,6 @@ func (o *ShuttleTimetable) Upsert(ctx context.Context, exec boil.ContextExecutor
 func (o *ShuttleTimetable) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ShuttleTimetable provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), shuttleTimetablePrimaryKeyMapping)
@@ -1147,10 +925,6 @@ func (o *ShuttleTimetable) Delete(ctx context.Context, exec boil.ContextExecutor
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for shuttle_timetable")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1183,14 +957,6 @@ func (o ShuttleTimetableSlice) DeleteAll(ctx context.Context, exec boil.ContextE
 		return 0, nil
 	}
 
-	if len(shuttleTimetableBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), shuttleTimetablePrimaryKeyMapping)
@@ -1213,14 +979,6 @@ func (o ShuttleTimetableSlice) DeleteAll(ctx context.Context, exec boil.ContextE
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for shuttle_timetable")
-	}
-
-	if len(shuttleTimetableAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

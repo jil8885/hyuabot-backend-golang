@@ -175,8 +175,6 @@ type (
 	// SubwayRealtimeSlice is an alias for a slice of pointers to SubwayRealtime.
 	// This should almost always be used instead of []SubwayRealtime.
 	SubwayRealtimeSlice []*SubwayRealtime
-	// SubwayRealtimeHook is the signature for custom SubwayRealtime hook methods
-	SubwayRealtimeHook func(context.Context, boil.ContextExecutor, *SubwayRealtime) error
 
 	subwayRealtimeQuery struct {
 		*queries.Query
@@ -204,179 +202,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var subwayRealtimeAfterSelectHooks []SubwayRealtimeHook
-
-var subwayRealtimeBeforeInsertHooks []SubwayRealtimeHook
-var subwayRealtimeAfterInsertHooks []SubwayRealtimeHook
-
-var subwayRealtimeBeforeUpdateHooks []SubwayRealtimeHook
-var subwayRealtimeAfterUpdateHooks []SubwayRealtimeHook
-
-var subwayRealtimeBeforeDeleteHooks []SubwayRealtimeHook
-var subwayRealtimeAfterDeleteHooks []SubwayRealtimeHook
-
-var subwayRealtimeBeforeUpsertHooks []SubwayRealtimeHook
-var subwayRealtimeAfterUpsertHooks []SubwayRealtimeHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *SubwayRealtime) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayRealtimeAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *SubwayRealtime) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayRealtimeBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *SubwayRealtime) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayRealtimeAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *SubwayRealtime) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayRealtimeBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *SubwayRealtime) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayRealtimeAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *SubwayRealtime) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayRealtimeBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *SubwayRealtime) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayRealtimeAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *SubwayRealtime) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayRealtimeBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *SubwayRealtime) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range subwayRealtimeAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddSubwayRealtimeHook registers your hook function for all future operations.
-func AddSubwayRealtimeHook(hookPoint boil.HookPoint, subwayRealtimeHook SubwayRealtimeHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		subwayRealtimeAfterSelectHooks = append(subwayRealtimeAfterSelectHooks, subwayRealtimeHook)
-	case boil.BeforeInsertHook:
-		subwayRealtimeBeforeInsertHooks = append(subwayRealtimeBeforeInsertHooks, subwayRealtimeHook)
-	case boil.AfterInsertHook:
-		subwayRealtimeAfterInsertHooks = append(subwayRealtimeAfterInsertHooks, subwayRealtimeHook)
-	case boil.BeforeUpdateHook:
-		subwayRealtimeBeforeUpdateHooks = append(subwayRealtimeBeforeUpdateHooks, subwayRealtimeHook)
-	case boil.AfterUpdateHook:
-		subwayRealtimeAfterUpdateHooks = append(subwayRealtimeAfterUpdateHooks, subwayRealtimeHook)
-	case boil.BeforeDeleteHook:
-		subwayRealtimeBeforeDeleteHooks = append(subwayRealtimeBeforeDeleteHooks, subwayRealtimeHook)
-	case boil.AfterDeleteHook:
-		subwayRealtimeAfterDeleteHooks = append(subwayRealtimeAfterDeleteHooks, subwayRealtimeHook)
-	case boil.BeforeUpsertHook:
-		subwayRealtimeBeforeUpsertHooks = append(subwayRealtimeBeforeUpsertHooks, subwayRealtimeHook)
-	case boil.AfterUpsertHook:
-		subwayRealtimeAfterUpsertHooks = append(subwayRealtimeAfterUpsertHooks, subwayRealtimeHook)
-	}
-}
-
 // One returns a single subwayRealtime record from the query.
 func (q subwayRealtimeQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SubwayRealtime, error) {
 	o := &SubwayRealtime{}
@@ -391,10 +216,6 @@ func (q subwayRealtimeQuery) One(ctx context.Context, exec boil.ContextExecutor)
 		return nil, errors.Wrap(err, "models: failed to execute a one query for subway_realtime")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -405,14 +226,6 @@ func (q subwayRealtimeQuery) All(ctx context.Context, exec boil.ContextExecutor)
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to SubwayRealtime slice")
-	}
-
-	if len(subwayRealtimeAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -553,14 +366,6 @@ func (subwayRealtimeL) LoadStation(ctx context.Context, e boil.ContextExecutor, 
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for subway_route_station")
 	}
 
-	if len(subwayRouteStationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -671,14 +476,6 @@ func (subwayRealtimeL) LoadTerminalStation(ctx context.Context, e boil.ContextEx
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for subway_route_station")
-	}
-
-	if len(subwayRouteStationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -839,10 +636,6 @@ func FindSubwayRealtime(ctx context.Context, exec boil.ContextExecutor, stationI
 		return nil, errors.Wrap(err, "models: unable to select from subway_realtime")
 	}
 
-	if err = subwayRealtimeObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return subwayRealtimeObj, err
-	}
-
 	return subwayRealtimeObj, nil
 }
 
@@ -854,10 +647,6 @@ func (o *SubwayRealtime) Insert(ctx context.Context, exec boil.ContextExecutor, 
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(subwayRealtimeColumnsWithDefault, o)
 
@@ -922,7 +711,7 @@ func (o *SubwayRealtime) Insert(ctx context.Context, exec boil.ContextExecutor, 
 		subwayRealtimeInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the SubwayRealtime.
@@ -930,9 +719,6 @@ func (o *SubwayRealtime) Insert(ctx context.Context, exec boil.ContextExecutor, 
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *SubwayRealtime) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	subwayRealtimeUpdateCacheMut.RLock()
 	cache, cached := subwayRealtimeUpdateCache[key]
@@ -985,7 +771,7 @@ func (o *SubwayRealtime) Update(ctx context.Context, exec boil.ContextExecutor, 
 		subwayRealtimeUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -1058,10 +844,6 @@ func (o SubwayRealtimeSlice) UpdateAll(ctx context.Context, exec boil.ContextExe
 func (o *SubwayRealtime) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no subway_realtime provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(subwayRealtimeColumnsWithDefault, o)
@@ -1166,7 +948,7 @@ func (o *SubwayRealtime) Upsert(ctx context.Context, exec boil.ContextExecutor, 
 		subwayRealtimeUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single SubwayRealtime record with an executor.
@@ -1174,10 +956,6 @@ func (o *SubwayRealtime) Upsert(ctx context.Context, exec boil.ContextExecutor, 
 func (o *SubwayRealtime) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no SubwayRealtime provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), subwayRealtimePrimaryKeyMapping)
@@ -1196,10 +974,6 @@ func (o *SubwayRealtime) Delete(ctx context.Context, exec boil.ContextExecutor) 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for subway_realtime")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1232,14 +1006,6 @@ func (o SubwayRealtimeSlice) DeleteAll(ctx context.Context, exec boil.ContextExe
 		return 0, nil
 	}
 
-	if len(subwayRealtimeBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), subwayRealtimePrimaryKeyMapping)
@@ -1262,14 +1028,6 @@ func (o SubwayRealtimeSlice) DeleteAll(ctx context.Context, exec boil.ContextExe
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for subway_realtime")
-	}
-
-	if len(subwayRealtimeAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

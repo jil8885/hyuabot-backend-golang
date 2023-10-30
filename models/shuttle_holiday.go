@@ -91,8 +91,6 @@ type (
 	// ShuttleHolidaySlice is an alias for a slice of pointers to ShuttleHoliday.
 	// This should almost always be used instead of []ShuttleHoliday.
 	ShuttleHolidaySlice []*ShuttleHoliday
-	// ShuttleHolidayHook is the signature for custom ShuttleHoliday hook methods
-	ShuttleHolidayHook func(context.Context, boil.ContextExecutor, *ShuttleHoliday) error
 
 	shuttleHolidayQuery struct {
 		*queries.Query
@@ -120,179 +118,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var shuttleHolidayAfterSelectHooks []ShuttleHolidayHook
-
-var shuttleHolidayBeforeInsertHooks []ShuttleHolidayHook
-var shuttleHolidayAfterInsertHooks []ShuttleHolidayHook
-
-var shuttleHolidayBeforeUpdateHooks []ShuttleHolidayHook
-var shuttleHolidayAfterUpdateHooks []ShuttleHolidayHook
-
-var shuttleHolidayBeforeDeleteHooks []ShuttleHolidayHook
-var shuttleHolidayAfterDeleteHooks []ShuttleHolidayHook
-
-var shuttleHolidayBeforeUpsertHooks []ShuttleHolidayHook
-var shuttleHolidayAfterUpsertHooks []ShuttleHolidayHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ShuttleHoliday) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleHolidayAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *ShuttleHoliday) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleHolidayBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *ShuttleHoliday) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleHolidayAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *ShuttleHoliday) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleHolidayBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *ShuttleHoliday) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleHolidayAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *ShuttleHoliday) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleHolidayBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *ShuttleHoliday) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleHolidayAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *ShuttleHoliday) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleHolidayBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *ShuttleHoliday) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleHolidayAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddShuttleHolidayHook registers your hook function for all future operations.
-func AddShuttleHolidayHook(hookPoint boil.HookPoint, shuttleHolidayHook ShuttleHolidayHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		shuttleHolidayAfterSelectHooks = append(shuttleHolidayAfterSelectHooks, shuttleHolidayHook)
-	case boil.BeforeInsertHook:
-		shuttleHolidayBeforeInsertHooks = append(shuttleHolidayBeforeInsertHooks, shuttleHolidayHook)
-	case boil.AfterInsertHook:
-		shuttleHolidayAfterInsertHooks = append(shuttleHolidayAfterInsertHooks, shuttleHolidayHook)
-	case boil.BeforeUpdateHook:
-		shuttleHolidayBeforeUpdateHooks = append(shuttleHolidayBeforeUpdateHooks, shuttleHolidayHook)
-	case boil.AfterUpdateHook:
-		shuttleHolidayAfterUpdateHooks = append(shuttleHolidayAfterUpdateHooks, shuttleHolidayHook)
-	case boil.BeforeDeleteHook:
-		shuttleHolidayBeforeDeleteHooks = append(shuttleHolidayBeforeDeleteHooks, shuttleHolidayHook)
-	case boil.AfterDeleteHook:
-		shuttleHolidayAfterDeleteHooks = append(shuttleHolidayAfterDeleteHooks, shuttleHolidayHook)
-	case boil.BeforeUpsertHook:
-		shuttleHolidayBeforeUpsertHooks = append(shuttleHolidayBeforeUpsertHooks, shuttleHolidayHook)
-	case boil.AfterUpsertHook:
-		shuttleHolidayAfterUpsertHooks = append(shuttleHolidayAfterUpsertHooks, shuttleHolidayHook)
-	}
-}
-
 // One returns a single shuttleHoliday record from the query.
 func (q shuttleHolidayQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ShuttleHoliday, error) {
 	o := &ShuttleHoliday{}
@@ -307,10 +132,6 @@ func (q shuttleHolidayQuery) One(ctx context.Context, exec boil.ContextExecutor)
 		return nil, errors.Wrap(err, "models: failed to execute a one query for shuttle_holiday")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -321,14 +142,6 @@ func (q shuttleHolidayQuery) All(ctx context.Context, exec boil.ContextExecutor)
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ShuttleHoliday slice")
-	}
-
-	if len(shuttleHolidayAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -399,10 +212,6 @@ func FindShuttleHoliday(ctx context.Context, exec boil.ContextExecutor, holidayD
 		return nil, errors.Wrap(err, "models: unable to select from shuttle_holiday")
 	}
 
-	if err = shuttleHolidayObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return shuttleHolidayObj, err
-	}
-
 	return shuttleHolidayObj, nil
 }
 
@@ -414,10 +223,6 @@ func (o *ShuttleHoliday) Insert(ctx context.Context, exec boil.ContextExecutor, 
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(shuttleHolidayColumnsWithDefault, o)
 
@@ -482,7 +287,7 @@ func (o *ShuttleHoliday) Insert(ctx context.Context, exec boil.ContextExecutor, 
 		shuttleHolidayInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the ShuttleHoliday.
@@ -490,9 +295,6 @@ func (o *ShuttleHoliday) Insert(ctx context.Context, exec boil.ContextExecutor, 
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *ShuttleHoliday) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	shuttleHolidayUpdateCacheMut.RLock()
 	cache, cached := shuttleHolidayUpdateCache[key]
@@ -545,7 +347,7 @@ func (o *ShuttleHoliday) Update(ctx context.Context, exec boil.ContextExecutor, 
 		shuttleHolidayUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -618,10 +420,6 @@ func (o ShuttleHolidaySlice) UpdateAll(ctx context.Context, exec boil.ContextExe
 func (o *ShuttleHoliday) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no shuttle_holiday provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(shuttleHolidayColumnsWithDefault, o)
@@ -726,7 +524,7 @@ func (o *ShuttleHoliday) Upsert(ctx context.Context, exec boil.ContextExecutor, 
 		shuttleHolidayUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single ShuttleHoliday record with an executor.
@@ -734,10 +532,6 @@ func (o *ShuttleHoliday) Upsert(ctx context.Context, exec boil.ContextExecutor, 
 func (o *ShuttleHoliday) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ShuttleHoliday provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), shuttleHolidayPrimaryKeyMapping)
@@ -756,10 +550,6 @@ func (o *ShuttleHoliday) Delete(ctx context.Context, exec boil.ContextExecutor) 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for shuttle_holiday")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -792,14 +582,6 @@ func (o ShuttleHolidaySlice) DeleteAll(ctx context.Context, exec boil.ContextExe
 		return 0, nil
 	}
 
-	if len(shuttleHolidayBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), shuttleHolidayPrimaryKeyMapping)
@@ -822,14 +604,6 @@ func (o ShuttleHolidaySlice) DeleteAll(ctx context.Context, exec boil.ContextExe
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for shuttle_holiday")
-	}
-
-	if len(shuttleHolidayAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

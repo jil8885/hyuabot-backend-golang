@@ -154,8 +154,6 @@ type (
 	// ShuttleRouteSlice is an alias for a slice of pointers to ShuttleRoute.
 	// This should almost always be used instead of []ShuttleRoute.
 	ShuttleRouteSlice []*ShuttleRoute
-	// ShuttleRouteHook is the signature for custom ShuttleRoute hook methods
-	ShuttleRouteHook func(context.Context, boil.ContextExecutor, *ShuttleRoute) error
 
 	shuttleRouteQuery struct {
 		*queries.Query
@@ -183,179 +181,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var shuttleRouteAfterSelectHooks []ShuttleRouteHook
-
-var shuttleRouteBeforeInsertHooks []ShuttleRouteHook
-var shuttleRouteAfterInsertHooks []ShuttleRouteHook
-
-var shuttleRouteBeforeUpdateHooks []ShuttleRouteHook
-var shuttleRouteAfterUpdateHooks []ShuttleRouteHook
-
-var shuttleRouteBeforeDeleteHooks []ShuttleRouteHook
-var shuttleRouteAfterDeleteHooks []ShuttleRouteHook
-
-var shuttleRouteBeforeUpsertHooks []ShuttleRouteHook
-var shuttleRouteAfterUpsertHooks []ShuttleRouteHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ShuttleRoute) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleRouteAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *ShuttleRoute) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleRouteBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *ShuttleRoute) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleRouteAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *ShuttleRoute) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleRouteBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *ShuttleRoute) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleRouteAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *ShuttleRoute) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleRouteBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *ShuttleRoute) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleRouteAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *ShuttleRoute) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleRouteBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *ShuttleRoute) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleRouteAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddShuttleRouteHook registers your hook function for all future operations.
-func AddShuttleRouteHook(hookPoint boil.HookPoint, shuttleRouteHook ShuttleRouteHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		shuttleRouteAfterSelectHooks = append(shuttleRouteAfterSelectHooks, shuttleRouteHook)
-	case boil.BeforeInsertHook:
-		shuttleRouteBeforeInsertHooks = append(shuttleRouteBeforeInsertHooks, shuttleRouteHook)
-	case boil.AfterInsertHook:
-		shuttleRouteAfterInsertHooks = append(shuttleRouteAfterInsertHooks, shuttleRouteHook)
-	case boil.BeforeUpdateHook:
-		shuttleRouteBeforeUpdateHooks = append(shuttleRouteBeforeUpdateHooks, shuttleRouteHook)
-	case boil.AfterUpdateHook:
-		shuttleRouteAfterUpdateHooks = append(shuttleRouteAfterUpdateHooks, shuttleRouteHook)
-	case boil.BeforeDeleteHook:
-		shuttleRouteBeforeDeleteHooks = append(shuttleRouteBeforeDeleteHooks, shuttleRouteHook)
-	case boil.AfterDeleteHook:
-		shuttleRouteAfterDeleteHooks = append(shuttleRouteAfterDeleteHooks, shuttleRouteHook)
-	case boil.BeforeUpsertHook:
-		shuttleRouteBeforeUpsertHooks = append(shuttleRouteBeforeUpsertHooks, shuttleRouteHook)
-	case boil.AfterUpsertHook:
-		shuttleRouteAfterUpsertHooks = append(shuttleRouteAfterUpsertHooks, shuttleRouteHook)
-	}
-}
-
 // One returns a single shuttleRoute record from the query.
 func (q shuttleRouteQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ShuttleRoute, error) {
 	o := &ShuttleRoute{}
@@ -370,10 +195,6 @@ func (q shuttleRouteQuery) One(ctx context.Context, exec boil.ContextExecutor) (
 		return nil, errors.Wrap(err, "models: failed to execute a one query for shuttle_route")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -384,14 +205,6 @@ func (q shuttleRouteQuery) All(ctx context.Context, exec boil.ContextExecutor) (
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ShuttleRoute slice")
-	}
-
-	if len(shuttleRouteAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -564,14 +377,6 @@ func (shuttleRouteL) LoadEndStopShuttleStop(ctx context.Context, e boil.ContextE
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for shuttle_stop")
 	}
 
-	if len(shuttleStopAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -688,14 +493,6 @@ func (shuttleRouteL) LoadStartStopShuttleStop(ctx context.Context, e boil.Contex
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for shuttle_stop")
 	}
 
-	if len(shuttleStopAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -806,13 +603,6 @@ func (shuttleRouteL) LoadRouteNameShuttleRouteStops(ctx context.Context, e boil.
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for shuttle_route_stop")
 	}
 
-	if len(shuttleRouteStopAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.RouteNameShuttleRouteStops = resultSlice
 		for _, foreign := range resultSlice {
@@ -920,13 +710,6 @@ func (shuttleRouteL) LoadRouteNameShuttleTimetables(ctx context.Context, e boil.
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for shuttle_timetable")
 	}
 
-	if len(shuttleTimetableAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.RouteNameShuttleTimetables = resultSlice
 		for _, foreign := range resultSlice {
@@ -1254,10 +1037,6 @@ func FindShuttleRoute(ctx context.Context, exec boil.ContextExecutor, routeName 
 		return nil, errors.Wrap(err, "models: unable to select from shuttle_route")
 	}
 
-	if err = shuttleRouteObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return shuttleRouteObj, err
-	}
-
 	return shuttleRouteObj, nil
 }
 
@@ -1269,10 +1048,6 @@ func (o *ShuttleRoute) Insert(ctx context.Context, exec boil.ContextExecutor, co
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(shuttleRouteColumnsWithDefault, o)
 
@@ -1337,7 +1112,7 @@ func (o *ShuttleRoute) Insert(ctx context.Context, exec boil.ContextExecutor, co
 		shuttleRouteInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the ShuttleRoute.
@@ -1345,9 +1120,6 @@ func (o *ShuttleRoute) Insert(ctx context.Context, exec boil.ContextExecutor, co
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *ShuttleRoute) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	shuttleRouteUpdateCacheMut.RLock()
 	cache, cached := shuttleRouteUpdateCache[key]
@@ -1400,7 +1172,7 @@ func (o *ShuttleRoute) Update(ctx context.Context, exec boil.ContextExecutor, co
 		shuttleRouteUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -1473,10 +1245,6 @@ func (o ShuttleRouteSlice) UpdateAll(ctx context.Context, exec boil.ContextExecu
 func (o *ShuttleRoute) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no shuttle_route provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(shuttleRouteColumnsWithDefault, o)
@@ -1581,7 +1349,7 @@ func (o *ShuttleRoute) Upsert(ctx context.Context, exec boil.ContextExecutor, up
 		shuttleRouteUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single ShuttleRoute record with an executor.
@@ -1589,10 +1357,6 @@ func (o *ShuttleRoute) Upsert(ctx context.Context, exec boil.ContextExecutor, up
 func (o *ShuttleRoute) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ShuttleRoute provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), shuttleRoutePrimaryKeyMapping)
@@ -1611,10 +1375,6 @@ func (o *ShuttleRoute) Delete(ctx context.Context, exec boil.ContextExecutor) (i
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for shuttle_route")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1647,14 +1407,6 @@ func (o ShuttleRouteSlice) DeleteAll(ctx context.Context, exec boil.ContextExecu
 		return 0, nil
 	}
 
-	if len(shuttleRouteBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), shuttleRoutePrimaryKeyMapping)
@@ -1677,14 +1429,6 @@ func (o ShuttleRouteSlice) DeleteAll(ctx context.Context, exec boil.ContextExecu
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for shuttle_route")
-	}
-
-	if len(shuttleRouteAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

@@ -103,8 +103,6 @@ type (
 	// CommuteShuttleRouteSlice is an alias for a slice of pointers to CommuteShuttleRoute.
 	// This should almost always be used instead of []CommuteShuttleRoute.
 	CommuteShuttleRouteSlice []*CommuteShuttleRoute
-	// CommuteShuttleRouteHook is the signature for custom CommuteShuttleRoute hook methods
-	CommuteShuttleRouteHook func(context.Context, boil.ContextExecutor, *CommuteShuttleRoute) error
 
 	commuteShuttleRouteQuery struct {
 		*queries.Query
@@ -132,179 +130,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var commuteShuttleRouteAfterSelectHooks []CommuteShuttleRouteHook
-
-var commuteShuttleRouteBeforeInsertHooks []CommuteShuttleRouteHook
-var commuteShuttleRouteAfterInsertHooks []CommuteShuttleRouteHook
-
-var commuteShuttleRouteBeforeUpdateHooks []CommuteShuttleRouteHook
-var commuteShuttleRouteAfterUpdateHooks []CommuteShuttleRouteHook
-
-var commuteShuttleRouteBeforeDeleteHooks []CommuteShuttleRouteHook
-var commuteShuttleRouteAfterDeleteHooks []CommuteShuttleRouteHook
-
-var commuteShuttleRouteBeforeUpsertHooks []CommuteShuttleRouteHook
-var commuteShuttleRouteAfterUpsertHooks []CommuteShuttleRouteHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *CommuteShuttleRoute) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleRouteAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *CommuteShuttleRoute) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleRouteBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *CommuteShuttleRoute) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleRouteAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *CommuteShuttleRoute) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleRouteBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *CommuteShuttleRoute) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleRouteAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *CommuteShuttleRoute) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleRouteBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *CommuteShuttleRoute) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleRouteAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *CommuteShuttleRoute) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleRouteBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *CommuteShuttleRoute) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleRouteAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddCommuteShuttleRouteHook registers your hook function for all future operations.
-func AddCommuteShuttleRouteHook(hookPoint boil.HookPoint, commuteShuttleRouteHook CommuteShuttleRouteHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		commuteShuttleRouteAfterSelectHooks = append(commuteShuttleRouteAfterSelectHooks, commuteShuttleRouteHook)
-	case boil.BeforeInsertHook:
-		commuteShuttleRouteBeforeInsertHooks = append(commuteShuttleRouteBeforeInsertHooks, commuteShuttleRouteHook)
-	case boil.AfterInsertHook:
-		commuteShuttleRouteAfterInsertHooks = append(commuteShuttleRouteAfterInsertHooks, commuteShuttleRouteHook)
-	case boil.BeforeUpdateHook:
-		commuteShuttleRouteBeforeUpdateHooks = append(commuteShuttleRouteBeforeUpdateHooks, commuteShuttleRouteHook)
-	case boil.AfterUpdateHook:
-		commuteShuttleRouteAfterUpdateHooks = append(commuteShuttleRouteAfterUpdateHooks, commuteShuttleRouteHook)
-	case boil.BeforeDeleteHook:
-		commuteShuttleRouteBeforeDeleteHooks = append(commuteShuttleRouteBeforeDeleteHooks, commuteShuttleRouteHook)
-	case boil.AfterDeleteHook:
-		commuteShuttleRouteAfterDeleteHooks = append(commuteShuttleRouteAfterDeleteHooks, commuteShuttleRouteHook)
-	case boil.BeforeUpsertHook:
-		commuteShuttleRouteBeforeUpsertHooks = append(commuteShuttleRouteBeforeUpsertHooks, commuteShuttleRouteHook)
-	case boil.AfterUpsertHook:
-		commuteShuttleRouteAfterUpsertHooks = append(commuteShuttleRouteAfterUpsertHooks, commuteShuttleRouteHook)
-	}
-}
-
 // One returns a single commuteShuttleRoute record from the query.
 func (q commuteShuttleRouteQuery) One(ctx context.Context, exec boil.ContextExecutor) (*CommuteShuttleRoute, error) {
 	o := &CommuteShuttleRoute{}
@@ -319,10 +144,6 @@ func (q commuteShuttleRouteQuery) One(ctx context.Context, exec boil.ContextExec
 		return nil, errors.Wrap(err, "models: failed to execute a one query for commute_shuttle_route")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -333,14 +154,6 @@ func (q commuteShuttleRouteQuery) All(ctx context.Context, exec boil.ContextExec
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to CommuteShuttleRoute slice")
-	}
-
-	if len(commuteShuttleRouteAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -471,13 +284,6 @@ func (commuteShuttleRouteL) LoadRouteNameCommuteShuttleTimetables(ctx context.Co
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for commute_shuttle_timetable")
 	}
 
-	if len(commuteShuttleTimetableAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.RouteNameCommuteShuttleTimetables = resultSlice
 		for _, foreign := range resultSlice {
@@ -592,10 +398,6 @@ func FindCommuteShuttleRoute(ctx context.Context, exec boil.ContextExecutor, rou
 		return nil, errors.Wrap(err, "models: unable to select from commute_shuttle_route")
 	}
 
-	if err = commuteShuttleRouteObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return commuteShuttleRouteObj, err
-	}
-
 	return commuteShuttleRouteObj, nil
 }
 
@@ -607,10 +409,6 @@ func (o *CommuteShuttleRoute) Insert(ctx context.Context, exec boil.ContextExecu
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(commuteShuttleRouteColumnsWithDefault, o)
 
@@ -675,7 +473,7 @@ func (o *CommuteShuttleRoute) Insert(ctx context.Context, exec boil.ContextExecu
 		commuteShuttleRouteInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the CommuteShuttleRoute.
@@ -683,9 +481,6 @@ func (o *CommuteShuttleRoute) Insert(ctx context.Context, exec boil.ContextExecu
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *CommuteShuttleRoute) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	commuteShuttleRouteUpdateCacheMut.RLock()
 	cache, cached := commuteShuttleRouteUpdateCache[key]
@@ -738,7 +533,7 @@ func (o *CommuteShuttleRoute) Update(ctx context.Context, exec boil.ContextExecu
 		commuteShuttleRouteUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -811,10 +606,6 @@ func (o CommuteShuttleRouteSlice) UpdateAll(ctx context.Context, exec boil.Conte
 func (o *CommuteShuttleRoute) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no commute_shuttle_route provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(commuteShuttleRouteColumnsWithDefault, o)
@@ -919,7 +710,7 @@ func (o *CommuteShuttleRoute) Upsert(ctx context.Context, exec boil.ContextExecu
 		commuteShuttleRouteUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single CommuteShuttleRoute record with an executor.
@@ -927,10 +718,6 @@ func (o *CommuteShuttleRoute) Upsert(ctx context.Context, exec boil.ContextExecu
 func (o *CommuteShuttleRoute) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no CommuteShuttleRoute provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), commuteShuttleRoutePrimaryKeyMapping)
@@ -949,10 +736,6 @@ func (o *CommuteShuttleRoute) Delete(ctx context.Context, exec boil.ContextExecu
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for commute_shuttle_route")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -985,14 +768,6 @@ func (o CommuteShuttleRouteSlice) DeleteAll(ctx context.Context, exec boil.Conte
 		return 0, nil
 	}
 
-	if len(commuteShuttleRouteBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), commuteShuttleRoutePrimaryKeyMapping)
@@ -1015,14 +790,6 @@ func (o CommuteShuttleRouteSlice) DeleteAll(ctx context.Context, exec boil.Conte
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for commute_shuttle_route")
-	}
-
-	if len(commuteShuttleRouteAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

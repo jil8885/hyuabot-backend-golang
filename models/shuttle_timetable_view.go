@@ -125,8 +125,6 @@ type (
 	// ShuttleTimetableViewSlice is an alias for a slice of pointers to ShuttleTimetableView.
 	// This should almost always be used instead of []ShuttleTimetableView.
 	ShuttleTimetableViewSlice []*ShuttleTimetableView
-	// ShuttleTimetableViewHook is the signature for custom ShuttleTimetableView hook methods
-	ShuttleTimetableViewHook func(context.Context, boil.ContextExecutor, *ShuttleTimetableView) error
 
 	shuttleTimetableViewQuery struct {
 		*queries.Query
@@ -160,31 +158,6 @@ var (
 	_ = strconv.IntSize
 )
 
-var shuttleTimetableViewAfterSelectHooks []ShuttleTimetableViewHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ShuttleTimetableView) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range shuttleTimetableViewAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddShuttleTimetableViewHook registers your hook function for all future operations.
-func AddShuttleTimetableViewHook(hookPoint boil.HookPoint, shuttleTimetableViewHook ShuttleTimetableViewHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		shuttleTimetableViewAfterSelectHooks = append(shuttleTimetableViewAfterSelectHooks, shuttleTimetableViewHook)
-	}
-}
-
 // One returns a single shuttleTimetableView record from the query.
 func (q shuttleTimetableViewQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ShuttleTimetableView, error) {
 	o := &ShuttleTimetableView{}
@@ -199,10 +172,6 @@ func (q shuttleTimetableViewQuery) One(ctx context.Context, exec boil.ContextExe
 		return nil, errors.Wrap(err, "models: failed to execute a one query for shuttle_timetable_view")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -213,14 +182,6 @@ func (q shuttleTimetableViewQuery) All(ctx context.Context, exec boil.ContextExe
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ShuttleTimetableView slice")
-	}
-
-	if len(shuttleTimetableViewAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil

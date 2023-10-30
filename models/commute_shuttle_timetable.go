@@ -120,8 +120,6 @@ type (
 	// CommuteShuttleTimetableSlice is an alias for a slice of pointers to CommuteShuttleTimetable.
 	// This should almost always be used instead of []CommuteShuttleTimetable.
 	CommuteShuttleTimetableSlice []*CommuteShuttleTimetable
-	// CommuteShuttleTimetableHook is the signature for custom CommuteShuttleTimetable hook methods
-	CommuteShuttleTimetableHook func(context.Context, boil.ContextExecutor, *CommuteShuttleTimetable) error
 
 	commuteShuttleTimetableQuery struct {
 		*queries.Query
@@ -149,179 +147,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var commuteShuttleTimetableAfterSelectHooks []CommuteShuttleTimetableHook
-
-var commuteShuttleTimetableBeforeInsertHooks []CommuteShuttleTimetableHook
-var commuteShuttleTimetableAfterInsertHooks []CommuteShuttleTimetableHook
-
-var commuteShuttleTimetableBeforeUpdateHooks []CommuteShuttleTimetableHook
-var commuteShuttleTimetableAfterUpdateHooks []CommuteShuttleTimetableHook
-
-var commuteShuttleTimetableBeforeDeleteHooks []CommuteShuttleTimetableHook
-var commuteShuttleTimetableAfterDeleteHooks []CommuteShuttleTimetableHook
-
-var commuteShuttleTimetableBeforeUpsertHooks []CommuteShuttleTimetableHook
-var commuteShuttleTimetableAfterUpsertHooks []CommuteShuttleTimetableHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *CommuteShuttleTimetable) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleTimetableAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *CommuteShuttleTimetable) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleTimetableBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *CommuteShuttleTimetable) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleTimetableAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *CommuteShuttleTimetable) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleTimetableBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *CommuteShuttleTimetable) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleTimetableAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *CommuteShuttleTimetable) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleTimetableBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *CommuteShuttleTimetable) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleTimetableAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *CommuteShuttleTimetable) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleTimetableBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *CommuteShuttleTimetable) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleTimetableAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddCommuteShuttleTimetableHook registers your hook function for all future operations.
-func AddCommuteShuttleTimetableHook(hookPoint boil.HookPoint, commuteShuttleTimetableHook CommuteShuttleTimetableHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		commuteShuttleTimetableAfterSelectHooks = append(commuteShuttleTimetableAfterSelectHooks, commuteShuttleTimetableHook)
-	case boil.BeforeInsertHook:
-		commuteShuttleTimetableBeforeInsertHooks = append(commuteShuttleTimetableBeforeInsertHooks, commuteShuttleTimetableHook)
-	case boil.AfterInsertHook:
-		commuteShuttleTimetableAfterInsertHooks = append(commuteShuttleTimetableAfterInsertHooks, commuteShuttleTimetableHook)
-	case boil.BeforeUpdateHook:
-		commuteShuttleTimetableBeforeUpdateHooks = append(commuteShuttleTimetableBeforeUpdateHooks, commuteShuttleTimetableHook)
-	case boil.AfterUpdateHook:
-		commuteShuttleTimetableAfterUpdateHooks = append(commuteShuttleTimetableAfterUpdateHooks, commuteShuttleTimetableHook)
-	case boil.BeforeDeleteHook:
-		commuteShuttleTimetableBeforeDeleteHooks = append(commuteShuttleTimetableBeforeDeleteHooks, commuteShuttleTimetableHook)
-	case boil.AfterDeleteHook:
-		commuteShuttleTimetableAfterDeleteHooks = append(commuteShuttleTimetableAfterDeleteHooks, commuteShuttleTimetableHook)
-	case boil.BeforeUpsertHook:
-		commuteShuttleTimetableBeforeUpsertHooks = append(commuteShuttleTimetableBeforeUpsertHooks, commuteShuttleTimetableHook)
-	case boil.AfterUpsertHook:
-		commuteShuttleTimetableAfterUpsertHooks = append(commuteShuttleTimetableAfterUpsertHooks, commuteShuttleTimetableHook)
-	}
-}
-
 // One returns a single commuteShuttleTimetable record from the query.
 func (q commuteShuttleTimetableQuery) One(ctx context.Context, exec boil.ContextExecutor) (*CommuteShuttleTimetable, error) {
 	o := &CommuteShuttleTimetable{}
@@ -336,10 +161,6 @@ func (q commuteShuttleTimetableQuery) One(ctx context.Context, exec boil.Context
 		return nil, errors.Wrap(err, "models: failed to execute a one query for commute_shuttle_timetable")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -350,14 +171,6 @@ func (q commuteShuttleTimetableQuery) All(ctx context.Context, exec boil.Context
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to CommuteShuttleTimetable slice")
-	}
-
-	if len(commuteShuttleTimetableAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -498,14 +311,6 @@ func (commuteShuttleTimetableL) LoadRouteNameCommuteShuttleRoute(ctx context.Con
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for commute_shuttle_route")
 	}
 
-	if len(commuteShuttleRouteAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -616,14 +421,6 @@ func (commuteShuttleTimetableL) LoadStopNameCommuteShuttleStop(ctx context.Conte
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for commute_shuttle_stop")
-	}
-
-	if len(commuteShuttleStopAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -784,10 +581,6 @@ func FindCommuteShuttleTimetable(ctx context.Context, exec boil.ContextExecutor,
 		return nil, errors.Wrap(err, "models: unable to select from commute_shuttle_timetable")
 	}
 
-	if err = commuteShuttleTimetableObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return commuteShuttleTimetableObj, err
-	}
-
 	return commuteShuttleTimetableObj, nil
 }
 
@@ -799,10 +592,6 @@ func (o *CommuteShuttleTimetable) Insert(ctx context.Context, exec boil.ContextE
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(commuteShuttleTimetableColumnsWithDefault, o)
 
@@ -867,7 +656,7 @@ func (o *CommuteShuttleTimetable) Insert(ctx context.Context, exec boil.ContextE
 		commuteShuttleTimetableInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the CommuteShuttleTimetable.
@@ -875,9 +664,6 @@ func (o *CommuteShuttleTimetable) Insert(ctx context.Context, exec boil.ContextE
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *CommuteShuttleTimetable) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	commuteShuttleTimetableUpdateCacheMut.RLock()
 	cache, cached := commuteShuttleTimetableUpdateCache[key]
@@ -930,7 +716,7 @@ func (o *CommuteShuttleTimetable) Update(ctx context.Context, exec boil.ContextE
 		commuteShuttleTimetableUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -1003,10 +789,6 @@ func (o CommuteShuttleTimetableSlice) UpdateAll(ctx context.Context, exec boil.C
 func (o *CommuteShuttleTimetable) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no commute_shuttle_timetable provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(commuteShuttleTimetableColumnsWithDefault, o)
@@ -1111,7 +893,7 @@ func (o *CommuteShuttleTimetable) Upsert(ctx context.Context, exec boil.ContextE
 		commuteShuttleTimetableUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single CommuteShuttleTimetable record with an executor.
@@ -1119,10 +901,6 @@ func (o *CommuteShuttleTimetable) Upsert(ctx context.Context, exec boil.ContextE
 func (o *CommuteShuttleTimetable) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no CommuteShuttleTimetable provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), commuteShuttleTimetablePrimaryKeyMapping)
@@ -1141,10 +919,6 @@ func (o *CommuteShuttleTimetable) Delete(ctx context.Context, exec boil.ContextE
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for commute_shuttle_timetable")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1177,14 +951,6 @@ func (o CommuteShuttleTimetableSlice) DeleteAll(ctx context.Context, exec boil.C
 		return 0, nil
 	}
 
-	if len(commuteShuttleTimetableBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), commuteShuttleTimetablePrimaryKeyMapping)
@@ -1207,14 +973,6 @@ func (o CommuteShuttleTimetableSlice) DeleteAll(ctx context.Context, exec boil.C
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for commute_shuttle_timetable")
-	}
-
-	if len(commuteShuttleTimetableAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

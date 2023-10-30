@@ -126,8 +126,6 @@ type (
 	// RestaurantSlice is an alias for a slice of pointers to Restaurant.
 	// This should almost always be used instead of []Restaurant.
 	RestaurantSlice []*Restaurant
-	// RestaurantHook is the signature for custom Restaurant hook methods
-	RestaurantHook func(context.Context, boil.ContextExecutor, *Restaurant) error
 
 	restaurantQuery struct {
 		*queries.Query
@@ -155,179 +153,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var restaurantAfterSelectHooks []RestaurantHook
-
-var restaurantBeforeInsertHooks []RestaurantHook
-var restaurantAfterInsertHooks []RestaurantHook
-
-var restaurantBeforeUpdateHooks []RestaurantHook
-var restaurantAfterUpdateHooks []RestaurantHook
-
-var restaurantBeforeDeleteHooks []RestaurantHook
-var restaurantAfterDeleteHooks []RestaurantHook
-
-var restaurantBeforeUpsertHooks []RestaurantHook
-var restaurantAfterUpsertHooks []RestaurantHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *Restaurant) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range restaurantAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Restaurant) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range restaurantBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Restaurant) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range restaurantAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Restaurant) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range restaurantBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Restaurant) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range restaurantAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Restaurant) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range restaurantBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Restaurant) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range restaurantAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Restaurant) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range restaurantBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Restaurant) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range restaurantAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddRestaurantHook registers your hook function for all future operations.
-func AddRestaurantHook(hookPoint boil.HookPoint, restaurantHook RestaurantHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		restaurantAfterSelectHooks = append(restaurantAfterSelectHooks, restaurantHook)
-	case boil.BeforeInsertHook:
-		restaurantBeforeInsertHooks = append(restaurantBeforeInsertHooks, restaurantHook)
-	case boil.AfterInsertHook:
-		restaurantAfterInsertHooks = append(restaurantAfterInsertHooks, restaurantHook)
-	case boil.BeforeUpdateHook:
-		restaurantBeforeUpdateHooks = append(restaurantBeforeUpdateHooks, restaurantHook)
-	case boil.AfterUpdateHook:
-		restaurantAfterUpdateHooks = append(restaurantAfterUpdateHooks, restaurantHook)
-	case boil.BeforeDeleteHook:
-		restaurantBeforeDeleteHooks = append(restaurantBeforeDeleteHooks, restaurantHook)
-	case boil.AfterDeleteHook:
-		restaurantAfterDeleteHooks = append(restaurantAfterDeleteHooks, restaurantHook)
-	case boil.BeforeUpsertHook:
-		restaurantBeforeUpsertHooks = append(restaurantBeforeUpsertHooks, restaurantHook)
-	case boil.AfterUpsertHook:
-		restaurantAfterUpsertHooks = append(restaurantAfterUpsertHooks, restaurantHook)
-	}
-}
-
 // One returns a single restaurant record from the query.
 func (q restaurantQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Restaurant, error) {
 	o := &Restaurant{}
@@ -342,10 +167,6 @@ func (q restaurantQuery) One(ctx context.Context, exec boil.ContextExecutor) (*R
 		return nil, errors.Wrap(err, "models: failed to execute a one query for restaurant")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -356,14 +177,6 @@ func (q restaurantQuery) All(ctx context.Context, exec boil.ContextExecutor) (Re
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to Restaurant slice")
-	}
-
-	if len(restaurantAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -507,14 +320,6 @@ func (restaurantL) LoadCampus(ctx context.Context, e boil.ContextExecutor, singu
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for campus")
 	}
 
-	if len(campusAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -625,13 +430,6 @@ func (restaurantL) LoadMenus(ctx context.Context, e boil.ContextExecutor, singul
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for menu")
 	}
 
-	if len(menuAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Menus = resultSlice
 		for _, foreign := range resultSlice {
@@ -793,10 +591,6 @@ func FindRestaurant(ctx context.Context, exec boil.ContextExecutor, restaurantID
 		return nil, errors.Wrap(err, "models: unable to select from restaurant")
 	}
 
-	if err = restaurantObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return restaurantObj, err
-	}
-
 	return restaurantObj, nil
 }
 
@@ -808,10 +602,6 @@ func (o *Restaurant) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(restaurantColumnsWithDefault, o)
 
@@ -876,7 +666,7 @@ func (o *Restaurant) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 		restaurantInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the Restaurant.
@@ -884,9 +674,6 @@ func (o *Restaurant) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *Restaurant) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	restaurantUpdateCacheMut.RLock()
 	cache, cached := restaurantUpdateCache[key]
@@ -939,7 +726,7 @@ func (o *Restaurant) Update(ctx context.Context, exec boil.ContextExecutor, colu
 		restaurantUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -1012,10 +799,6 @@ func (o RestaurantSlice) UpdateAll(ctx context.Context, exec boil.ContextExecuto
 func (o *Restaurant) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no restaurant provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(restaurantColumnsWithDefault, o)
@@ -1120,7 +903,7 @@ func (o *Restaurant) Upsert(ctx context.Context, exec boil.ContextExecutor, upda
 		restaurantUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single Restaurant record with an executor.
@@ -1128,10 +911,6 @@ func (o *Restaurant) Upsert(ctx context.Context, exec boil.ContextExecutor, upda
 func (o *Restaurant) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Restaurant provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), restaurantPrimaryKeyMapping)
@@ -1150,10 +929,6 @@ func (o *Restaurant) Delete(ctx context.Context, exec boil.ContextExecutor) (int
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for restaurant")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1186,14 +961,6 @@ func (o RestaurantSlice) DeleteAll(ctx context.Context, exec boil.ContextExecuto
 		return 0, nil
 	}
 
-	if len(restaurantBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), restaurantPrimaryKeyMapping)
@@ -1216,14 +983,6 @@ func (o RestaurantSlice) DeleteAll(ctx context.Context, exec boil.ContextExecuto
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for restaurant")
-	}
-
-	if len(restaurantAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

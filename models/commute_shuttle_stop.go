@@ -148,8 +148,6 @@ type (
 	// CommuteShuttleStopSlice is an alias for a slice of pointers to CommuteShuttleStop.
 	// This should almost always be used instead of []CommuteShuttleStop.
 	CommuteShuttleStopSlice []*CommuteShuttleStop
-	// CommuteShuttleStopHook is the signature for custom CommuteShuttleStop hook methods
-	CommuteShuttleStopHook func(context.Context, boil.ContextExecutor, *CommuteShuttleStop) error
 
 	commuteShuttleStopQuery struct {
 		*queries.Query
@@ -177,179 +175,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var commuteShuttleStopAfterSelectHooks []CommuteShuttleStopHook
-
-var commuteShuttleStopBeforeInsertHooks []CommuteShuttleStopHook
-var commuteShuttleStopAfterInsertHooks []CommuteShuttleStopHook
-
-var commuteShuttleStopBeforeUpdateHooks []CommuteShuttleStopHook
-var commuteShuttleStopAfterUpdateHooks []CommuteShuttleStopHook
-
-var commuteShuttleStopBeforeDeleteHooks []CommuteShuttleStopHook
-var commuteShuttleStopAfterDeleteHooks []CommuteShuttleStopHook
-
-var commuteShuttleStopBeforeUpsertHooks []CommuteShuttleStopHook
-var commuteShuttleStopAfterUpsertHooks []CommuteShuttleStopHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *CommuteShuttleStop) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleStopAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *CommuteShuttleStop) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleStopBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *CommuteShuttleStop) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleStopAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *CommuteShuttleStop) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleStopBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *CommuteShuttleStop) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleStopAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *CommuteShuttleStop) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleStopBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *CommuteShuttleStop) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleStopAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *CommuteShuttleStop) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleStopBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *CommuteShuttleStop) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range commuteShuttleStopAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddCommuteShuttleStopHook registers your hook function for all future operations.
-func AddCommuteShuttleStopHook(hookPoint boil.HookPoint, commuteShuttleStopHook CommuteShuttleStopHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		commuteShuttleStopAfterSelectHooks = append(commuteShuttleStopAfterSelectHooks, commuteShuttleStopHook)
-	case boil.BeforeInsertHook:
-		commuteShuttleStopBeforeInsertHooks = append(commuteShuttleStopBeforeInsertHooks, commuteShuttleStopHook)
-	case boil.AfterInsertHook:
-		commuteShuttleStopAfterInsertHooks = append(commuteShuttleStopAfterInsertHooks, commuteShuttleStopHook)
-	case boil.BeforeUpdateHook:
-		commuteShuttleStopBeforeUpdateHooks = append(commuteShuttleStopBeforeUpdateHooks, commuteShuttleStopHook)
-	case boil.AfterUpdateHook:
-		commuteShuttleStopAfterUpdateHooks = append(commuteShuttleStopAfterUpdateHooks, commuteShuttleStopHook)
-	case boil.BeforeDeleteHook:
-		commuteShuttleStopBeforeDeleteHooks = append(commuteShuttleStopBeforeDeleteHooks, commuteShuttleStopHook)
-	case boil.AfterDeleteHook:
-		commuteShuttleStopAfterDeleteHooks = append(commuteShuttleStopAfterDeleteHooks, commuteShuttleStopHook)
-	case boil.BeforeUpsertHook:
-		commuteShuttleStopBeforeUpsertHooks = append(commuteShuttleStopBeforeUpsertHooks, commuteShuttleStopHook)
-	case boil.AfterUpsertHook:
-		commuteShuttleStopAfterUpsertHooks = append(commuteShuttleStopAfterUpsertHooks, commuteShuttleStopHook)
-	}
-}
-
 // One returns a single commuteShuttleStop record from the query.
 func (q commuteShuttleStopQuery) One(ctx context.Context, exec boil.ContextExecutor) (*CommuteShuttleStop, error) {
 	o := &CommuteShuttleStop{}
@@ -364,10 +189,6 @@ func (q commuteShuttleStopQuery) One(ctx context.Context, exec boil.ContextExecu
 		return nil, errors.Wrap(err, "models: failed to execute a one query for commute_shuttle_stop")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -378,14 +199,6 @@ func (q commuteShuttleStopQuery) All(ctx context.Context, exec boil.ContextExecu
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to CommuteShuttleStop slice")
-	}
-
-	if len(commuteShuttleStopAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -516,13 +329,6 @@ func (commuteShuttleStopL) LoadStopNameCommuteShuttleTimetables(ctx context.Cont
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for commute_shuttle_timetable")
 	}
 
-	if len(commuteShuttleTimetableAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.StopNameCommuteShuttleTimetables = resultSlice
 		for _, foreign := range resultSlice {
@@ -637,10 +443,6 @@ func FindCommuteShuttleStop(ctx context.Context, exec boil.ContextExecutor, stop
 		return nil, errors.Wrap(err, "models: unable to select from commute_shuttle_stop")
 	}
 
-	if err = commuteShuttleStopObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return commuteShuttleStopObj, err
-	}
-
 	return commuteShuttleStopObj, nil
 }
 
@@ -652,10 +454,6 @@ func (o *CommuteShuttleStop) Insert(ctx context.Context, exec boil.ContextExecut
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(commuteShuttleStopColumnsWithDefault, o)
 
@@ -720,7 +518,7 @@ func (o *CommuteShuttleStop) Insert(ctx context.Context, exec boil.ContextExecut
 		commuteShuttleStopInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the CommuteShuttleStop.
@@ -728,9 +526,6 @@ func (o *CommuteShuttleStop) Insert(ctx context.Context, exec boil.ContextExecut
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *CommuteShuttleStop) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	commuteShuttleStopUpdateCacheMut.RLock()
 	cache, cached := commuteShuttleStopUpdateCache[key]
@@ -783,7 +578,7 @@ func (o *CommuteShuttleStop) Update(ctx context.Context, exec boil.ContextExecut
 		commuteShuttleStopUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -856,10 +651,6 @@ func (o CommuteShuttleStopSlice) UpdateAll(ctx context.Context, exec boil.Contex
 func (o *CommuteShuttleStop) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no commute_shuttle_stop provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(commuteShuttleStopColumnsWithDefault, o)
@@ -964,7 +755,7 @@ func (o *CommuteShuttleStop) Upsert(ctx context.Context, exec boil.ContextExecut
 		commuteShuttleStopUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single CommuteShuttleStop record with an executor.
@@ -972,10 +763,6 @@ func (o *CommuteShuttleStop) Upsert(ctx context.Context, exec boil.ContextExecut
 func (o *CommuteShuttleStop) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no CommuteShuttleStop provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), commuteShuttleStopPrimaryKeyMapping)
@@ -994,10 +781,6 @@ func (o *CommuteShuttleStop) Delete(ctx context.Context, exec boil.ContextExecut
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for commute_shuttle_stop")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1030,14 +813,6 @@ func (o CommuteShuttleStopSlice) DeleteAll(ctx context.Context, exec boil.Contex
 		return 0, nil
 	}
 
-	if len(commuteShuttleStopBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), commuteShuttleStopPrimaryKeyMapping)
@@ -1060,14 +835,6 @@ func (o CommuteShuttleStopSlice) DeleteAll(ctx context.Context, exec boil.Contex
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for commute_shuttle_stop")
-	}
-
-	if len(commuteShuttleStopAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

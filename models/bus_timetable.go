@@ -119,8 +119,6 @@ type (
 	// BusTimetableSlice is an alias for a slice of pointers to BusTimetable.
 	// This should almost always be used instead of []BusTimetable.
 	BusTimetableSlice []*BusTimetable
-	// BusTimetableHook is the signature for custom BusTimetable hook methods
-	BusTimetableHook func(context.Context, boil.ContextExecutor, *BusTimetable) error
 
 	busTimetableQuery struct {
 		*queries.Query
@@ -148,179 +146,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var busTimetableAfterSelectHooks []BusTimetableHook
-
-var busTimetableBeforeInsertHooks []BusTimetableHook
-var busTimetableAfterInsertHooks []BusTimetableHook
-
-var busTimetableBeforeUpdateHooks []BusTimetableHook
-var busTimetableAfterUpdateHooks []BusTimetableHook
-
-var busTimetableBeforeDeleteHooks []BusTimetableHook
-var busTimetableAfterDeleteHooks []BusTimetableHook
-
-var busTimetableBeforeUpsertHooks []BusTimetableHook
-var busTimetableAfterUpsertHooks []BusTimetableHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *BusTimetable) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busTimetableAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *BusTimetable) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busTimetableBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *BusTimetable) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busTimetableAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *BusTimetable) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busTimetableBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *BusTimetable) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busTimetableAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *BusTimetable) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busTimetableBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *BusTimetable) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busTimetableAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *BusTimetable) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busTimetableBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *BusTimetable) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busTimetableAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddBusTimetableHook registers your hook function for all future operations.
-func AddBusTimetableHook(hookPoint boil.HookPoint, busTimetableHook BusTimetableHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		busTimetableAfterSelectHooks = append(busTimetableAfterSelectHooks, busTimetableHook)
-	case boil.BeforeInsertHook:
-		busTimetableBeforeInsertHooks = append(busTimetableBeforeInsertHooks, busTimetableHook)
-	case boil.AfterInsertHook:
-		busTimetableAfterInsertHooks = append(busTimetableAfterInsertHooks, busTimetableHook)
-	case boil.BeforeUpdateHook:
-		busTimetableBeforeUpdateHooks = append(busTimetableBeforeUpdateHooks, busTimetableHook)
-	case boil.AfterUpdateHook:
-		busTimetableAfterUpdateHooks = append(busTimetableAfterUpdateHooks, busTimetableHook)
-	case boil.BeforeDeleteHook:
-		busTimetableBeforeDeleteHooks = append(busTimetableBeforeDeleteHooks, busTimetableHook)
-	case boil.AfterDeleteHook:
-		busTimetableAfterDeleteHooks = append(busTimetableAfterDeleteHooks, busTimetableHook)
-	case boil.BeforeUpsertHook:
-		busTimetableBeforeUpsertHooks = append(busTimetableBeforeUpsertHooks, busTimetableHook)
-	case boil.AfterUpsertHook:
-		busTimetableAfterUpsertHooks = append(busTimetableAfterUpsertHooks, busTimetableHook)
-	}
-}
-
 // One returns a single busTimetable record from the query.
 func (q busTimetableQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BusTimetable, error) {
 	o := &BusTimetable{}
@@ -335,10 +160,6 @@ func (q busTimetableQuery) One(ctx context.Context, exec boil.ContextExecutor) (
 		return nil, errors.Wrap(err, "models: failed to execute a one query for bus_timetable")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -349,14 +170,6 @@ func (q busTimetableQuery) All(ctx context.Context, exec boil.ContextExecutor) (
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to BusTimetable slice")
-	}
-
-	if len(busTimetableAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -497,14 +310,6 @@ func (busTimetableL) LoadRoute(ctx context.Context, e boil.ContextExecutor, sing
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for bus_route")
 	}
 
-	if len(busRouteAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -615,14 +420,6 @@ func (busTimetableL) LoadStartStop(ctx context.Context, e boil.ContextExecutor, 
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for bus_stop")
-	}
-
-	if len(busStopAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -783,10 +580,6 @@ func FindBusTimetable(ctx context.Context, exec boil.ContextExecutor, routeID in
 		return nil, errors.Wrap(err, "models: unable to select from bus_timetable")
 	}
 
-	if err = busTimetableObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return busTimetableObj, err
-	}
-
 	return busTimetableObj, nil
 }
 
@@ -798,10 +591,6 @@ func (o *BusTimetable) Insert(ctx context.Context, exec boil.ContextExecutor, co
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(busTimetableColumnsWithDefault, o)
 
@@ -866,7 +655,7 @@ func (o *BusTimetable) Insert(ctx context.Context, exec boil.ContextExecutor, co
 		busTimetableInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the BusTimetable.
@@ -874,9 +663,6 @@ func (o *BusTimetable) Insert(ctx context.Context, exec boil.ContextExecutor, co
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *BusTimetable) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	busTimetableUpdateCacheMut.RLock()
 	cache, cached := busTimetableUpdateCache[key]
@@ -929,7 +715,7 @@ func (o *BusTimetable) Update(ctx context.Context, exec boil.ContextExecutor, co
 		busTimetableUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -1002,10 +788,6 @@ func (o BusTimetableSlice) UpdateAll(ctx context.Context, exec boil.ContextExecu
 func (o *BusTimetable) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no bus_timetable provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(busTimetableColumnsWithDefault, o)
@@ -1110,7 +892,7 @@ func (o *BusTimetable) Upsert(ctx context.Context, exec boil.ContextExecutor, up
 		busTimetableUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single BusTimetable record with an executor.
@@ -1118,10 +900,6 @@ func (o *BusTimetable) Upsert(ctx context.Context, exec boil.ContextExecutor, up
 func (o *BusTimetable) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no BusTimetable provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), busTimetablePrimaryKeyMapping)
@@ -1140,10 +918,6 @@ func (o *BusTimetable) Delete(ctx context.Context, exec boil.ContextExecutor) (i
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for bus_timetable")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1176,14 +950,6 @@ func (o BusTimetableSlice) DeleteAll(ctx context.Context, exec boil.ContextExecu
 		return 0, nil
 	}
 
-	if len(busTimetableBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), busTimetablePrimaryKeyMapping)
@@ -1206,14 +972,6 @@ func (o BusTimetableSlice) DeleteAll(ctx context.Context, exec boil.ContextExecu
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for bus_timetable")
-	}
-
-	if len(busTimetableAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

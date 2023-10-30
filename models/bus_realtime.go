@@ -163,8 +163,6 @@ type (
 	// BusRealtimeSlice is an alias for a slice of pointers to BusRealtime.
 	// This should almost always be used instead of []BusRealtime.
 	BusRealtimeSlice []*BusRealtime
-	// BusRealtimeHook is the signature for custom BusRealtime hook methods
-	BusRealtimeHook func(context.Context, boil.ContextExecutor, *BusRealtime) error
 
 	busRealtimeQuery struct {
 		*queries.Query
@@ -192,179 +190,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var busRealtimeAfterSelectHooks []BusRealtimeHook
-
-var busRealtimeBeforeInsertHooks []BusRealtimeHook
-var busRealtimeAfterInsertHooks []BusRealtimeHook
-
-var busRealtimeBeforeUpdateHooks []BusRealtimeHook
-var busRealtimeAfterUpdateHooks []BusRealtimeHook
-
-var busRealtimeBeforeDeleteHooks []BusRealtimeHook
-var busRealtimeAfterDeleteHooks []BusRealtimeHook
-
-var busRealtimeBeforeUpsertHooks []BusRealtimeHook
-var busRealtimeAfterUpsertHooks []BusRealtimeHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *BusRealtime) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRealtimeAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *BusRealtime) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRealtimeBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *BusRealtime) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRealtimeAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *BusRealtime) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRealtimeBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *BusRealtime) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRealtimeAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *BusRealtime) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRealtimeBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *BusRealtime) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRealtimeAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *BusRealtime) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRealtimeBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *BusRealtime) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRealtimeAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddBusRealtimeHook registers your hook function for all future operations.
-func AddBusRealtimeHook(hookPoint boil.HookPoint, busRealtimeHook BusRealtimeHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		busRealtimeAfterSelectHooks = append(busRealtimeAfterSelectHooks, busRealtimeHook)
-	case boil.BeforeInsertHook:
-		busRealtimeBeforeInsertHooks = append(busRealtimeBeforeInsertHooks, busRealtimeHook)
-	case boil.AfterInsertHook:
-		busRealtimeAfterInsertHooks = append(busRealtimeAfterInsertHooks, busRealtimeHook)
-	case boil.BeforeUpdateHook:
-		busRealtimeBeforeUpdateHooks = append(busRealtimeBeforeUpdateHooks, busRealtimeHook)
-	case boil.AfterUpdateHook:
-		busRealtimeAfterUpdateHooks = append(busRealtimeAfterUpdateHooks, busRealtimeHook)
-	case boil.BeforeDeleteHook:
-		busRealtimeBeforeDeleteHooks = append(busRealtimeBeforeDeleteHooks, busRealtimeHook)
-	case boil.AfterDeleteHook:
-		busRealtimeAfterDeleteHooks = append(busRealtimeAfterDeleteHooks, busRealtimeHook)
-	case boil.BeforeUpsertHook:
-		busRealtimeBeforeUpsertHooks = append(busRealtimeBeforeUpsertHooks, busRealtimeHook)
-	case boil.AfterUpsertHook:
-		busRealtimeAfterUpsertHooks = append(busRealtimeAfterUpsertHooks, busRealtimeHook)
-	}
-}
-
 // One returns a single busRealtime record from the query.
 func (q busRealtimeQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BusRealtime, error) {
 	o := &BusRealtime{}
@@ -379,10 +204,6 @@ func (q busRealtimeQuery) One(ctx context.Context, exec boil.ContextExecutor) (*
 		return nil, errors.Wrap(err, "models: failed to execute a one query for bus_realtime")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -393,14 +214,6 @@ func (q busRealtimeQuery) All(ctx context.Context, exec boil.ContextExecutor) (B
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to BusRealtime slice")
-	}
-
-	if len(busRealtimeAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -471,10 +284,6 @@ func FindBusRealtime(ctx context.Context, exec boil.ContextExecutor, routeStopID
 		return nil, errors.Wrap(err, "models: unable to select from bus_realtime")
 	}
 
-	if err = busRealtimeObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return busRealtimeObj, err
-	}
-
 	return busRealtimeObj, nil
 }
 
@@ -486,10 +295,6 @@ func (o *BusRealtime) Insert(ctx context.Context, exec boil.ContextExecutor, col
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(busRealtimeColumnsWithDefault, o)
 
@@ -554,7 +359,7 @@ func (o *BusRealtime) Insert(ctx context.Context, exec boil.ContextExecutor, col
 		busRealtimeInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the BusRealtime.
@@ -562,9 +367,6 @@ func (o *BusRealtime) Insert(ctx context.Context, exec boil.ContextExecutor, col
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *BusRealtime) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	busRealtimeUpdateCacheMut.RLock()
 	cache, cached := busRealtimeUpdateCache[key]
@@ -617,7 +419,7 @@ func (o *BusRealtime) Update(ctx context.Context, exec boil.ContextExecutor, col
 		busRealtimeUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -690,10 +492,6 @@ func (o BusRealtimeSlice) UpdateAll(ctx context.Context, exec boil.ContextExecut
 func (o *BusRealtime) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no bus_realtime provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(busRealtimeColumnsWithDefault, o)
@@ -798,7 +596,7 @@ func (o *BusRealtime) Upsert(ctx context.Context, exec boil.ContextExecutor, upd
 		busRealtimeUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single BusRealtime record with an executor.
@@ -806,10 +604,6 @@ func (o *BusRealtime) Upsert(ctx context.Context, exec boil.ContextExecutor, upd
 func (o *BusRealtime) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no BusRealtime provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), busRealtimePrimaryKeyMapping)
@@ -828,10 +622,6 @@ func (o *BusRealtime) Delete(ctx context.Context, exec boil.ContextExecutor) (in
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for bus_realtime")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -864,14 +654,6 @@ func (o BusRealtimeSlice) DeleteAll(ctx context.Context, exec boil.ContextExecut
 		return 0, nil
 	}
 
-	if len(busRealtimeBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), busRealtimePrimaryKeyMapping)
@@ -894,14 +676,6 @@ func (o BusRealtimeSlice) DeleteAll(ctx context.Context, exec boil.ContextExecut
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for bus_realtime")
-	}
-
-	if len(busRealtimeAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

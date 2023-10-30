@@ -250,8 +250,6 @@ type (
 	// BusStopSlice is an alias for a slice of pointers to BusStop.
 	// This should almost always be used instead of []BusStop.
 	BusStopSlice []*BusStop
-	// BusStopHook is the signature for custom BusStop hook methods
-	BusStopHook func(context.Context, boil.ContextExecutor, *BusStop) error
 
 	busStopQuery struct {
 		*queries.Query
@@ -279,179 +277,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var busStopAfterSelectHooks []BusStopHook
-
-var busStopBeforeInsertHooks []BusStopHook
-var busStopAfterInsertHooks []BusStopHook
-
-var busStopBeforeUpdateHooks []BusStopHook
-var busStopAfterUpdateHooks []BusStopHook
-
-var busStopBeforeDeleteHooks []BusStopHook
-var busStopAfterDeleteHooks []BusStopHook
-
-var busStopBeforeUpsertHooks []BusStopHook
-var busStopAfterUpsertHooks []BusStopHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *BusStop) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busStopAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *BusStop) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busStopBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *BusStop) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busStopAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *BusStop) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busStopBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *BusStop) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busStopAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *BusStop) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busStopBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *BusStop) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busStopAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *BusStop) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busStopBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *BusStop) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busStopAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddBusStopHook registers your hook function for all future operations.
-func AddBusStopHook(hookPoint boil.HookPoint, busStopHook BusStopHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		busStopAfterSelectHooks = append(busStopAfterSelectHooks, busStopHook)
-	case boil.BeforeInsertHook:
-		busStopBeforeInsertHooks = append(busStopBeforeInsertHooks, busStopHook)
-	case boil.AfterInsertHook:
-		busStopAfterInsertHooks = append(busStopAfterInsertHooks, busStopHook)
-	case boil.BeforeUpdateHook:
-		busStopBeforeUpdateHooks = append(busStopBeforeUpdateHooks, busStopHook)
-	case boil.AfterUpdateHook:
-		busStopAfterUpdateHooks = append(busStopAfterUpdateHooks, busStopHook)
-	case boil.BeforeDeleteHook:
-		busStopBeforeDeleteHooks = append(busStopBeforeDeleteHooks, busStopHook)
-	case boil.AfterDeleteHook:
-		busStopAfterDeleteHooks = append(busStopAfterDeleteHooks, busStopHook)
-	case boil.BeforeUpsertHook:
-		busStopBeforeUpsertHooks = append(busStopBeforeUpsertHooks, busStopHook)
-	case boil.AfterUpsertHook:
-		busStopAfterUpsertHooks = append(busStopAfterUpsertHooks, busStopHook)
-	}
-}
-
 // One returns a single busStop record from the query.
 func (q busStopQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BusStop, error) {
 	o := &BusStop{}
@@ -466,10 +291,6 @@ func (q busStopQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BusS
 		return nil, errors.Wrap(err, "models: failed to execute a one query for bus_stop")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -480,14 +301,6 @@ func (q busStopQuery) All(ctx context.Context, exec boil.ContextExecutor) (BusSt
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to BusStop slice")
-	}
-
-	if len(busStopAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -674,13 +487,6 @@ func (busStopL) LoadEndStopBusRoutes(ctx context.Context, e boil.ContextExecutor
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for bus_route")
 	}
 
-	if len(busRouteAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.EndStopBusRoutes = resultSlice
 		for _, foreign := range resultSlice {
@@ -788,13 +594,6 @@ func (busStopL) LoadStartStopBusRoutes(ctx context.Context, e boil.ContextExecut
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for bus_route")
 	}
 
-	if len(busRouteAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.StartStopBusRoutes = resultSlice
 		for _, foreign := range resultSlice {
@@ -902,13 +701,6 @@ func (busStopL) LoadStartStopBusRouteStops(ctx context.Context, e boil.ContextEx
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for bus_route_stop")
 	}
 
-	if len(busRouteStopAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.StartStopBusRouteStops = resultSlice
 		for _, foreign := range resultSlice {
@@ -1016,13 +808,6 @@ func (busStopL) LoadStopBusRouteStops(ctx context.Context, e boil.ContextExecuto
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for bus_route_stop")
 	}
 
-	if len(busRouteStopAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.StopBusRouteStops = resultSlice
 		for _, foreign := range resultSlice {
@@ -1130,13 +915,6 @@ func (busStopL) LoadStartStopBusTimetables(ctx context.Context, e boil.ContextEx
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for bus_timetable")
 	}
 
-	if len(busTimetableAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.StartStopBusTimetables = resultSlice
 		for _, foreign := range resultSlice {
@@ -1463,10 +1241,6 @@ func FindBusStop(ctx context.Context, exec boil.ContextExecutor, stopID int, sel
 		return nil, errors.Wrap(err, "models: unable to select from bus_stop")
 	}
 
-	if err = busStopObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return busStopObj, err
-	}
-
 	return busStopObj, nil
 }
 
@@ -1478,10 +1252,6 @@ func (o *BusStop) Insert(ctx context.Context, exec boil.ContextExecutor, columns
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(busStopColumnsWithDefault, o)
 
@@ -1546,7 +1316,7 @@ func (o *BusStop) Insert(ctx context.Context, exec boil.ContextExecutor, columns
 		busStopInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the BusStop.
@@ -1554,9 +1324,6 @@ func (o *BusStop) Insert(ctx context.Context, exec boil.ContextExecutor, columns
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *BusStop) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	busStopUpdateCacheMut.RLock()
 	cache, cached := busStopUpdateCache[key]
@@ -1609,7 +1376,7 @@ func (o *BusStop) Update(ctx context.Context, exec boil.ContextExecutor, columns
 		busStopUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -1682,10 +1449,6 @@ func (o BusStopSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, 
 func (o *BusStop) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no bus_stop provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(busStopColumnsWithDefault, o)
@@ -1790,7 +1553,7 @@ func (o *BusStop) Upsert(ctx context.Context, exec boil.ContextExecutor, updateO
 		busStopUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single BusStop record with an executor.
@@ -1798,10 +1561,6 @@ func (o *BusStop) Upsert(ctx context.Context, exec boil.ContextExecutor, updateO
 func (o *BusStop) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no BusStop provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), busStopPrimaryKeyMapping)
@@ -1820,10 +1579,6 @@ func (o *BusStop) Delete(ctx context.Context, exec boil.ContextExecutor) (int64,
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for bus_stop")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1856,14 +1611,6 @@ func (o BusStopSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) 
 		return 0, nil
 	}
 
-	if len(busStopBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), busStopPrimaryKeyMapping)
@@ -1886,14 +1633,6 @@ func (o BusStopSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for bus_stop")
-	}
-
-	if len(busStopAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

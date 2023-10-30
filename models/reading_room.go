@@ -152,8 +152,6 @@ type (
 	// ReadingRoomSlice is an alias for a slice of pointers to ReadingRoom.
 	// This should almost always be used instead of []ReadingRoom.
 	ReadingRoomSlice []*ReadingRoom
-	// ReadingRoomHook is the signature for custom ReadingRoom hook methods
-	ReadingRoomHook func(context.Context, boil.ContextExecutor, *ReadingRoom) error
 
 	readingRoomQuery struct {
 		*queries.Query
@@ -181,179 +179,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var readingRoomAfterSelectHooks []ReadingRoomHook
-
-var readingRoomBeforeInsertHooks []ReadingRoomHook
-var readingRoomAfterInsertHooks []ReadingRoomHook
-
-var readingRoomBeforeUpdateHooks []ReadingRoomHook
-var readingRoomAfterUpdateHooks []ReadingRoomHook
-
-var readingRoomBeforeDeleteHooks []ReadingRoomHook
-var readingRoomAfterDeleteHooks []ReadingRoomHook
-
-var readingRoomBeforeUpsertHooks []ReadingRoomHook
-var readingRoomAfterUpsertHooks []ReadingRoomHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ReadingRoom) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range readingRoomAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *ReadingRoom) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range readingRoomBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *ReadingRoom) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range readingRoomAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *ReadingRoom) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range readingRoomBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *ReadingRoom) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range readingRoomAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *ReadingRoom) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range readingRoomBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *ReadingRoom) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range readingRoomAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *ReadingRoom) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range readingRoomBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *ReadingRoom) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range readingRoomAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddReadingRoomHook registers your hook function for all future operations.
-func AddReadingRoomHook(hookPoint boil.HookPoint, readingRoomHook ReadingRoomHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		readingRoomAfterSelectHooks = append(readingRoomAfterSelectHooks, readingRoomHook)
-	case boil.BeforeInsertHook:
-		readingRoomBeforeInsertHooks = append(readingRoomBeforeInsertHooks, readingRoomHook)
-	case boil.AfterInsertHook:
-		readingRoomAfterInsertHooks = append(readingRoomAfterInsertHooks, readingRoomHook)
-	case boil.BeforeUpdateHook:
-		readingRoomBeforeUpdateHooks = append(readingRoomBeforeUpdateHooks, readingRoomHook)
-	case boil.AfterUpdateHook:
-		readingRoomAfterUpdateHooks = append(readingRoomAfterUpdateHooks, readingRoomHook)
-	case boil.BeforeDeleteHook:
-		readingRoomBeforeDeleteHooks = append(readingRoomBeforeDeleteHooks, readingRoomHook)
-	case boil.AfterDeleteHook:
-		readingRoomAfterDeleteHooks = append(readingRoomAfterDeleteHooks, readingRoomHook)
-	case boil.BeforeUpsertHook:
-		readingRoomBeforeUpsertHooks = append(readingRoomBeforeUpsertHooks, readingRoomHook)
-	case boil.AfterUpsertHook:
-		readingRoomAfterUpsertHooks = append(readingRoomAfterUpsertHooks, readingRoomHook)
-	}
-}
-
 // One returns a single readingRoom record from the query.
 func (q readingRoomQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ReadingRoom, error) {
 	o := &ReadingRoom{}
@@ -368,10 +193,6 @@ func (q readingRoomQuery) One(ctx context.Context, exec boil.ContextExecutor) (*
 		return nil, errors.Wrap(err, "models: failed to execute a one query for reading_room")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -382,14 +203,6 @@ func (q readingRoomQuery) All(ctx context.Context, exec boil.ContextExecutor) (R
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ReadingRoom slice")
-	}
-
-	if len(readingRoomAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -519,14 +332,6 @@ func (readingRoomL) LoadCampus(ctx context.Context, e boil.ContextExecutor, sing
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for campus")
 	}
 
-	if len(campusAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -638,10 +443,6 @@ func FindReadingRoom(ctx context.Context, exec boil.ContextExecutor, roomID int,
 		return nil, errors.Wrap(err, "models: unable to select from reading_room")
 	}
 
-	if err = readingRoomObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return readingRoomObj, err
-	}
-
 	return readingRoomObj, nil
 }
 
@@ -653,10 +454,6 @@ func (o *ReadingRoom) Insert(ctx context.Context, exec boil.ContextExecutor, col
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(readingRoomColumnsWithDefault, o)
 
@@ -722,7 +519,7 @@ func (o *ReadingRoom) Insert(ctx context.Context, exec boil.ContextExecutor, col
 		readingRoomInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the ReadingRoom.
@@ -730,9 +527,6 @@ func (o *ReadingRoom) Insert(ctx context.Context, exec boil.ContextExecutor, col
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *ReadingRoom) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	readingRoomUpdateCacheMut.RLock()
 	cache, cached := readingRoomUpdateCache[key]
@@ -786,7 +580,7 @@ func (o *ReadingRoom) Update(ctx context.Context, exec boil.ContextExecutor, col
 		readingRoomUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -859,10 +653,6 @@ func (o ReadingRoomSlice) UpdateAll(ctx context.Context, exec boil.ContextExecut
 func (o *ReadingRoom) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no reading_room provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(readingRoomColumnsWithDefault, o)
@@ -970,7 +760,7 @@ func (o *ReadingRoom) Upsert(ctx context.Context, exec boil.ContextExecutor, upd
 		readingRoomUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single ReadingRoom record with an executor.
@@ -978,10 +768,6 @@ func (o *ReadingRoom) Upsert(ctx context.Context, exec boil.ContextExecutor, upd
 func (o *ReadingRoom) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ReadingRoom provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), readingRoomPrimaryKeyMapping)
@@ -1000,10 +786,6 @@ func (o *ReadingRoom) Delete(ctx context.Context, exec boil.ContextExecutor) (in
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for reading_room")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1036,14 +818,6 @@ func (o ReadingRoomSlice) DeleteAll(ctx context.Context, exec boil.ContextExecut
 		return 0, nil
 	}
 
-	if len(readingRoomBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), readingRoomPrimaryKeyMapping)
@@ -1066,14 +840,6 @@ func (o ReadingRoomSlice) DeleteAll(ctx context.Context, exec boil.ContextExecut
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for reading_room")
-	}
-
-	if len(readingRoomAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

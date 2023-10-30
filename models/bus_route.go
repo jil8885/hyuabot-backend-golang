@@ -248,8 +248,6 @@ type (
 	// BusRouteSlice is an alias for a slice of pointers to BusRoute.
 	// This should almost always be used instead of []BusRoute.
 	BusRouteSlice []*BusRoute
-	// BusRouteHook is the signature for custom BusRoute hook methods
-	BusRouteHook func(context.Context, boil.ContextExecutor, *BusRoute) error
 
 	busRouteQuery struct {
 		*queries.Query
@@ -277,179 +275,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var busRouteAfterSelectHooks []BusRouteHook
-
-var busRouteBeforeInsertHooks []BusRouteHook
-var busRouteAfterInsertHooks []BusRouteHook
-
-var busRouteBeforeUpdateHooks []BusRouteHook
-var busRouteAfterUpdateHooks []BusRouteHook
-
-var busRouteBeforeDeleteHooks []BusRouteHook
-var busRouteAfterDeleteHooks []BusRouteHook
-
-var busRouteBeforeUpsertHooks []BusRouteHook
-var busRouteAfterUpsertHooks []BusRouteHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *BusRoute) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRouteAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *BusRoute) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRouteBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *BusRoute) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRouteAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *BusRoute) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRouteBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *BusRoute) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRouteAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *BusRoute) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRouteBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *BusRoute) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRouteAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *BusRoute) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRouteBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *BusRoute) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range busRouteAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddBusRouteHook registers your hook function for all future operations.
-func AddBusRouteHook(hookPoint boil.HookPoint, busRouteHook BusRouteHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		busRouteAfterSelectHooks = append(busRouteAfterSelectHooks, busRouteHook)
-	case boil.BeforeInsertHook:
-		busRouteBeforeInsertHooks = append(busRouteBeforeInsertHooks, busRouteHook)
-	case boil.AfterInsertHook:
-		busRouteAfterInsertHooks = append(busRouteAfterInsertHooks, busRouteHook)
-	case boil.BeforeUpdateHook:
-		busRouteBeforeUpdateHooks = append(busRouteBeforeUpdateHooks, busRouteHook)
-	case boil.AfterUpdateHook:
-		busRouteAfterUpdateHooks = append(busRouteAfterUpdateHooks, busRouteHook)
-	case boil.BeforeDeleteHook:
-		busRouteBeforeDeleteHooks = append(busRouteBeforeDeleteHooks, busRouteHook)
-	case boil.AfterDeleteHook:
-		busRouteAfterDeleteHooks = append(busRouteAfterDeleteHooks, busRouteHook)
-	case boil.BeforeUpsertHook:
-		busRouteBeforeUpsertHooks = append(busRouteBeforeUpsertHooks, busRouteHook)
-	case boil.AfterUpsertHook:
-		busRouteAfterUpsertHooks = append(busRouteAfterUpsertHooks, busRouteHook)
-	}
-}
-
 // One returns a single busRoute record from the query.
 func (q busRouteQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BusRoute, error) {
 	o := &BusRoute{}
@@ -464,10 +289,6 @@ func (q busRouteQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Bus
 		return nil, errors.Wrap(err, "models: failed to execute a one query for bus_route")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -478,14 +299,6 @@ func (q busRouteQuery) All(ctx context.Context, exec boil.ContextExecutor) (BusR
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to BusRoute slice")
-	}
-
-	if len(busRouteAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -654,14 +467,6 @@ func (busRouteL) LoadEndStop(ctx context.Context, e boil.ContextExecutor, singul
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for bus_stop")
 	}
 
-	if len(busStopAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -774,14 +579,6 @@ func (busRouteL) LoadStartStop(ctx context.Context, e boil.ContextExecutor, sing
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for bus_stop")
 	}
 
-	if len(busStopAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -892,13 +689,6 @@ func (busRouteL) LoadRouteBusRouteStops(ctx context.Context, e boil.ContextExecu
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for bus_route_stop")
 	}
 
-	if len(busRouteStopAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.RouteBusRouteStops = resultSlice
 		for _, foreign := range resultSlice {
@@ -1006,13 +796,6 @@ func (busRouteL) LoadRouteBusTimetables(ctx context.Context, e boil.ContextExecu
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for bus_timetable")
 	}
 
-	if len(busTimetableAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.RouteBusTimetables = resultSlice
 		for _, foreign := range resultSlice {
@@ -1274,10 +1057,6 @@ func FindBusRoute(ctx context.Context, exec boil.ContextExecutor, routeID int, s
 		return nil, errors.Wrap(err, "models: unable to select from bus_route")
 	}
 
-	if err = busRouteObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return busRouteObj, err
-	}
-
 	return busRouteObj, nil
 }
 
@@ -1289,10 +1068,6 @@ func (o *BusRoute) Insert(ctx context.Context, exec boil.ContextExecutor, column
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(busRouteColumnsWithDefault, o)
 
@@ -1357,7 +1132,7 @@ func (o *BusRoute) Insert(ctx context.Context, exec boil.ContextExecutor, column
 		busRouteInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the BusRoute.
@@ -1365,9 +1140,6 @@ func (o *BusRoute) Insert(ctx context.Context, exec boil.ContextExecutor, column
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *BusRoute) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	busRouteUpdateCacheMut.RLock()
 	cache, cached := busRouteUpdateCache[key]
@@ -1420,7 +1192,7 @@ func (o *BusRoute) Update(ctx context.Context, exec boil.ContextExecutor, column
 		busRouteUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -1493,10 +1265,6 @@ func (o BusRouteSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor,
 func (o *BusRoute) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no bus_route provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(busRouteColumnsWithDefault, o)
@@ -1601,7 +1369,7 @@ func (o *BusRoute) Upsert(ctx context.Context, exec boil.ContextExecutor, update
 		busRouteUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single BusRoute record with an executor.
@@ -1609,10 +1377,6 @@ func (o *BusRoute) Upsert(ctx context.Context, exec boil.ContextExecutor, update
 func (o *BusRoute) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no BusRoute provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), busRoutePrimaryKeyMapping)
@@ -1631,10 +1395,6 @@ func (o *BusRoute) Delete(ctx context.Context, exec boil.ContextExecutor) (int64
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for bus_route")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1667,14 +1427,6 @@ func (o BusRouteSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor)
 		return 0, nil
 	}
 
-	if len(busRouteBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), busRoutePrimaryKeyMapping)
@@ -1697,14 +1449,6 @@ func (o BusRouteSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor)
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for bus_route")
-	}
-
-	if len(busRouteAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

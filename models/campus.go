@@ -105,8 +105,6 @@ type (
 	// CampusSlice is an alias for a slice of pointers to Campus.
 	// This should almost always be used instead of []Campus.
 	CampusSlice []*Campus
-	// CampusHook is the signature for custom Campus hook methods
-	CampusHook func(context.Context, boil.ContextExecutor, *Campus) error
 
 	campusQuery struct {
 		*queries.Query
@@ -134,179 +132,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var campusAfterSelectHooks []CampusHook
-
-var campusBeforeInsertHooks []CampusHook
-var campusAfterInsertHooks []CampusHook
-
-var campusBeforeUpdateHooks []CampusHook
-var campusAfterUpdateHooks []CampusHook
-
-var campusBeforeDeleteHooks []CampusHook
-var campusAfterDeleteHooks []CampusHook
-
-var campusBeforeUpsertHooks []CampusHook
-var campusAfterUpsertHooks []CampusHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *Campus) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range campusAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Campus) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range campusBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Campus) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range campusAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Campus) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range campusBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Campus) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range campusAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Campus) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range campusBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Campus) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range campusAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Campus) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range campusBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Campus) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range campusAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddCampusHook registers your hook function for all future operations.
-func AddCampusHook(hookPoint boil.HookPoint, campusHook CampusHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		campusAfterSelectHooks = append(campusAfterSelectHooks, campusHook)
-	case boil.BeforeInsertHook:
-		campusBeforeInsertHooks = append(campusBeforeInsertHooks, campusHook)
-	case boil.AfterInsertHook:
-		campusAfterInsertHooks = append(campusAfterInsertHooks, campusHook)
-	case boil.BeforeUpdateHook:
-		campusBeforeUpdateHooks = append(campusBeforeUpdateHooks, campusHook)
-	case boil.AfterUpdateHook:
-		campusAfterUpdateHooks = append(campusAfterUpdateHooks, campusHook)
-	case boil.BeforeDeleteHook:
-		campusBeforeDeleteHooks = append(campusBeforeDeleteHooks, campusHook)
-	case boil.AfterDeleteHook:
-		campusAfterDeleteHooks = append(campusAfterDeleteHooks, campusHook)
-	case boil.BeforeUpsertHook:
-		campusBeforeUpsertHooks = append(campusBeforeUpsertHooks, campusHook)
-	case boil.AfterUpsertHook:
-		campusAfterUpsertHooks = append(campusAfterUpsertHooks, campusHook)
-	}
-}
-
 // One returns a single campus record from the query.
 func (q campusQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Campus, error) {
 	o := &Campus{}
@@ -321,10 +146,6 @@ func (q campusQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Campu
 		return nil, errors.Wrap(err, "models: failed to execute a one query for campus")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -335,14 +156,6 @@ func (q campusQuery) All(ctx context.Context, exec boil.ContextExecutor) (Campus
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to Campus slice")
-	}
-
-	if len(campusAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -487,13 +300,6 @@ func (campusL) LoadReadingRooms(ctx context.Context, e boil.ContextExecutor, sin
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for reading_room")
 	}
 
-	if len(readingRoomAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ReadingRooms = resultSlice
 		for _, foreign := range resultSlice {
@@ -601,13 +407,6 @@ func (campusL) LoadRestaurants(ctx context.Context, e boil.ContextExecutor, sing
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for restaurant")
 	}
 
-	if len(restaurantAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Restaurants = resultSlice
 		for _, foreign := range resultSlice {
@@ -775,10 +574,6 @@ func FindCampus(ctx context.Context, exec boil.ContextExecutor, campusID int, se
 		return nil, errors.Wrap(err, "models: unable to select from campus")
 	}
 
-	if err = campusObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return campusObj, err
-	}
-
 	return campusObj, nil
 }
 
@@ -790,10 +585,6 @@ func (o *Campus) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(campusColumnsWithDefault, o)
 
@@ -858,7 +649,7 @@ func (o *Campus) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 		campusInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the Campus.
@@ -866,9 +657,6 @@ func (o *Campus) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *Campus) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	campusUpdateCacheMut.RLock()
 	cache, cached := campusUpdateCache[key]
@@ -921,7 +709,7 @@ func (o *Campus) Update(ctx context.Context, exec boil.ContextExecutor, columns 
 		campusUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -994,10 +782,6 @@ func (o CampusSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, c
 func (o *Campus) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no campus provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(campusColumnsWithDefault, o)
@@ -1102,7 +886,7 @@ func (o *Campus) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOn
 		campusUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single Campus record with an executor.
@@ -1110,10 +894,6 @@ func (o *Campus) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOn
 func (o *Campus) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Campus provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), campusPrimaryKeyMapping)
@@ -1132,10 +912,6 @@ func (o *Campus) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for campus")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1168,14 +944,6 @@ func (o CampusSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (
 		return 0, nil
 	}
 
-	if len(campusBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), campusPrimaryKeyMapping)
@@ -1198,14 +966,6 @@ func (o CampusSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for campus")
-	}
-
-	if len(campusAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

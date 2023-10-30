@@ -159,8 +159,6 @@ type (
 	// AdminUserSlice is an alias for a slice of pointers to AdminUser.
 	// This should almost always be used instead of []AdminUser.
 	AdminUserSlice []*AdminUser
-	// AdminUserHook is the signature for custom AdminUser hook methods
-	AdminUserHook func(context.Context, boil.ContextExecutor, *AdminUser) error
 
 	adminUserQuery struct {
 		*queries.Query
@@ -188,179 +186,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var adminUserAfterSelectHooks []AdminUserHook
-
-var adminUserBeforeInsertHooks []AdminUserHook
-var adminUserAfterInsertHooks []AdminUserHook
-
-var adminUserBeforeUpdateHooks []AdminUserHook
-var adminUserAfterUpdateHooks []AdminUserHook
-
-var adminUserBeforeDeleteHooks []AdminUserHook
-var adminUserAfterDeleteHooks []AdminUserHook
-
-var adminUserBeforeUpsertHooks []AdminUserHook
-var adminUserAfterUpsertHooks []AdminUserHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *AdminUser) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range adminUserAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *AdminUser) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range adminUserBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *AdminUser) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range adminUserAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *AdminUser) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range adminUserBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *AdminUser) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range adminUserAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *AdminUser) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range adminUserBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *AdminUser) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range adminUserAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *AdminUser) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range adminUserBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *AdminUser) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range adminUserAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddAdminUserHook registers your hook function for all future operations.
-func AddAdminUserHook(hookPoint boil.HookPoint, adminUserHook AdminUserHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		adminUserAfterSelectHooks = append(adminUserAfterSelectHooks, adminUserHook)
-	case boil.BeforeInsertHook:
-		adminUserBeforeInsertHooks = append(adminUserBeforeInsertHooks, adminUserHook)
-	case boil.AfterInsertHook:
-		adminUserAfterInsertHooks = append(adminUserAfterInsertHooks, adminUserHook)
-	case boil.BeforeUpdateHook:
-		adminUserBeforeUpdateHooks = append(adminUserBeforeUpdateHooks, adminUserHook)
-	case boil.AfterUpdateHook:
-		adminUserAfterUpdateHooks = append(adminUserAfterUpdateHooks, adminUserHook)
-	case boil.BeforeDeleteHook:
-		adminUserBeforeDeleteHooks = append(adminUserBeforeDeleteHooks, adminUserHook)
-	case boil.AfterDeleteHook:
-		adminUserAfterDeleteHooks = append(adminUserAfterDeleteHooks, adminUserHook)
-	case boil.BeforeUpsertHook:
-		adminUserBeforeUpsertHooks = append(adminUserBeforeUpsertHooks, adminUserHook)
-	case boil.AfterUpsertHook:
-		adminUserAfterUpsertHooks = append(adminUserAfterUpsertHooks, adminUserHook)
-	}
-}
-
 // One returns a single adminUser record from the query.
 func (q adminUserQuery) One(ctx context.Context, exec boil.ContextExecutor) (*AdminUser, error) {
 	o := &AdminUser{}
@@ -375,10 +200,6 @@ func (q adminUserQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Ad
 		return nil, errors.Wrap(err, "models: failed to execute a one query for admin_user")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -389,14 +210,6 @@ func (q adminUserQuery) All(ctx context.Context, exec boil.ContextExecutor) (Adm
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to AdminUser slice")
-	}
-
-	if len(adminUserAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -527,13 +340,6 @@ func (adminUserL) LoadUserNotices(ctx context.Context, e boil.ContextExecutor, s
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for notices")
 	}
 
-	if len(noticeAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.UserNotices = resultSlice
 		for _, foreign := range resultSlice {
@@ -648,10 +454,6 @@ func FindAdminUser(ctx context.Context, exec boil.ContextExecutor, userID string
 		return nil, errors.Wrap(err, "models: unable to select from admin_user")
 	}
 
-	if err = adminUserObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return adminUserObj, err
-	}
-
 	return adminUserObj, nil
 }
 
@@ -663,10 +465,6 @@ func (o *AdminUser) Insert(ctx context.Context, exec boil.ContextExecutor, colum
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(adminUserColumnsWithDefault, o)
 
@@ -731,7 +529,7 @@ func (o *AdminUser) Insert(ctx context.Context, exec boil.ContextExecutor, colum
 		adminUserInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the AdminUser.
@@ -739,9 +537,6 @@ func (o *AdminUser) Insert(ctx context.Context, exec boil.ContextExecutor, colum
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *AdminUser) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	adminUserUpdateCacheMut.RLock()
 	cache, cached := adminUserUpdateCache[key]
@@ -794,7 +589,7 @@ func (o *AdminUser) Update(ctx context.Context, exec boil.ContextExecutor, colum
 		adminUserUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -867,10 +662,6 @@ func (o AdminUserSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor
 func (o *AdminUser) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no admin_user provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(adminUserColumnsWithDefault, o)
@@ -975,7 +766,7 @@ func (o *AdminUser) Upsert(ctx context.Context, exec boil.ContextExecutor, updat
 		adminUserUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single AdminUser record with an executor.
@@ -983,10 +774,6 @@ func (o *AdminUser) Upsert(ctx context.Context, exec boil.ContextExecutor, updat
 func (o *AdminUser) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no AdminUser provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), adminUserPrimaryKeyMapping)
@@ -1005,10 +792,6 @@ func (o *AdminUser) Delete(ctx context.Context, exec boil.ContextExecutor) (int6
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for admin_user")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1041,14 +824,6 @@ func (o AdminUserSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor
 		return 0, nil
 	}
 
-	if len(adminUserBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), adminUserPrimaryKeyMapping)
@@ -1071,14 +846,6 @@ func (o AdminUserSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for admin_user")
-	}
-
-	if len(adminUserAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil

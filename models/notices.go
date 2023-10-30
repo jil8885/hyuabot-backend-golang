@@ -158,8 +158,6 @@ type (
 	// NoticeSlice is an alias for a slice of pointers to Notice.
 	// This should almost always be used instead of []Notice.
 	NoticeSlice []*Notice
-	// NoticeHook is the signature for custom Notice hook methods
-	NoticeHook func(context.Context, boil.ContextExecutor, *Notice) error
 
 	noticeQuery struct {
 		*queries.Query
@@ -187,179 +185,6 @@ var (
 	_ = qmhelper.Where
 )
 
-var noticeAfterSelectHooks []NoticeHook
-
-var noticeBeforeInsertHooks []NoticeHook
-var noticeAfterInsertHooks []NoticeHook
-
-var noticeBeforeUpdateHooks []NoticeHook
-var noticeAfterUpdateHooks []NoticeHook
-
-var noticeBeforeDeleteHooks []NoticeHook
-var noticeAfterDeleteHooks []NoticeHook
-
-var noticeBeforeUpsertHooks []NoticeHook
-var noticeAfterUpsertHooks []NoticeHook
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *Notice) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range noticeAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Notice) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range noticeBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Notice) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range noticeAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Notice) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range noticeBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Notice) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range noticeAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Notice) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range noticeBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Notice) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range noticeAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Notice) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range noticeBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Notice) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range noticeAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddNoticeHook registers your hook function for all future operations.
-func AddNoticeHook(hookPoint boil.HookPoint, noticeHook NoticeHook) {
-	switch hookPoint {
-	case boil.AfterSelectHook:
-		noticeAfterSelectHooks = append(noticeAfterSelectHooks, noticeHook)
-	case boil.BeforeInsertHook:
-		noticeBeforeInsertHooks = append(noticeBeforeInsertHooks, noticeHook)
-	case boil.AfterInsertHook:
-		noticeAfterInsertHooks = append(noticeAfterInsertHooks, noticeHook)
-	case boil.BeforeUpdateHook:
-		noticeBeforeUpdateHooks = append(noticeBeforeUpdateHooks, noticeHook)
-	case boil.AfterUpdateHook:
-		noticeAfterUpdateHooks = append(noticeAfterUpdateHooks, noticeHook)
-	case boil.BeforeDeleteHook:
-		noticeBeforeDeleteHooks = append(noticeBeforeDeleteHooks, noticeHook)
-	case boil.AfterDeleteHook:
-		noticeAfterDeleteHooks = append(noticeAfterDeleteHooks, noticeHook)
-	case boil.BeforeUpsertHook:
-		noticeBeforeUpsertHooks = append(noticeBeforeUpsertHooks, noticeHook)
-	case boil.AfterUpsertHook:
-		noticeAfterUpsertHooks = append(noticeAfterUpsertHooks, noticeHook)
-	}
-}
-
 // One returns a single notice record from the query.
 func (q noticeQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Notice, error) {
 	o := &Notice{}
@@ -374,10 +199,6 @@ func (q noticeQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Notic
 		return nil, errors.Wrap(err, "models: failed to execute a one query for notices")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
@@ -388,14 +209,6 @@ func (q noticeQuery) All(ctx context.Context, exec boil.ContextExecutor) (Notice
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to Notice slice")
-	}
-
-	if len(noticeAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
 	}
 
 	return o, nil
@@ -536,14 +349,6 @@ func (noticeL) LoadCategory(ctx context.Context, e boil.ContextExecutor, singula
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for notice_category")
 	}
 
-	if len(noticeCategoryAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -654,14 +459,6 @@ func (noticeL) LoadUser(ctx context.Context, e boil.ContextExecutor, singular bo
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for admin_user")
-	}
-
-	if len(adminUserAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -822,10 +619,6 @@ func FindNotice(ctx context.Context, exec boil.ContextExecutor, noticeID int, se
 		return nil, errors.Wrap(err, "models: unable to select from notices")
 	}
 
-	if err = noticeObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return noticeObj, err
-	}
-
 	return noticeObj, nil
 }
 
@@ -837,10 +630,6 @@ func (o *Notice) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(noticeColumnsWithDefault, o)
 
@@ -905,7 +694,7 @@ func (o *Notice) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 		noticeInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
 }
 
 // Update uses an executor to update the Notice.
@@ -913,9 +702,6 @@ func (o *Notice) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *Notice) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	noticeUpdateCacheMut.RLock()
 	cache, cached := noticeUpdateCache[key]
@@ -968,7 +754,7 @@ func (o *Notice) Update(ctx context.Context, exec boil.ContextExecutor, columns 
 		noticeUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
@@ -1041,10 +827,6 @@ func (o NoticeSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, c
 func (o *Notice) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no notices provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(noticeColumnsWithDefault, o)
@@ -1149,7 +931,7 @@ func (o *Notice) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOn
 		noticeUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return nil
 }
 
 // Delete deletes a single Notice record with an executor.
@@ -1157,10 +939,6 @@ func (o *Notice) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOn
 func (o *Notice) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Notice provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), noticePrimaryKeyMapping)
@@ -1179,10 +957,6 @@ func (o *Notice) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for notices")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
 	}
 
 	return rowsAff, nil
@@ -1215,14 +989,6 @@ func (o NoticeSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (
 		return 0, nil
 	}
 
-	if len(noticeBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
 	var args []interface{}
 	for _, obj := range o {
 		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), noticePrimaryKeyMapping)
@@ -1245,14 +1011,6 @@ func (o NoticeSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for notices")
-	}
-
-	if len(noticeAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
 	}
 
 	return rowsAff, nil
