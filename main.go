@@ -1,10 +1,11 @@
 package main
 
 import (
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/database"
-	"log"
 )
 
 func init() {

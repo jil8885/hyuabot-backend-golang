@@ -3,10 +3,11 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
-	"github.com/volatiletech/sqlboiler/v4/boil"
 	"log"
 	"os"
+
+	_ "github.com/lib/pq" //nolint:goimports
+	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
 var DB *sql.DB
