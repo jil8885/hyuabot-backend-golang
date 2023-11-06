@@ -7,17 +7,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/hyuabot-developers/hyuabot-backend-golang/database"
 )
 
 func TestSignUp(t *testing.T) {
 	setupDatabase()
-	_, err := database.DB.Exec("DELETE FROM admin_user")
-	if err != nil {
-		panic(err)
-	}
-
 	test := assert.New(t)
 	testCases := []struct {
 		UserName string `json:"username"`
@@ -68,4 +61,5 @@ func TestSignUp(t *testing.T) {
 
 		test.Equal(expectedStatusCodes[index], response.StatusCode)
 	}
+	tearDownDatabase()
 }
