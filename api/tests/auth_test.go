@@ -54,7 +54,7 @@ func TestSignUp(t *testing.T) {
 		}
 		req := httptest.NewRequest("POST", "/api/v1/auth/signup", bytes.NewBuffer(body))
 		req.Header.Set("Content-Type", "application/json")
-		response, err := app.Test(req)
+		response, err := app.Test(req, 5000)
 		if err != nil {
 			panic(err)
 		}
