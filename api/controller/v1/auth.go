@@ -20,6 +20,8 @@ func SignUp(c *fiber.Ctx) error {
 	var request requests.SignUpRequest
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(http.StatusUnprocessableEntity).JSON(responses.ErrorResponse{Message: "INVALID_JSON_PROVIDED"})
+	} else if request.Password == "" || request.Username == "" || request.Name == "" || request.Email == "" || request.Phone == "" {
+		return c.Status(http.StatusUnprocessableEntity).JSON(responses.ErrorResponse{Message: "INVALID_JSON_PROVIDED"})
 	}
 
 	hashedPassword, err := utils.HashPassword(request.Password)
@@ -29,6 +31,7 @@ func SignUp(c *fiber.Ctx) error {
 
 	exists, err := models.AdminUserExists(c.Context(), database.DB, request.Username)
 	if err != nil {
+		fmt.Println(err)
 		return c.Status(http.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	} else if exists {
 		return c.Status(http.StatusConflict).JSON(responses.ErrorResponse{Message: "USER_ALREADY_EXISTS"})

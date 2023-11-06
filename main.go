@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -11,7 +12,7 @@ import (
 )
 
 func init() {
-	database.ConnectDB()
+	database.ConnectDB(os.Getenv("DB_NAME"))
 	database.ConnectRedis()
 }
 

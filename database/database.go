@@ -14,14 +14,14 @@ import (
 var DB *sql.DB
 var Client *redis.Client
 
-func ConnectDB() {
+func ConnectDB(databaseName string) {
 	var connectionURL = fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"),
+		databaseName,
 	)
 
 	db, err := sql.Open("postgres", connectionURL)
@@ -34,7 +34,6 @@ func ConnectDB() {
 
 	boil.SetDB(db)
 	DB = db
-	log.Println("Connected to database")
 }
 
 func ConnectRedis() {
