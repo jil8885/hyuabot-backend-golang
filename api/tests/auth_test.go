@@ -236,3 +236,70 @@ func TestLogout(t *testing.T) {
 	test.Equal("UNAUTHORIZED", errorRes.Message)
 	tearDownDatabase()
 }
+
+func TestRefresh(t *testing.T) {
+	setupDatabase()
+	// Insert test user
+	hashedPassword, _ := utils.HashPassword("test")
+	user := models.AdminUser{
+		UserID:   "test",
+		Password: hashedPassword,
+		Name:     "test",
+		Email:    "test@email.com",
+		Phone:    "010-1234-5678",
+		Active:   true,
+	}
+	ctx := context.Background()
+	err := user.Insert(ctx, database.DB, boil.Infer())
+	if err != nil {
+		panic(err)
+	}
+	// Test logout
+	test := assert.New(t)
+	testCase := struct {
+		UserName string `json:"username"`
+		Password string `json:"password"`
+	}{
+		UserName: "test",
+		Password: "test",
+	}
+	// Login
+	app := setup()
+	body, err := json.Marshal(testCase)
+	if err != nil {
+		panic(err)
+	}
+	req := httptest.NewRequest("POST", "/api/v1/auth/login", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	response, err := app.Test(req, 5000)
+	if err != nil {
+		panic(err)
+	}
+	test.Equal(200, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var result responses.TokenResponse
+	_ = json.NewDecoder(response.Body).Decode(&result)
+	// Refresh
+	tokenRequest := struct {
+		RefreshToken string `json:"refreshToken"`
+	}{
+		RefreshToken: result.RefreshToken,
+	}
+	body, _ = json.Marshal(tokenRequest)
+	req = httptest.NewRequest("POST", "/api/v1/auth/refresh", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", result.AccessToken))
+	response, err = app.Test(req, 5000)
+	if err != nil {
+		panic(err)
+	}
+	test.Equal(201, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var tokenRes responses.TokenResponse
+	err = json.NewDecoder(response.Body).Decode(&tokenRes)
+	if err != nil {
+		panic(err)
+	}
+	test.NotEmpty(tokenRes.AccessToken)
+	test.NotEmpty(tokenRes.RefreshToken)
+}
