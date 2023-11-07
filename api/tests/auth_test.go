@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http/httptest"
 	"testing"
 
@@ -154,5 +155,84 @@ func TestLogin(t *testing.T) {
 			test.Equal("INVALID_LOGIN_CREDENTIALS", result.Message)
 		}
 	}
+	tearDownDatabase()
+}
+
+func TestLogout(t *testing.T) {
+	setupDatabase()
+	// Insert test user
+	hashedPassword, _ := utils.HashPassword("test")
+	user := models.AdminUser{
+		UserID:   "test",
+		Password: hashedPassword,
+		Name:     "test",
+		Email:    "test@email.com",
+		Phone:    "010-1234-5678",
+		Active:   true,
+	}
+	ctx := context.Background()
+	err := user.Insert(ctx, database.DB, boil.Infer())
+	if err != nil {
+		panic(err)
+	}
+	// Test logout
+	test := assert.New(t)
+	testCase := struct {
+		UserName string `json:"username"`
+		Password string `json:"password"`
+	}{
+		UserName: "test",
+		Password: "test",
+	}
+	// Login
+	app := setup()
+	body, err := json.Marshal(testCase)
+	if err != nil {
+		panic(err)
+	}
+	req := httptest.NewRequest("POST", "/api/v1/auth/login", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	response, err := app.Test(req, 5000)
+	if err != nil {
+		panic(err)
+	}
+	test.Equal(200, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var result responses.TokenResponse
+	_ = json.NewDecoder(response.Body).Decode(&result)
+	// Logout
+	req = httptest.NewRequest("POST", "/api/v1/auth/logout", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", result.AccessToken))
+	response, err = app.Test(req, 5000)
+	if err != nil {
+		panic(err)
+	}
+	test.Equal(200, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var successRes responses.SuccessResponse
+	err = json.NewDecoder(response.Body).Decode(&successRes)
+	if err != nil {
+		panic(err)
+	}
+	test.NotEmpty(successRes.Message)
+	test.Equal("LOGGED_OUT", successRes.Message)
+	// Logout again
+	req = httptest.NewRequest("POST", "/api/v1/auth/logout", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", result.AccessToken))
+	response, err = app.Test(req, 5000)
+	if err != nil {
+		panic(err)
+	}
+	test.Equal(401, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var errorRes responses.ErrorResponse
+	err = json.NewDecoder(response.Body).Decode(&errorRes)
+	if err != nil {
+		panic(err)
+	}
+	test.NotEmpty(errorRes.Message)
+	test.Equal("UNAUTHORIZED", errorRes.Message)
 	tearDownDatabase()
 }
