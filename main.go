@@ -18,6 +18,18 @@ func init() {
 	database.ConnectRedis()
 }
 
+// @title HYUabot API Documentation
+// @version v1
+// @description This is a documentation of HYUabot API.
+
+// @contact.name Jeongin Lee
+// @contact.email jil8885@hanyang.ac.kr
+
+// @host 127.0.0.1:3000
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 func main() {
 	app := fiber.New()
 	// Logger

@@ -16,6 +16,16 @@ import (
 	"github.com/hyuabot-developers/hyuabot-backend-golang/utils"
 )
 
+// @description Create a inactive user
+// @id SignUp
+// @tags Auth
+// @accept json
+// @produce json
+// @param body body requests.SignUpRequest true "Information of user to create"
+// @success 201 {object} responses.TokenResponse
+// @failure 422 {object} responses.ErrorResponse
+// @failure 409 {object} responses.ErrorResponse
+// @router /api/v1/auth/signup [post]
 func SignUp(c *fiber.Ctx) error {
 	var request requests.SignUpRequest
 	if err := c.BodyParser(&request); err != nil {
@@ -53,6 +63,16 @@ func SignUp(c *fiber.Ctx) error {
 	return c.Status(http.StatusCreated).JSON(responses.SuccessResponse{Message: "USER_CREATED"})
 }
 
+// @description Login to the system
+// @id Login
+// @tags Auth
+// @accept json
+// @produce json
+// @param body body requests.LoginRequest true "Username and password to login"
+// @success 200 {object} responses.TokenResponse
+// @failure 422 {object} responses.ErrorResponse
+// @failure 401 {object} responses.ErrorResponse
+// @router /api/v1/auth/login [post]
 func Login(c *fiber.Ctx) error {
 	var request requests.LoginRequest
 	if err := c.BodyParser(&request); err != nil {
@@ -90,6 +110,16 @@ func Login(c *fiber.Ctx) error {
 	})
 }
 
+// @description Logout from the system
+// @id Logout
+// @tags Auth
+// @accept json
+// @produce json
+// @security BearerAuth
+// @success 200 {object} responses.SuccessResponse
+// @failure 401 {object} responses.ErrorResponse
+// @router /api/v1/auth/logout [post]
+// @Security Bearer
 func Logout(c *fiber.Ctx) error {
 	au, err := utils.ExtractTokenMetaData(c.Request())
 	if err != nil {
@@ -104,6 +134,17 @@ func Logout(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(responses.SuccessResponse{Message: "LOGGED_OUT"})
 }
 
+// @description Refresh access token
+// @id RefreshAccessToken
+// @tags Auth
+// @accept json
+// @produce json
+// @param body body map[string]string true "Refresh token"
+// @success 201 {object} responses.TokenResponse
+// @failure 422 {object} responses.ErrorResponse
+// @failure 401 {object} responses.ErrorResponse
+// @router /api/v1/auth/refresh [post]
+// @Security Bearer
 func Refresh(c *fiber.Ctx) error {
 	mapToken := map[string]string{}
 	if err := c.BodyParser(&mapToken); err != nil {
