@@ -8,7 +8,8 @@ jobs:
     steps:
       - uses: actions/setup-go@v3
         with:
-          go-version: 1.21
+          go-version: 1.21.3
+          cache: false
       - uses: actions/checkout@v3
       - name: Lint
         uses: golangci/golangci-lint-action@v3
@@ -24,17 +25,17 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: 1.21.3
-          cache: true
+          cache: false
       - name: Install dependencies
         run: go mod download
       - name: Test
         run: go test -v ./...
         env:
-          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
-          POSTGRES_ID: ${{ secrets.POSTGRES_ID }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          DB_HOST: ${{ secrets.POSTGRES_HOST }}
+          DB_PORT: ${{ secrets.POSTGRES_PORT }}
+          DB_USER: ${{ secrets.POSTGRES_ID }}
+          DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          DB_NAME: ${{ secrets.POSTGRES_DB }}
   build:
     needs: [lint, test]
     runs-on: self-hosted
@@ -44,7 +45,7 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: 1.21.3
-          cache: true
+          cache: false
 
       - name: Install dependencies
         run: go mod download
