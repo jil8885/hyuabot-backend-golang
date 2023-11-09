@@ -179,7 +179,7 @@ func CreateShuttleTimetable(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_DEPARTURE_TIME"})
 	}
-	item, err := models.ShuttleTimetables(
+	item, _ := models.ShuttleTimetables(
 		models.ShuttleTimetableWhere.PeriodType.EQ(request.PeriodType),
 		models.ShuttleTimetableWhere.Weekday.EQ(request.Weekday),
 		models.ShuttleTimetableWhere.RouteName.EQ(request.Route),
@@ -548,9 +548,7 @@ func GetShuttleStop(c *fiber.Ctx) error {
 		Latitude:  item.Latitude,
 		Longitude: item.Longitude,
 	})
-
 }
-
 func CreateShuttleStop(c *fiber.Ctx) error {
 	var request requests.ShuttleStopRequest
 	if err := c.BodyParser(&request); err != nil {
