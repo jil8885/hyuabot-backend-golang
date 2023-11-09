@@ -14,4 +14,7 @@ func SetupRouterV1(app *fiber.App) {
 	authGroup.Post("/login", v1.Login)
 	authGroup.Post("/refresh", v1.Refresh)
 	authGroup.Post("/logout", utils.AuthMiddleware(), v1.Logout)
+
+	shuttleGroup := api.Group("/shuttle", utils.AuthMiddleware())
+	shuttleGroup.Get("/timetable/view", v1.GetShuttleTimetableView)
 }
