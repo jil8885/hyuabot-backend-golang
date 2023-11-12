@@ -2,6 +2,7 @@ package v1
 
 import (
 	"fmt"
+	"github.com/hyuabot-developers/hyuabot-backend-golang/utils"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -185,12 +186,31 @@ func CreateShuttleTimetable(c *fiber.Ctx) error {
 		models.ShuttleTimetableWhere.RouteName.EQ(request.Route),
 		models.ShuttleTimetableWhere.DepartureTime.EQ(departureTime),
 	).One(c.Context(), database.DB)
+	if item != nil {
+		return c.Status(fiber.StatusConflict).JSON(responses.ErrorResponse{Message: "TIMETABLE_ALREADY_EXISTS"})
+	}
+	route, err := models.FindShuttleRoute(c.Context(), database.DB, request.Route)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
+	} else if route == nil {
+		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "ROUTE_NOT_FOUND"})
+	}
+	timetable := models.ShuttleTimetable{
+		PeriodType:    request.PeriodType,
+		Weekday:       request.Weekday,
+		RouteName:     request.Route,
+		DepartureTime: departureTime,
+	}
+	err = timetable.Insert(c.Context(), database.DB, boil.Infer())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
+	}
 	return c.Status(fiber.StatusOK).JSON(responses.ShuttleTimetableItem{
-		Seq:           item.Seq,
-		PeriodType:    item.PeriodType,
-		Weekday:       item.Weekday,
-		Route:         item.RouteName,
-		DepartureTime: item.DepartureTime.Format("15:04"),
+		Seq:           timetable.Seq,
+		PeriodType:    timetable.PeriodType,
+		Weekday:       timetable.Weekday,
+		Route:         timetable.RouteName,
+		DepartureTime: timetable.DepartureTime.Format("15:04"),
 	})
 }
 
@@ -276,6 +296,11 @@ func GetShuttleRouteList(c *fiber.Ctx) error {
 			models.ShuttleRouteWhere.RouteTag.EQ(null.StringFrom(tagQuery)),
 		)
 	}
+	queries = append(
+		queries,
+		qm.Load(models.ShuttleRouteRels.StartStopShuttleStop),
+		qm.Load(models.ShuttleRouteRels.EndStopShuttleStop),
+	)
 	// Join query
 	shuttleRouteItems, err := models.ShuttleRoutes(
 		queries...,
@@ -317,14 +342,27 @@ func GetShuttleRoute(c *fiber.Ctx) error {
 	if err != nil || !exists {
 		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "ROUTE_NOT_FOUND"})
 	}
-	item, err := models.FindShuttleRoute(c.Context(), database.DB, nameParam)
+
+	queries := make([]qm.QueryMod, 0)
+	queries = append(
+		queries,
+		models.ShuttleRouteWhere.RouteName.EQ(nameParam),
+		qm.Load(models.ShuttleRouteRels.StartStopShuttleStop),
+		qm.Load(models.ShuttleRouteRels.EndStopShuttleStop),
+		qm.Load(models.ShuttleRouteRels.RouteNameShuttleRouteStops),
+	)
+	item, err := models.ShuttleRoutes(
+		queries...,
+	).One(c.Context(), database.DB)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
+	} else if item == nil {
+		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "ROUTE_NOT_FOUND"})
 	}
 
 	stops := make([]responses.ShuttleRouteStopItem, 0)
 	for _, shuttleRouteStop := range item.R.RouteNameShuttleRouteStops {
-		timeDelta, err := time.ParseDuration(shuttleRouteStop.CumulativeTime)
+		timeDelta := utils.IntervalToDuration(shuttleRouteStop.CumulativeTime)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 		}
@@ -447,6 +485,7 @@ func UpdateShuttleRoute(c *fiber.Ctx) error {
 		} else if startStop == nil {
 			return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "START_STOP_NOT_FOUND"})
 		}
+		item.StartStop = request.Start
 	}
 	if request.End.Valid {
 		endStop, err := models.FindShuttleStop(c.Context(), database.DB, request.End.String)
@@ -455,8 +494,23 @@ func UpdateShuttleRoute(c *fiber.Ctx) error {
 		} else if endStop == nil {
 			return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "END_STOP_NOT_FOUND"})
 		}
+		item.EndStop = request.End
 	}
 	_, err = item.Update(c.Context(), database.DB, boil.Infer())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
+	}
+
+	queries := make([]qm.QueryMod, 0)
+	queries = append(
+		queries,
+		models.ShuttleRouteWhere.RouteName.EQ(nameParam),
+		qm.Load(models.ShuttleRouteRels.StartStopShuttleStop),
+		qm.Load(models.ShuttleRouteRels.EndStopShuttleStop),
+	)
+	item, err = models.ShuttleRoutes(
+		queries...,
+	).One(c.Context(), database.DB)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	}
@@ -481,11 +535,6 @@ func UpdateShuttleRoute(c *fiber.Ctx) error {
 }
 
 func DeleteShuttleRoute(c *fiber.Ctx) error {
-	var request requests.ShuttleRouteUpdateRequest
-	if err := c.BodyParser(&request); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_JSON_PROVIDED"})
-	}
-
 	nameParam := c.Params("route")
 	if nameParam == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_ROUTE_NAME"})
@@ -619,7 +668,15 @@ func DeleteShuttleStop(c *fiber.Ctx) error {
 	if err != nil || !exists {
 		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "STOP_NOT_FOUND"})
 	}
-	item, err := models.FindShuttleStop(c.Context(), database.DB, stopParam)
+	queries := make([]qm.QueryMod, 0)
+	queries = append(
+		queries,
+		models.ShuttleStopWhere.StopName.EQ(stopParam),
+		qm.Load(models.ShuttleStopRels.StopNameShuttleRouteStops),
+	)
+	item, err := models.ShuttleStops(
+		queries...,
+	).One(c.Context(), database.DB)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	}
@@ -641,7 +698,10 @@ func GetShuttleRouteStopList(c *fiber.Ctx) error {
 	if routeParam == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_ROUTE_NAME"})
 	}
-	route, err := models.FindShuttleRoute(c.Context(), database.DB, routeParam)
+	route, err := models.ShuttleRoutes(
+		models.ShuttleRouteWhere.RouteName.EQ(routeParam),
+		qm.Load(models.ShuttleRouteRels.RouteNameShuttleRouteStops),
+	).One(c.Context(), database.DB)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	} else if route == nil {
@@ -650,10 +710,7 @@ func GetShuttleRouteStopList(c *fiber.Ctx) error {
 
 	items := make([]responses.ShuttleRouteStopItem, 0)
 	for _, shuttleRouteStop := range route.R.RouteNameShuttleRouteStops {
-		timeDelta, err := time.ParseDuration(shuttleRouteStop.CumulativeTime)
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-		}
+		timeDelta := utils.IntervalToDuration(shuttleRouteStop.CumulativeTime)
 		items = append(items, responses.ShuttleRouteStopItem{
 			Name:           shuttleRouteStop.StopName,
 			Seq:            shuttleRouteStop.StopOrder.Int,
@@ -682,10 +739,7 @@ func GetShuttleRouteStop(c *fiber.Ctx) error {
 	} else if stop == nil {
 		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "STOP_NOT_FOUND"})
 	}
-	duration, err := time.ParseDuration(stop.CumulativeTime)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-	}
+	duration := utils.IntervalToDuration(stop.CumulativeTime)
 	return c.Status(fiber.StatusOK).JSON(responses.ShuttleRouteStopItem{
 		Name:           stop.StopName,
 		Seq:            stop.StopOrder.Int,
@@ -712,7 +766,7 @@ func CreateShuttleRouteStop(c *fiber.Ctx) error {
 	item, err := models.ShuttleRouteStops(
 		models.ShuttleRouteStopWhere.RouteName.EQ(routeParam),
 		models.ShuttleRouteStopWhere.StopName.EQ(request.Name),
-	).One(c.Context(), database.DB)
+	).All(c.Context(), database.DB)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	} else if item != nil {
@@ -729,10 +783,7 @@ func CreateShuttleRouteStop(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	}
-	duration, err := time.ParseDuration(stop.CumulativeTime)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-	}
+	duration := utils.IntervalToDuration(stop.CumulativeTime)
 	return c.Status(fiber.StatusCreated).JSON(responses.ShuttleRouteStopItem{
 		Name:           stop.StopName,
 		Seq:            stop.StopOrder.Int,
@@ -761,7 +812,7 @@ func UpdateShuttleRouteStop(c *fiber.Ctx) error {
 	item, err := models.FindShuttleRouteStop(c.Context(), database.DB, routeParam, stopParam)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-	} else if err == nil {
+	} else if item == nil {
 		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "STOP_NOT_FOUND"})
 	}
 
@@ -769,20 +820,13 @@ func UpdateShuttleRouteStop(c *fiber.Ctx) error {
 		item.StopOrder = request.Seq
 	}
 	if request.CumulativeTime.Valid {
-		_, err := time.ParseDuration(request.CumulativeTime.String)
-		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_CUMULATIVE_TIME"})
-		}
 		item.CumulativeTime = request.CumulativeTime.String
 	}
 	_, err = item.Update(c.Context(), database.DB, boil.Infer())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	}
-	duration, err := time.ParseDuration(item.CumulativeTime)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-	}
+	duration := utils.IntervalToDuration(item.CumulativeTime)
 	return c.Status(fiber.StatusOK).JSON(responses.ShuttleRouteStopItem{
 		Name:           item.StopName,
 		Seq:            item.StopOrder.Int,
@@ -803,10 +847,11 @@ func DeleteShuttleRouteStop(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "ROUTE_NOT_FOUND"})
 	}
 
-	stop, err := models.FindShuttleRouteStop(c.Context(), database.DB, routeParam, stopParam)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-	} else if stop == nil {
+	stop, err := models.ShuttleRouteStops(
+		models.ShuttleRouteStopWhere.RouteName.EQ(routeParam),
+		models.ShuttleRouteStopWhere.StopName.EQ(stopParam),
+	).One(c.Context(), database.DB)
+	if err != nil || stop == nil {
 		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "STOP_NOT_FOUND"})
 	}
 	_, err = stop.Delete(c.Context(), database.DB)

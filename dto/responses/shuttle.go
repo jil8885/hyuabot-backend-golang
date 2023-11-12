@@ -77,9 +77,9 @@ type ShuttleRouteStopListResponse struct {
 }
 
 type ShuttleRouteStopItem struct {
-	Name           string        `json:"name"`
-	Seq            int           `json:"seq"`
-	CumulativeTime time.Duration `json:"cumulativeTime"`
+	Name           string `json:"name"`
+	Seq            int    `json:"seq"`
+	CumulativeTime string `json:"cumulativeTime"`
 }
 
 type ShuttleRouteStopDetailItem struct {
