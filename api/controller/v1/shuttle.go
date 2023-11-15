@@ -2,9 +2,10 @@ package v1
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/golang-module/carbon/v2"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/utils"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/volatiletech/null/v8"
@@ -893,7 +894,7 @@ func CreateShuttlePeriod(c *fiber.Ctx) error {
 	}
 	startDate := carbon.Parse(fmt.Sprintf("%sT00:00:00+09:00", request.StartDate)).SetTimezone(carbon.UTC)
 	endDate := carbon.Parse(fmt.Sprintf("%sT23:59:59+09:00", request.EndDate)).SetTimezone(carbon.UTC)
-	item, err := models.ShuttlePeriods(
+	item, _ := models.ShuttlePeriods(
 		models.ShuttlePeriodWhere.PeriodStart.EQ(startDate.ToStdTime()),
 		models.ShuttlePeriodWhere.PeriodEnd.EQ(endDate.ToStdTime()),
 	).One(c.Context(), database.DB)
@@ -905,7 +906,7 @@ func CreateShuttlePeriod(c *fiber.Ctx) error {
 		PeriodEnd:   endDate.ToStdTime(),
 		PeriodType:  request.PeriodType,
 	}
-	err = period.Insert(c.Context(), database.DB, boil.Infer())
+	err := period.Insert(c.Context(), database.DB, boil.Infer())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	}
@@ -1042,7 +1043,7 @@ func CreateShuttleHoliday(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_DATE"})
 	}
 
-	item, err := models.ShuttleHolidays(
+	item, _ := models.ShuttleHolidays(
 		models.ShuttleHolidayWhere.HolidayDate.EQ(date),
 	).One(c.Context(), database.DB)
 	if item != nil {

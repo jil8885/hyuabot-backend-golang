@@ -5,6 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/Pallinder/go-randomdata"
 	"github.com/bluele/factory-go/factory"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/database"
@@ -13,8 +16,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	"net/http/httptest"
-	"testing"
 )
 
 var shuttleRouteFactory = factory.NewFactory(

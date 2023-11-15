@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"net/http/httptest"
+	"os"
+
 	"github.com/hyuabot-developers/hyuabot-backend-golang/dto/responses"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/models"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/utils"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	"net/http/httptest"
-	"os"
 
 	"github.com/gofiber/fiber/v2"
 

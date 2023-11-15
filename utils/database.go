@@ -30,14 +30,13 @@ func IntervalToDuration(s string) string {
 				60-minutes,
 				seconds,
 			)
-		} else {
-			return fmt.Sprintf(
-				"%02d:%02d:%02d",
-				hours,
-				minutes,
-				seconds,
-			)
 		}
+		return fmt.Sprintf(
+			"%02d:%02d:%02d",
+			hours,
+			minutes,
+			seconds,
+		)
 	} else if len(values) == 1 {
 		timeValue := strings.Split(s, ":")
 		hours, _ := strconv.Atoi(timeValue[0])
@@ -50,7 +49,6 @@ func IntervalToDuration(s string) string {
 			minutes,
 			seconds,
 		)
-	} else {
-		return "00:00:00"
 	}
+	return "00:00:00"
 }
