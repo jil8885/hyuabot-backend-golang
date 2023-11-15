@@ -673,17 +673,11 @@ func DeleteShuttleStop(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	}
-	for _, shuttleRouteStop := range item.R.StopNameShuttleRouteStops {
-		_, err = shuttleRouteStop.Delete(c.Context(), database.DB)
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-		}
-	}
 	_, err = item.Delete(c.Context(), database.DB)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
+		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "STOP_IS_IN_USE"})
 	}
-	return c.Status(fiber.StatusOK).JSON(responses.SuccessResponse{Message: "DELETED"})
+	return c.Status(fiber.StatusNoContent).JSON(responses.SuccessResponse{Message: "DELETED"})
 }
 
 func GetShuttleRouteStopList(c *fiber.Ctx) error {
