@@ -2,6 +2,7 @@ package v1
 
 import (
 	"fmt"
+	"github.com/golang-module/carbon/v2"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/utils"
 	"time"
 
@@ -869,8 +870,8 @@ func GetShuttlePeriodList(c *fiber.Ctx) error {
 	periods := make([]responses.ShuttlePeriodItem, 0)
 	for _, item := range items {
 		periods = append(periods, responses.ShuttlePeriodItem{
-			StartDate:  item.PeriodStart.Format("2006-01-02"),
-			EndDate:    item.PeriodEnd.Format("2006-01-02"),
+			StartDate:  carbon.CreateFromStdTime(item.PeriodStart).SetTimezone(carbon.Seoul).ToDateString(),
+			EndDate:    carbon.CreateFromStdTime(item.PeriodEnd).SetTimezone(carbon.Seoul).ToDateString(),
 			PeriodType: item.PeriodType,
 		})
 	}
@@ -883,26 +884,18 @@ func GetShuttlePeriod(c *fiber.Ctx) error {
 	if startParam == "" || endParam == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_PERIOD"})
 	}
-	startDate, err := time.Parse("2006-01-02", startParam)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_START_DATE"})
-	}
-	endDate, err := time.Parse("2006-01-02", endParam)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_END_DATE"})
-	}
+	startDate := carbon.Parse(fmt.Sprintf("%sT00:00:00+09:00", startParam)).SetTimezone(carbon.UTC)
+	endDate := carbon.Parse(fmt.Sprintf("%sT23:59:59+09:00", endParam)).SetTimezone(carbon.UTC)
 	item, err := models.ShuttlePeriods(
-		models.ShuttlePeriodWhere.PeriodStart.EQ(startDate),
-		models.ShuttlePeriodWhere.PeriodEnd.EQ(endDate),
+		models.ShuttlePeriodWhere.PeriodStart.EQ(startDate.ToStdTime()),
+		models.ShuttlePeriodWhere.PeriodEnd.EQ(endDate.ToStdTime()),
 	).One(c.Context(), database.DB)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-	} else if item == nil {
+	if err != nil || item == nil {
 		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "PERIOD_NOT_FOUND"})
 	}
 	return c.Status(fiber.StatusOK).JSON(responses.ShuttlePeriodItem{
-		StartDate:  item.PeriodStart.Format("2006-01-02"),
-		EndDate:    item.PeriodEnd.Format("2006-01-02"),
+		StartDate:  carbon.CreateFromStdTime(item.PeriodStart).SetTimezone(carbon.Seoul).ToDateString(),
+		EndDate:    carbon.CreateFromStdTime(item.PeriodEnd).SetTimezone(carbon.Seoul).ToDateString(),
 		PeriodType: item.PeriodType,
 	})
 }
@@ -912,26 +905,18 @@ func CreateShuttlePeriod(c *fiber.Ctx) error {
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_JSON_PROVIDED"})
 	}
-	startDate, err := time.Parse("2006-01-02", request.StartDate)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_START_DATE"})
-	}
-	endDate, err := time.Parse("2006-01-02", request.EndDate)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_END_DATE"})
-	}
+	startDate := carbon.Parse(fmt.Sprintf("%sT00:00:00+09:00", request.StartDate)).SetTimezone(carbon.UTC)
+	endDate := carbon.Parse(fmt.Sprintf("%sT23:59:59+09:00", request.EndDate)).SetTimezone(carbon.UTC)
 	item, err := models.ShuttlePeriods(
-		models.ShuttlePeriodWhere.PeriodStart.EQ(startDate),
-		models.ShuttlePeriodWhere.PeriodEnd.EQ(endDate),
+		models.ShuttlePeriodWhere.PeriodStart.EQ(startDate.ToStdTime()),
+		models.ShuttlePeriodWhere.PeriodEnd.EQ(endDate.ToStdTime()),
 	).One(c.Context(), database.DB)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-	} else if item != nil {
+	if item != nil {
 		return c.Status(fiber.StatusConflict).JSON(responses.ErrorResponse{Message: "PERIOD_ALREADY_EXISTS"})
 	}
 	period := models.ShuttlePeriod{
-		PeriodStart: startDate,
-		PeriodEnd:   endDate,
+		PeriodStart: startDate.ToStdTime(),
+		PeriodEnd:   endDate.ToStdTime(),
 		PeriodType:  request.PeriodType,
 	}
 	err = period.Insert(c.Context(), database.DB, boil.Infer())
@@ -939,27 +924,25 @@ func CreateShuttlePeriod(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	}
 	return c.Status(fiber.StatusCreated).JSON(responses.ShuttlePeriodItem{
-		StartDate:  period.PeriodStart.Format("2006-01-02"),
-		EndDate:    period.PeriodEnd.Format("2006-01-02"),
+		StartDate:  carbon.CreateFromStdTime(period.PeriodStart).SetTimezone(carbon.Seoul).ToDateString(),
+		EndDate:    carbon.CreateFromStdTime(period.PeriodEnd).SetTimezone(carbon.Seoul).ToDateString(),
 		PeriodType: period.PeriodType,
 	})
 }
 
 func DeleteShuttlePeriod(c *fiber.Ctx) error {
-	startDateQuery := c.Query("start")
-	endDateQuery := c.Query("end")
-	start, err := time.Parse("2006-01-02", startDateQuery)
+	startDateQuery := c.Params("start")
+	endDateQuery := c.Params("end")
+	startDate := carbon.Parse(fmt.Sprintf("%sT00:00:00+09:00", startDateQuery)).SetTimezone(carbon.UTC)
+	endDate := carbon.Parse(fmt.Sprintf("%sT23:59:59+09:00", endDateQuery)).SetTimezone(carbon.UTC)
+	item, err := models.ShuttlePeriods(
+		models.ShuttlePeriodWhere.PeriodStart.EQ(startDate.ToStdTime()),
+		models.ShuttlePeriodWhere.PeriodEnd.EQ(endDate.ToStdTime()),
+	).One(c.Context(), database.DB)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_START_DATE"})
+		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "PERIOD_NOT_FOUND"})
 	}
-	end, err := time.Parse("2006-01-02", endDateQuery)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_END_DATE"})
-	}
-	_, err = models.ShuttlePeriods(
-		models.ShuttlePeriodWhere.PeriodStart.EQ(start),
-		models.ShuttlePeriodWhere.PeriodEnd.EQ(end),
-	).DeleteAll(c.Context(), database.DB)
+	_, err = item.Delete(c.Context(), database.DB)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	}
@@ -1039,18 +1022,21 @@ func GetShuttleHolidayList(c *fiber.Ctx) error {
 }
 
 func GetShuttleHoliday(c *fiber.Ctx) error {
+	calendarTypeQuery := c.Params("calendar")
+	if calendarTypeQuery == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_CALENDAR_TYPE"})
+	}
 	dateQuery := c.Params("date")
 	date, err := time.Parse("2006-01-02", dateQuery)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "INVALID_DATE"})
 	}
 	item, err := models.ShuttleHolidays(
+		models.ShuttleHolidayWhere.CalendarType.EQ(calendarTypeQuery),
 		models.ShuttleHolidayWhere.HolidayDate.EQ(date),
 	).One(c.Context(), database.DB)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-	} else if item == nil {
-		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "NOT_FOUND"})
+	if err != nil || item == nil {
+		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "HOLIDAY_NOT_FOUND"})
 	}
 	return c.Status(fiber.StatusOK).JSON(responses.ShuttleHolidayItem{
 		CalendarType: item.CalendarType,
@@ -1073,9 +1059,7 @@ func CreateShuttleHoliday(c *fiber.Ctx) error {
 	item, err := models.ShuttleHolidays(
 		models.ShuttleHolidayWhere.HolidayDate.EQ(date),
 	).One(c.Context(), database.DB)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-	} else if item != nil {
+	if item != nil {
 		return c.Status(fiber.StatusConflict).JSON(responses.ErrorResponse{Message: "HOLIDAY_ALREADY_EXISTS"})
 	}
 
@@ -1105,10 +1089,8 @@ func DeleteShuttleHoliday(c *fiber.Ctx) error {
 	item, err := models.ShuttleHolidays(
 		models.ShuttleHolidayWhere.HolidayDate.EQ(date),
 	).One(c.Context(), database.DB)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-	} else if item == nil {
-		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "NOT_FOUND"})
+	if err != nil || item == nil {
+		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "HOLIDAY_NOT_FOUND"})
 	}
 
 	_, err = item.Delete(c.Context(), database.DB)

@@ -34,6 +34,7 @@ require (
 	github.com/gofiber/swagger v0.1.14 // indirect
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang-module/carbon/v2 v2.2.13 // indirect
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
