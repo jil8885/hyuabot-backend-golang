@@ -407,17 +407,13 @@ func CreateShuttleRoute(c *fiber.Ctx) error {
 	}
 
 	startStop, err := models.FindShuttleStop(c.Context(), database.DB, request.Start)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-	} else if startStop == nil {
-		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "START_STOP_NOT_FOUND"})
+	if err != nil || startStop == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "START_STOP_NOT_FOUND"})
 	}
 
 	endStop, err := models.FindShuttleStop(c.Context(), database.DB, request.End)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-	} else if endStop == nil {
-		return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "END_STOP_NOT_FOUND"})
+	if err != nil || endStop == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "END_STOP_NOT_FOUND"})
 	}
 
 	route := models.ShuttleRoute{
@@ -481,19 +477,15 @@ func UpdateShuttleRoute(c *fiber.Ctx) error {
 	}
 	if request.Start.Valid {
 		startStop, err := models.FindShuttleStop(c.Context(), database.DB, request.Start.String)
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-		} else if startStop == nil {
-			return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "START_STOP_NOT_FOUND"})
+		if err != nil || startStop == nil {
+			return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "START_STOP_NOT_FOUND"})
 		}
 		item.StartStop = request.Start
 	}
 	if request.End.Valid {
 		endStop, err := models.FindShuttleStop(c.Context(), database.DB, request.End.String)
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
-		} else if endStop == nil {
-			return c.Status(fiber.StatusNotFound).JSON(responses.ErrorResponse{Message: "END_STOP_NOT_FOUND"})
+		if err != nil || endStop == nil {
+			return c.Status(fiber.StatusBadRequest).JSON(responses.ErrorResponse{Message: "END_STOP_NOT_FOUND"})
 		}
 		item.EndStop = request.End
 	}
@@ -561,7 +553,7 @@ func DeleteShuttleRoute(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	}
-	return c.Status(fiber.StatusOK).JSON(responses.SuccessResponse{Message: "DELETED"})
+	return c.Status(fiber.StatusNoContent).JSON(responses.SuccessResponse{Message: "DELETED"})
 }
 
 func GetShuttleStopList(c *fiber.Ctx) error {
