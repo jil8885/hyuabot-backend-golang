@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/Pallinder/go-randomdata"
 	"github.com/bluele/factory-go/factory"
+	"github.com/golang-module/carbon/v2"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/database"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/dto/responses"
 	"github.com/hyuabot-developers/hyuabot-backend-golang/models"
@@ -35,9 +37,52 @@ var shuttleStopFactory = factory.NewFactory(
 	},
 )
 
-func shuttleDataCreate() ([]*models.ShuttleStop, []*models.ShuttleRoute) {
+var shuttlePeriodType = []string{"semester", "vacation", "vacation_session"}
+var shuttlePeriodFactory = factory.NewFactory(
+	&models.ShuttlePeriod{
+		PeriodType:  shuttlePeriodType[randomdata.Number(0, 2)],
+		PeriodStart: carbon.Parse(randomdata.FullDate()).ToStdTime(),
+		PeriodEnd:   carbon.Parse(randomdata.FullDate()).ToStdTime(),
+	},
+)
+
+var shuttleHolidayType = []string{"weekends", "halt"}
+var shuttleHolidayFactory = factory.NewFactory(
+	&models.ShuttleHoliday{
+		HolidayType: shuttleHolidayType[randomdata.Number(0, 1)],
+		HolidayDate: carbon.Parse(randomdata.FullDate()).ToStdTime(),
+	},
+)
+
+var shuttleTimetableFactory = factory.NewFactory(
+	&models.ShuttleTimetable{
+		PeriodType:    shuttlePeriodType[randomdata.Number(0, 2)],
+		Weekday:       randomdata.Boolean(),
+		RouteName:     randomdata.Noun(),
+		DepartureTime: time.Date(0, 0, 0, randomdata.Number(0, 23), randomdata.Number(0, 59), 0, 0, time.Local),
+	},
+)
+
+func shuttleDataCreate() (
+	[]*models.ShuttleStop,
+	[]*models.ShuttleRoute,
+	[]*models.ShuttleTimetable,
+	[]*models.ShuttlePeriod,
+	[]*models.ShuttleHoliday,
+) {
 	stopList := make([]*models.ShuttleStop, 0)
 	routeList := make([]*models.ShuttleRoute, 0)
+	timetableList := make([]*models.ShuttleTimetable, 0)
+	periodList := make([]*models.ShuttlePeriod, 0)
+	holidayList := make([]*models.ShuttleHoliday, 0)
+
+	for i := 0; i < 3; i++ {
+		period := models.ShuttlePeriodType{PeriodType: shuttlePeriodType[i]}
+		err := period.Insert(context.Background(), database.DB, boil.Infer())
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 	for i := 0; i < 10; i++ {
 		stop, _ := shuttleStopFactory.MustCreateWithOption(map[string]interface{}{
 			"StopName": randomdata.Alphanumeric(6),
@@ -72,7 +117,53 @@ func shuttleDataCreate() ([]*models.ShuttleStop, []*models.ShuttleRoute) {
 			fmt.Println(err)
 		}
 	}
-	return stopList, routeList
+	for i := 0; i < 100; i++ {
+		timetable := shuttleTimetableFactory.MustCreateWithOption(map[string]interface{}{
+			"PeriodType":    shuttlePeriodType[randomdata.Number(0, 2)],
+			"Weekday":       randomdata.Boolean(),
+			"RouteName":     routeList[randomdata.Number(0, 9)].RouteName,
+			"DepartureTime": time.Date(0, 0, 0, randomdata.Number(0, 23), randomdata.Number(0, 59), 0, 0, time.Local),
+		}).(*models.ShuttleTimetable)
+		err := timetable.Insert(context.Background(), database.DB, boil.Infer())
+		if err != nil {
+			fmt.Println(err)
+		}
+		timetableList = append(timetableList, timetable)
+	}
+	for i := 0; i < 9; i++ {
+		start := carbon.Parse(fmt.Sprintf(
+			"%d-%d-%d",
+			randomdata.Number(2010, 2020),
+			randomdata.Number(1, 12),
+			randomdata.Number(1, 28),
+		)).SetTimezone(carbon.Seoul).SetTime(0, 0, 0)
+		end := start.AddMonths(randomdata.Number(1, 3)).SetTime(23, 59, 59)
+		period := shuttlePeriodFactory.MustCreateWithOption(map[string]interface{}{
+			"PeriodStart": start.SetTimezone(carbon.UTC).ToStdTime(),
+			"PeriodEnd":   end.SetTimezone(carbon.UTC).ToStdTime(),
+		}).(*models.ShuttlePeriod)
+		err := period.Insert(context.Background(), database.DB, boil.Infer())
+		if err != nil {
+			fmt.Println(err)
+		}
+		periodList = append(periodList, period)
+	}
+	for i := 0; i < 9; i++ {
+		holiday := shuttleHolidayFactory.MustCreateWithOption(map[string]interface{}{
+			"HolidayDate": carbon.Parse(fmt.Sprintf(
+				"%d-%d-%d",
+				randomdata.Number(2010, 2020),
+				randomdata.Number(1, 12),
+				randomdata.Number(1, 28),
+			)).ToStdTime(),
+		}).(*models.ShuttleHoliday)
+		err := holiday.Insert(context.Background(), database.DB, boil.Infer())
+		if err != nil {
+			fmt.Println(err)
+		}
+		holidayList = append(holidayList, holiday)
+	}
+	return stopList, routeList, timetableList, periodList, holidayList
 }
 
 func TestGetShuttleRouteList(t *testing.T) {
@@ -80,7 +171,7 @@ func TestGetShuttleRouteList(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	_, routeList := shuttleDataCreate()
+	_, routeList, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -128,7 +219,7 @@ func TestGetShuttleRouteItem(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	_, routeList := shuttleDataCreate()
+	_, routeList, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -171,7 +262,7 @@ func TestCreateShuttleRoute(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	stopList, routeList := shuttleDataCreate()
+	stopList, routeList, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -260,7 +351,7 @@ func TestUpdateShuttleRoute(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	stopList, routeList := shuttleDataCreate()
+	stopList, routeList, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -346,7 +437,7 @@ func TestDeleteShuttleRoute(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	_, routeList := shuttleDataCreate()
+	_, routeList, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -402,7 +493,7 @@ func TestGetShuttleStopItem(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	stopList, _ := shuttleDataCreate()
+	stopList, _, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -433,7 +524,7 @@ func TestCreateShuttleStop(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	stopList, _ := shuttleDataCreate()
+	stopList, _, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -479,7 +570,7 @@ func TestUpdateShuttleStop(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	stopList, _ := shuttleDataCreate()
+	stopList, _, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -527,7 +618,7 @@ func TestDeleteShuttleStop(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	stopList, _ := shuttleDataCreate()
+	stopList, _, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -556,7 +647,7 @@ func TestGetShuttleRouteStop(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	_, routeList := shuttleDataCreate()
+	_, routeList, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -590,7 +681,7 @@ func TestCreateShuttleRouteStop(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	stopList, routeList := shuttleDataCreate()
+	stopList, routeList, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -652,7 +743,7 @@ func TestUpdateShuttleRouteStop(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	stopList, routeList := shuttleDataCreate()
+	stopList, routeList, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -689,7 +780,7 @@ func TestDeleteShuttleRouteStop(t *testing.T) {
 	// Create shuttle data
 	setupDatabase()
 	createAdminUser()
-	stopList, routeList := shuttleDataCreate()
+	stopList, routeList, _, _, _ := shuttleDataCreate()
 	// Get access token
 	app := setup()
 	accessToken := loginWithAdminUser(app)
@@ -710,5 +801,167 @@ func TestDeleteShuttleRouteStop(t *testing.T) {
 	_ = json.NewDecoder(response.Body).Decode(&responseError)
 	test.NotEmpty(responseError.Message)
 	test.Equal("STOP_NOT_FOUND", responseError.Message)
+	tearDownDatabase()
+}
+
+func TestGetShuttlePeriodList(t *testing.T) {
+	test := assert.New(t)
+	// Create shuttle data
+	setupDatabase()
+	createAdminUser()
+	shuttleDataCreate()
+	// Get access token
+	app := setup()
+	accessToken := loginWithAdminUser(app)
+	// Request all shuttle periods
+	req := httptest.NewRequest("GET", "/api/v1/shuttle/period", nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ := app.Test(req, 5000)
+	test.Equal(200, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var shuttlePeriodListResponse responses.ShuttlePeriodListResponse
+	_ = json.NewDecoder(response.Body).Decode(&shuttlePeriodListResponse)
+	test.NotEmpty(shuttlePeriodListResponse.Data)
+	for _, shuttlePeriod := range shuttlePeriodListResponse.Data {
+		test.NotEmpty(shuttlePeriod.PeriodType)
+		test.NotEmpty(shuttlePeriod.StartDate)
+		test.NotEmpty(shuttlePeriod.EndDate)
+	}
+	tearDownDatabase()
+}
+
+func TestGetShuttlePeriodItem(t *testing.T) {
+	test := assert.New(t)
+	// Create shuttle data
+	setupDatabase()
+	createAdminUser()
+	_, _, _, periodList, _ := shuttleDataCreate()
+	fmt.Println(periodList[0])
+	// Get access token
+	app := setup()
+	accessToken := loginWithAdminUser(app)
+	// Request shuttle period
+	req := httptest.NewRequest("GET", fmt.Sprintf(
+		"/api/v1/shuttle/period/%s/%s",
+		periodList[0].PeriodStart.AddDate(0, 0, 1).Format("2006-01-02"),
+		periodList[0].PeriodEnd.Format("2006-01-02"),
+	), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ := app.Test(req, 5000)
+	test.Equal(200, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var shuttlePeriodItemResponse responses.ShuttlePeriodItem
+	_ = json.NewDecoder(response.Body).Decode(&shuttlePeriodItemResponse)
+	test.NotEmpty(shuttlePeriodItemResponse.PeriodType)
+	test.NotEmpty(shuttlePeriodItemResponse.StartDate)
+	test.NotEmpty(shuttlePeriodItemResponse.EndDate)
+
+	// Request shuttle period with invalid id
+	req = httptest.NewRequest("GET", fmt.Sprintf(
+		"/api/v1/shuttle/period/%s/%s",
+		"0000-00-00",
+		"0000-00-00",
+	), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ = app.Test(req, 5000)
+	test.Equal(404, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var responseError responses.ErrorResponse
+	_ = json.NewDecoder(response.Body).Decode(&responseError)
+	test.NotEmpty(responseError.Message)
+	test.Equal("PERIOD_NOT_FOUND", responseError.Message)
+	tearDownDatabase()
+}
+
+func TestCreateShuttlePeriod(t *testing.T) {
+	test := assert.New(t)
+	// Create shuttle data
+	setupDatabase()
+	createAdminUser()
+	_, _, _, periodList, _ := shuttleDataCreate()
+	// Get access token
+	app := setup()
+	accessToken := loginWithAdminUser(app)
+	// Request create shuttle period
+	testCases := []struct {
+		PeriodType  string `json:"type"`
+		PeriodStart string `json:"start"`
+		PeriodEnd   string `json:"end"`
+	}{
+		{
+			PeriodType:  periodList[0].PeriodType,
+			PeriodStart: periodList[0].PeriodStart.AddDate(0, 0, 1).Format("2006-01-02"),
+			PeriodEnd:   periodList[0].PeriodEnd.Format("2006-01-02"),
+		},
+		{
+			PeriodType:  shuttlePeriodType[randomdata.Number(0, 2)],
+			PeriodStart: "2020-01-01",
+			PeriodEnd:   "2020-01-03",
+		},
+	}
+	expectedStatusCodes := []int{409, 201}
+	for index, testCase := range testCases {
+		body, _ := json.Marshal(testCase)
+		req := httptest.NewRequest("POST", "/api/v1/shuttle/period", bytes.NewBuffer(body))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+		req.Header.Set("Content-Type", "application/json")
+		response, _ := app.Test(req, 5000)
+		test.Equal(expectedStatusCodes[index], response.StatusCode)
+
+		if response.StatusCode == 201 {
+			var responseShuttlePeriod responses.ShuttlePeriodItem
+			_ = json.NewDecoder(response.Body).Decode(&responseShuttlePeriod)
+			test.NotEmpty(responseShuttlePeriod.PeriodType)
+			test.NotEmpty(responseShuttlePeriod.StartDate)
+			test.NotEmpty(responseShuttlePeriod.EndDate)
+		} else if response.StatusCode == 409 {
+			var responseError responses.ErrorResponse
+			_ = json.NewDecoder(response.Body).Decode(&responseError)
+			test.NotEmpty(responseError.Message)
+			test.Equal("PERIOD_ALREADY_EXISTS", responseError.Message)
+		}
+	}
+	tearDownDatabase()
+}
+
+func TestDeleteShuttlePeriod(t *testing.T) {
+	test := assert.New(t)
+	// Create shuttle data
+	setupDatabase()
+	createAdminUser()
+	_, _, _, periodList, _ := shuttleDataCreate()
+	// Get access token
+	app := setup()
+	accessToken := loginWithAdminUser(app)
+	// Request delete shuttle period
+	req := httptest.NewRequest("DELETE", fmt.Sprintf(
+		"/api/v1/shuttle/period/%s/%s",
+		periodList[0].PeriodStart.AddDate(0, 0, 1).Format("2006-01-02"),
+		periodList[0].PeriodEnd.Format("2006-01-02"),
+	), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ := app.Test(req, 5000)
+
+	test.Equal(204, response.StatusCode)
+	// Request delete shuttle period with invalid id
+	req = httptest.NewRequest("DELETE", fmt.Sprintf(
+		"/api/v1/shuttle/period/%s/%s",
+		"0000-00-00",
+		"0000-00-00",
+	), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ = app.Test(req, 5000)
+
+	test.Equal(404, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var responseError responses.ErrorResponse
+	_ = json.NewDecoder(response.Body).Decode(&responseError)
+	test.NotEmpty(responseError.Message)
+	test.Equal("PERIOD_NOT_FOUND", responseError.Message)
 	tearDownDatabase()
 }

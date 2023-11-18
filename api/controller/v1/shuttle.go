@@ -924,7 +924,7 @@ func DeleteShuttlePeriod(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(responses.ErrorResponse{Message: "INTERNAL_SERVER_ERROR"})
 	}
-	return c.Status(fiber.StatusOK).JSON(responses.SuccessResponse{Message: "DELETED"})
+	return c.Status(fiber.StatusNoContent).JSON(responses.SuccessResponse{Message: "DELETED"})
 }
 
 func GetShuttleHolidayList(c *fiber.Ctx) error {
