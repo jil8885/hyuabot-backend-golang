@@ -60,6 +60,18 @@ func shuttleDataCreate() ([]*models.ShuttleStop, []*models.ShuttleRoute) {
 		}
 		routeList = append(routeList, route)
 	}
+	for i := 0; i < 9; i++ {
+		routeStop := models.ShuttleRouteStop{
+			RouteName:      routeList[0].RouteName,
+			StopName:       stopList[i].StopName,
+			StopOrder:      null.IntFrom(i),
+			CumulativeTime: fmt.Sprintf("00:%02d:00", i*5),
+		}
+		err := routeStop.Insert(context.Background(), database.DB, boil.Infer())
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 	return stopList, routeList
 }
 
@@ -142,7 +154,7 @@ func TestGetShuttleRouteItem(t *testing.T) {
 	for _, stop := range shuttleRouteItemResponse.Stops {
 		test.NotEmpty(stop.Name)
 		test.NotEmpty(stop.CumulativeTime)
-		test.NotEmpty(stop.Seq)
+		test.GreaterOrEqual(stop.Seq, 0)
 	}
 	// Request shuttle route with invalid tag
 	req = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/shuttle/route/%s", "invalid_tag"), nil)
@@ -527,6 +539,168 @@ func TestDeleteShuttleStop(t *testing.T) {
 	test.Equal(204, response.StatusCode)
 	// Request delete shuttle route with invalid tag
 	req = httptest.NewRequest("DELETE", fmt.Sprintf("/api/v1/shuttle/stop/%s", "invalid_tag"), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ = app.Test(req, 5000)
+	test.Equal(404, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var responseError responses.ErrorResponse
+	_ = json.NewDecoder(response.Body).Decode(&responseError)
+	test.NotEmpty(responseError.Message)
+	test.Equal("STOP_NOT_FOUND", responseError.Message)
+	tearDownDatabase()
+}
+
+func TestGetShuttleRouteStop(t *testing.T) {
+	test := assert.New(t)
+	// Create shuttle data
+	setupDatabase()
+	createAdminUser()
+	_, routeList := shuttleDataCreate()
+	// Get access token
+	app := setup()
+	accessToken := loginWithAdminUser(app)
+	// Request shuttle route
+	req := httptest.NewRequest("GET", fmt.Sprintf("/api/v1/shuttle/route/%s/stop", routeList[0].RouteName), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ := app.Test(req, 5000)
+	test.Equal(200, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var shuttleRouteStopListResponse responses.ShuttleRouteStopListResponse
+	_ = json.NewDecoder(response.Body).Decode(&shuttleRouteStopListResponse)
+	test.NotEmpty(shuttleRouteStopListResponse.Data)
+	for _, shuttleRouteStop := range shuttleRouteStopListResponse.Data {
+		test.NotEmpty(shuttleRouteStop.Name)
+		test.GreaterOrEqual(shuttleRouteStop.Seq, 0)
+		test.NotEmpty(shuttleRouteStop.CumulativeTime)
+	}
+	// Request shuttle route with invalid tag
+	req = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/shuttle/route/%s/stop", "invalid_tag"), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ = app.Test(req, 5000)
+	test.Equal(404, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	tearDownDatabase()
+}
+
+func TestCreateShuttleRouteStop(t *testing.T) {
+	test := assert.New(t)
+	// Create shuttle data
+	setupDatabase()
+	createAdminUser()
+	stopList, routeList := shuttleDataCreate()
+	// Get access token
+	app := setup()
+	accessToken := loginWithAdminUser(app)
+	// Request create shuttle route
+	testCases := []struct {
+		StopName       string `json:"name"`
+		StopOrder      int    `json:"seq"`
+		CumulativeTime string `json:"cumulativeTime"`
+	}{
+		{
+			StopName:       stopList[0].StopName,
+			StopOrder:      0,
+			CumulativeTime: "00:00:00",
+		},
+		{
+			StopName:       stopList[9].StopName,
+			StopOrder:      10,
+			CumulativeTime: "00:05:00",
+		},
+	}
+	expectedStatusCodes := []int{409, 201}
+	for index, testCase := range testCases {
+		body, _ := json.Marshal(testCase)
+		req := httptest.NewRequest("POST", fmt.Sprintf("/api/v1/shuttle/route/%s/stop", routeList[0].RouteName), bytes.NewBuffer(body))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+		req.Header.Set("Content-Type", "application/json")
+		response, _ := app.Test(req, 5000)
+		test.Equal(expectedStatusCodes[index], response.StatusCode)
+
+		if response.StatusCode == 201 {
+			var responseShuttleRouteStop responses.ShuttleRouteStopItem
+			_ = json.NewDecoder(response.Body).Decode(&responseShuttleRouteStop)
+			test.NotEmpty(responseShuttleRouteStop.Name)
+			test.NotEmpty(responseShuttleRouteStop.Seq)
+			test.NotEmpty(responseShuttleRouteStop.CumulativeTime)
+		} else if response.StatusCode == 409 {
+			var responseError responses.ErrorResponse
+			_ = json.NewDecoder(response.Body).Decode(&responseError)
+			test.NotEmpty(responseError.Message)
+			test.Equal("STOP_ALREADY_EXISTS", responseError.Message)
+		}
+	}
+	body, _ := json.Marshal(testCases[0])
+	req := httptest.NewRequest("POST", fmt.Sprintf("/api/v1/shuttle/route/%s/stop", "invalid_tag"), bytes.NewBuffer(body))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ := app.Test(req, 5000)
+	test.Equal(404, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var responseError responses.ErrorResponse
+	_ = json.NewDecoder(response.Body).Decode(&responseError)
+	test.NotEmpty(responseError.Message)
+	test.Equal("ROUTE_NOT_FOUND", responseError.Message)
+	tearDownDatabase()
+}
+
+func TestUpdateShuttleRouteStop(t *testing.T) {
+	test := assert.New(t)
+	// Create shuttle data
+	setupDatabase()
+	createAdminUser()
+	stopList, routeList := shuttleDataCreate()
+	// Get access token
+	app := setup()
+	accessToken := loginWithAdminUser(app)
+	// Request create shuttle route
+	testCases := []struct {
+		StopOrder      int    `json:"seq"`
+		CumulativeTime string `json:"cumulativeTime"`
+	}{
+		{
+			StopOrder:      0,
+			CumulativeTime: "00:13:00",
+		},
+	}
+	expectedStatusCodes := []int{200}
+	for index, testCase := range testCases {
+		body, _ := json.Marshal(testCase)
+		req := httptest.NewRequest("PATCH", fmt.Sprintf("/api/v1/shuttle/route/%s/stop/%s", routeList[0].RouteName, stopList[0].StopName), bytes.NewBuffer(body))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+		req.Header.Set("Content-Type", "application/json")
+		response, _ := app.Test(req, 5000)
+		test.Equal(expectedStatusCodes[index], response.StatusCode)
+
+		var responseShuttleRouteStop responses.ShuttleRouteStopItem
+		_ = json.NewDecoder(response.Body).Decode(&responseShuttleRouteStop)
+		test.NotEmpty(responseShuttleRouteStop.Name)
+		test.GreaterOrEqual(responseShuttleRouteStop.Seq, 0)
+		test.NotEmpty(responseShuttleRouteStop.CumulativeTime)
+	}
+	tearDownDatabase()
+}
+
+func TestDeleteShuttleRouteStop(t *testing.T) {
+	test := assert.New(t)
+	// Create shuttle data
+	setupDatabase()
+	createAdminUser()
+	stopList, routeList := shuttleDataCreate()
+	// Get access token
+	app := setup()
+	accessToken := loginWithAdminUser(app)
+	// Request delete shuttle route
+	req := httptest.NewRequest("DELETE", fmt.Sprintf("/api/v1/shuttle/route/%s/stop/%s", routeList[0].RouteName, stopList[0].StopName), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ := app.Test(req, 5000)
+	test.Equal(204, response.StatusCode)
+	// Request delete shuttle route with invalid tag
+	req = httptest.NewRequest("DELETE", fmt.Sprintf("/api/v1/shuttle/route/%s/stop/%s", routeList[0].RouteName, "invalid_tag"), nil)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 	req.Header.Set("Content-Type", "application/json")
 	response, _ = app.Test(req, 5000)
