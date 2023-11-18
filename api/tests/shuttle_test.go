@@ -49,8 +49,9 @@ var shuttlePeriodFactory = factory.NewFactory(
 var shuttleHolidayType = []string{"weekends", "halt"}
 var shuttleHolidayFactory = factory.NewFactory(
 	&models.ShuttleHoliday{
-		HolidayType: shuttleHolidayType[randomdata.Number(0, 1)],
-		HolidayDate: carbon.Parse(randomdata.FullDate()).ToStdTime(),
+		CalendarType: "solar",
+		HolidayType:  shuttleHolidayType[randomdata.Number(0, 1)],
+		HolidayDate:  carbon.Parse(randomdata.FullDate()).ToStdTime(),
 	},
 )
 
@@ -963,5 +964,163 @@ func TestDeleteShuttlePeriod(t *testing.T) {
 	_ = json.NewDecoder(response.Body).Decode(&responseError)
 	test.NotEmpty(responseError.Message)
 	test.Equal("PERIOD_NOT_FOUND", responseError.Message)
+	tearDownDatabase()
+}
+
+func TestGetShuttleHolidayList(t *testing.T) {
+	test := assert.New(t)
+	// Create shuttle data
+	setupDatabase()
+	createAdminUser()
+	shuttleDataCreate()
+	// Get access token
+	app := setup()
+	accessToken := loginWithAdminUser(app)
+	// Request all shuttle holidays
+	req := httptest.NewRequest("GET", "/api/v1/shuttle/holiday", nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ := app.Test(req, 5000)
+
+	test.Equal(200, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var shuttleHolidayListResponse responses.ShuttleHolidayListResponse
+	_ = json.NewDecoder(response.Body).Decode(&shuttleHolidayListResponse)
+	test.NotEmpty(shuttleHolidayListResponse.Data)
+	for _, shuttleHoliday := range shuttleHolidayListResponse.Data {
+		test.NotEmpty(shuttleHoliday.HolidayType)
+		test.NotEmpty(shuttleHoliday.HolidayDate)
+	}
+	tearDownDatabase()
+}
+
+func TestGetShuttleHolidayItem(t *testing.T) {
+	test := assert.New(t)
+	// Create shuttle data
+	setupDatabase()
+	createAdminUser()
+	_, _, _, _, holidayList := shuttleDataCreate()
+	// Get access token
+	app := setup()
+	accessToken := loginWithAdminUser(app)
+	// Request shuttle holiday
+	req := httptest.NewRequest("GET", fmt.Sprintf(
+		"/api/v1/shuttle/holiday/%s/%s",
+		holidayList[0].CalendarType,
+		holidayList[0].HolidayDate.Format("2006-01-02")), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ := app.Test(req, 5000)
+
+	test.Equal(200, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var shuttleHolidayItemResponse responses.ShuttleHolidayItem
+	_ = json.NewDecoder(response.Body).Decode(&shuttleHolidayItemResponse)
+	test.NotEmpty(shuttleHolidayItemResponse.HolidayType)
+	test.NotEmpty(shuttleHolidayItemResponse.HolidayDate)
+	// Request shuttle holiday with invalid id
+	req = httptest.NewRequest("GET", fmt.Sprintf(
+		"/api/v1/shuttle/holiday/%s/%s",
+		"solar",
+		"2000-01-01",
+	), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ = app.Test(req, 5000)
+
+	test.Equal(404, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var responseError responses.ErrorResponse
+	_ = json.NewDecoder(response.Body).Decode(&responseError)
+	test.NotEmpty(responseError.Message)
+	test.Equal("HOLIDAY_NOT_FOUND", responseError.Message)
+	tearDownDatabase()
+}
+
+func TestCreateShuttleHoliday(t *testing.T) {
+	test := assert.New(t)
+	// Create shuttle data
+	setupDatabase()
+	createAdminUser()
+	_, _, _, _, holidayList := shuttleDataCreate()
+	// Get access token
+	app := setup()
+	accessToken := loginWithAdminUser(app)
+	// Request create shuttle holiday
+	testCases := []struct {
+		CalendarType string `json:"calendar"`
+		HolidayType  string `json:"holiday"`
+		HolidayDate  string `json:"date"`
+	}{
+		{
+			CalendarType: holidayList[0].CalendarType,
+			HolidayType:  holidayList[0].HolidayType,
+			HolidayDate:  holidayList[0].HolidayDate.Format("2006-01-02"),
+		},
+		{
+			CalendarType: "solar",
+			HolidayType:  shuttleHolidayType[randomdata.Number(0, 2)],
+			HolidayDate:  "2020-01-01",
+		},
+	}
+	expectedStatusCodes := []int{409, 201}
+	for index, testCase := range testCases {
+		body, _ := json.Marshal(testCase)
+		req := httptest.NewRequest("POST", "/api/v1/shuttle/holiday", bytes.NewBuffer(body))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+		req.Header.Set("Content-Type", "application/json")
+		response, _ := app.Test(req, 5000)
+
+		test.Equal(expectedStatusCodes[index], response.StatusCode)
+
+		if response.StatusCode == 201 {
+			var responseShuttleHoliday responses.ShuttleHolidayItem
+			_ = json.NewDecoder(response.Body).Decode(&responseShuttleHoliday)
+			test.NotEmpty(responseShuttleHoliday.HolidayType)
+			test.NotEmpty(responseShuttleHoliday.HolidayDate)
+		} else if response.StatusCode == 409 {
+			var responseError responses.ErrorResponse
+			_ = json.NewDecoder(response.Body).Decode(&responseError)
+			test.NotEmpty(responseError.Message)
+			test.Equal("HOLIDAY_ALREADY_EXISTS", responseError.Message)
+		}
+	}
+	tearDownDatabase()
+}
+
+func TestDeleteShuttleHoliday(t *testing.T) {
+	test := assert.New(t)
+	// Create shuttle data
+	setupDatabase()
+	createAdminUser()
+	_, _, _, _, holidayList := shuttleDataCreate()
+	// Get access token
+	app := setup()
+	accessToken := loginWithAdminUser(app)
+	// Request delete shuttle holiday
+	req := httptest.NewRequest("DELETE", fmt.Sprintf(
+		"/api/v1/shuttle/holiday/%s/%s",
+		holidayList[0].CalendarType,
+		holidayList[0].HolidayDate.Format("2006-01-02")), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ := app.Test(req, 5000)
+
+	test.Equal(204, response.StatusCode)
+	// Request delete shuttle holiday with invalid id
+	req = httptest.NewRequest("DELETE", fmt.Sprintf(
+		"/api/v1/shuttle/holiday/%s/%s",
+		"solar",
+		"2000-01-01"), nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Content-Type", "application/json")
+	response, _ = app.Test(req, 5000)
+
+	test.Equal(404, response.StatusCode)
+	test.Equal("application/json", response.Header.Get("Content-Type"))
+	var responseError responses.ErrorResponse
+	_ = json.NewDecoder(response.Body).Decode(&responseError)
+	test.NotEmpty(responseError.Message)
+	test.Equal("HOLIDAY_NOT_FOUND", responseError.Message)
 	tearDownDatabase()
 }
